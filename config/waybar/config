@@ -1,0 +1,70 @@
+[
+  {
+    "clock": {
+      "format": "󰥔  {:%H:%M %A}",
+      "format-alt": "󰃭 {:%Y年%m月%d日 %A}",
+      "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    },
+    "custom/battery": {
+      "exec": "upower -i $(upower -e | grep BAT) | awk '\n  /percentage:/ { perc=$2 }\n  /state:/ { state=$2 }\n  END {\n    percInt = perc + 0\n    icon = (percInt > 80) ? \"󰁹\" : (percInt > 60) ? \"󰂂\" : (percInt > 40) ? \"󰁾\" : (percInt > 20) ? \"󰁻\" : \"󰂃\"\n    print \"{ \\\"text\\\": \\\"\" perc \"\\\", \\\"tooltip\\\": \\\"Battery is \" state \"\\\", \\\"class\\\": \\\"\" state \"\\\", \\\"percentage\\\": \" percInt \", \\\"icon\\\": \\\"\" icon \"\\\" }\"\n  }\n'\n",
+      "format": "󱟠 {icon} {percentage}%",
+      "interval": 30,
+      "return-type": "json"
+    },
+    "hyprland/workspaces": {
+      "format": "{icon}",
+      "format-icons": {
+        "1": "一",
+        "2": "二",
+        "3": "三",
+        "4": "四",
+        "5": "五",
+        "6": "六",
+        "7": "七",
+        "8": "八",
+        "9": "九",
+        "10": "十",
+        "spotify": "",
+        "discord": "",
+        "steam": ""
+      }
+    },
+    "layer": "top",
+    "margin-left": 4,
+    "margin-right": 4,
+    "margin-top": 4,
+    "modules-center": [
+      "hyprland/workspaces"
+    ],
+    "modules-left": [
+      "clock",
+      "custom/battery"
+    ],
+    "modules-right": [
+      "tray",
+      "pulseaudio"
+    ],
+    "position": "top",
+    "pulseaudio": {
+      "format": "{icon}  {volume}%",
+      "format-icons": {
+        "default": [
+          "󰕿",
+          "󰖀",
+          "󰕾"
+        ],
+        "hands-free": "󰋋",
+        "headphone": "󰋋",
+        "headset": "󰋋"
+      },
+      "format-muted": "󰸈 Muted",
+      "on-click": "pwvucontrol",
+      "scroll-step": 5
+    },
+    "spacing": 4,
+    "tray": {
+      "icon-size": 18,
+      "spacing": 8
+    }
+  }
+]

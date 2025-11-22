@@ -1,0 +1,54 @@
+{
+  "autoUpdate": true,
+  "autoUpdateNotification": false,
+  "disableMinSize": true,
+  "notifyAboutUpdates": false,
+  "plugins": {
+    "AlwaysAnimate": {
+      "enabled": true
+    },
+    "AlwaysTrust": {
+      "enabled": true
+    },
+    "AnonymiseFileNames": {
+      "enabled": true
+    },
+    "ClearURLS": {
+      "enabled": true
+    },
+    "CrashHandler": {
+      "enabled": true
+    },
+    "CustomRPC": {
+      "enabled": true
+    },
+    "FakeNitro": {
+      "enabled": true
+    },
+    "FixImagesQuality": {
+      "enabled": true
+    },
+    "FixYoutubeEmbeds": {
+      "enabled": true
+    },
+    "MessageLogger": {
+      "enabled": true
+    },
+    "ReverseImageSearch": {
+      "enabled": true
+    },
+    "SilentTyping": {
+      "enabled": true
+    },
+    "TypingIndicator": {
+      "enabled": true
+    },
+    "WebScreenShareFixes": {
+      "enabled": true
+    },
+    "YoutubeAdblock": {
+      "enabled": true
+    }
+  },
+  "useQuickCss": true
+}

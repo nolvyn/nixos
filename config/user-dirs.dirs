@@ -1,0 +1,8 @@
+XDG_DESKTOP_DIR = "/home/weeb/Downloads"
+XDG_DOCUMENTS_DIR = "/home/weeb/Downloads"
+XDG_DOWNLOAD_DIR = "/home/weeb/Downloads"
+XDG_MUSIC_DIR = "/home/weeb/Downloads"
+XDG_PICTURES_DIR = "/home/weeb/Downloads"
+XDG_PUBLICSHARE_DIR = "/home/weeb/Downloads"
+XDG_TEMPLATES_DIR = "/home/weeb/Downloads"
+XDG_VIDEOS_DIR = "/home/weeb/Downloads"

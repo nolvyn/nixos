@@ -1,0 +1,24 @@
+{
+  "C_Cpp.default.cppStandard": "c++23",
+  "editor.detectIndentation": false,
+  "editor.insertSpaces": true,
+  "editor.lineNumbers": "on",
+  "editor.tabSize": 2,
+  "explorer.confirmDelete": true,
+  "explorer.confirmDragAndDrop": false,
+  "extensions.autoCheckUpdates": true,
+  "extensions.autoUpdate": true,
+  "extensions.ignoreRecommendations": true,
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "files.insertFinalNewline": true,
+  "markdown.preview.breaks": false,
+  "security.workspace.trust.enabled": true,
+  "security.workspace.trust.untrustedFiles": "prompt",
+  "telemetry.telemetryLevel": "off",
+  "update.mode": "none",
+  "workbench.enableExperiments": false,
+  "workbench.settings.applyToAllProfiles": [],
+
+  "zig.zls.enabled": "on"
+}
