@@ -6,7 +6,17 @@
   services.gnome.gnome-keyring.enable = true;
   programs.seahorse.enable = true;  # GUI Keyring Manager
 
-  security.sudo.enable = true;
+  # security.sudo.enable = false;
+  security.sudo.execWheelOnly = true;
+
+  security.doas.enable = true;
+  security.doas.extraRules = [{
+    users = ["weeb"];
+    keepEnv = true;
+    persist = true;
+  }];
+
+  environment.systemPackages = [ pkgs.git ]; # Needed for system rebuilds in flake based systems
 
   nix.settings.allowed-users = [ "@users" ];
 
@@ -67,5 +77,4 @@
   };
 
   services.dbus.implementation = "broker";
-  security.sudo.execWheelOnly = true;
 }

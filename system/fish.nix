@@ -9,15 +9,15 @@
       set fish_greeting # Disable greeting
     '';
     shellAliases = {
-      des = "cd && sudo nixos-rebuild switch --flake /home/weeb/nixos#WeebMachine";
-      lap = "cd && sudo nixos-rebuild switch --flake /home/weeb/nixos#MoeNote";
+      des = "cd && doas nixos-rebuild switch --flake /home/weeb/nixos#WeebMachine";
+      lap = "cd && doas nixos-rebuild switch --flake /home/weeb/nixos#MoeNote";
       nfu = "cd /home/weeb/nixos && nix flake update && cd";
 
       ga = "cd /home/weeb/nixos && git add *";
       gc = "git commit -m";
       gp = "git push origin main && cd";
 
-      sure = "sudo reboot";
+      dore = "doas reboot";
       rup = "ripunzip unzip-file";
       codium = "flatpak run com.vscodium.codium";
     };
