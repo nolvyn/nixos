@@ -6,7 +6,7 @@
   services.gnome.gnome-keyring.enable = true;
   programs.seahorse.enable = true;  # GUI Keyring Manager
 
-  # security.sudo.enable = false;
+  security.sudo.enable = false;
   security.sudo.execWheelOnly = true;
 
   security.doas.enable = true;

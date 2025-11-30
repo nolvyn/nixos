@@ -7,13 +7,13 @@
   ];
 
   environment.systemPackages = with pkgs; [
-    arduino
+    # arduino
   ];
 
   networking.hostName = "MoeNote";
 
   users.users.${config.user.name} = {
-    extraGroups = [ "dialout" ];
+    # extraGroups = [ "dialout" ];
   };
 
   services.upower.enable = true;

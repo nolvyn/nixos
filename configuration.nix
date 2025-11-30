@@ -64,12 +64,13 @@
     inputs.quickshell.packages.${pkgs.system}.default # Quickshell
     cryptomator
     unrar
+    arduino
   ];
 
   # Define a user account. 
   users.users.${config.user.name} = {
     isNormalUser = true;
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "dialout" "networkmanager" "wheel" ];
     packages = with pkgs; [];
   };
 
