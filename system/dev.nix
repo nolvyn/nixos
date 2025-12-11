@@ -18,6 +18,8 @@
     unstable.rustfmt
     unstable.clippy
     unstable.rust-analyzer
+
+    python313Packages.requests
   ];
 
   environment.sessionVariables = {
