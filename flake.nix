@@ -2,7 +2,7 @@
 {
   inputs = {
     stable = {
-      url = "github:nixos/nixpkgs/nixos-25.05";
+      url = "github:nixos/nixpkgs/nixos-25.11";
     };
 
     unstable = {

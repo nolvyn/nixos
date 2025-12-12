@@ -26,7 +26,8 @@
         "10": "十",
         "spotify": "",
         "discord": "",
-        "steam": ""
+        "steam": "",
+        "slack": ""
       }
     },
     "layer": "top",

@@ -45,7 +45,7 @@
     lynis                 # System security checker
     mediainfo             # Show media file info
     networkmanagerapplet  # Wi-Fi/VPN tray icon
-    onlyoffice-bin        # Office suite
+    onlyoffice-desktopeditors        # Office suite
     playerctl             # Control media players
     protonvpn-gui         # ProtonVPN desktop app
     resources             # Simple system monitor
@@ -61,7 +61,7 @@
     yazi                  # Terminal File Manager
     zoom-us               # Video calls and meetings
 
-    inputs.quickshell.packages.${pkgs.system}.default # Quickshell
+    inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default # Quickshell
     cryptomator
     unrar
     arduino

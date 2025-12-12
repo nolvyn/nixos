@@ -3,7 +3,7 @@
 
 {
   environment.systemPackages = with pkgs; [
-    micromamba
+    unstable.micromamba
 
     neovim
     vscode
