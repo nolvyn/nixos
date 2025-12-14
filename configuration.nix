@@ -7,6 +7,7 @@
     ./system/bluetooth.nix
     ./system/brave.nix
     ./system/dev.nix
+    ./system/file.nix
     ./system/firefox.nix
     ./system/fish.nix
     ./system/flatpak.nix
@@ -82,9 +83,6 @@
       ".config/waybar/style.css".source = ./config/waybar/style.css;
       ".config/fuzzel/fuzzel.ini".source = ./config/fuzzel.ini;
       ".config/fastfetch/config.jsonc".source = ./config/fastfetch/config.jsonc;
-
-      ".config/user-dirs.dirs".source = ./config/user-dirs.dirs;
-      ".config/user-dirs.conf".text = "enabled=False";
 
       ".config/kitty/kitty.conf".source = ./config/kitty.conf;
 
