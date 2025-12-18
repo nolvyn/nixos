@@ -83,6 +83,6 @@
   };
 
   environment.systemPackages = with pkgs; [
-    brave
+    unstable.brave
   ];
 }
