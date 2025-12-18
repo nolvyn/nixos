@@ -9,6 +9,8 @@
     files = {
       ".config/user-dirs.dirs".source = ../config/user-dirs.dirs;
       ".config/user-dirs.conf".text = "enabled=False";
+
+      ".local/share/applications/yazi.desktop".source = ../applications/yazi.desktop;
     };
   };
 }

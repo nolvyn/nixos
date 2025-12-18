@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Yazi
+Comment=Terminal file manager
+Exec=kitty -e yazi
+Icon=folder
+Terminal=false
+Categories=System;FileManager;
