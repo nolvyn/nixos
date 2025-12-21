@@ -8,53 +8,57 @@
 
   systemd.services.NetworkManager-wait-online.enable = false; # Speed up boot time
   
-  systemd.services.systemd-rfkill = {
-    serviceConfig = {
-      ProtectSystem = "strict";
-      ProtectHome = true;
-      ProtectKernelTunables = true;
-      ProtectKernelModules = true;
-      ProtectControlGroups = true;
-      ProtectClock = true;
-      ProtectProc = "invisible";
-      ProcSubset = "pid";
-      PrivateTmp = true;
-      MemoryDenyWriteExecute = true;
-      NoNewPrivileges = true;
-      LockPersonality = true;
-      RestrictRealtime = true;
-      SystemCallFilter = [ 
-        "write" 
-        "read" 
-        "openat" 
-        "close" 
-        "brk" 
-        "fstat"
-        "fstatat" 
-        "lseek" 
-        "mmap" 
-        "mprotect" 
-        "munmap" 
-        "rt_sigaction" 
-        "rt_sigprocmask" 
-        "ioctl" 
-        "nanosleep" 
-        "select" 
-        "access" 
-        "execve" 
-        "getuid" 
-        "arch_prctl" 
-        "set_tid_address" 
-        "set_robust_list" 
-        "prlimit64" 
-        "pread64" 
-        "getrandom"
-      ];
-      SystemCallArchitectures = "native";
-      UMask = "0077";
-      IPAddressDeny = "any";
-    };
-  };
+  systemd.services.systemd-rfkill.enable = false;
+  systemd.services.systemd-rfkill-wlan.enable = false;
+  systemd.services.systemd-rfkill-bluetooth.enable = false;
+
+ # systemd.services.systemd-rfkill = {
+ #   serviceConfig = {
+ #     ProtectSystem = "strict";
+ #     ProtectHome = true;
+ #     ProtectKernelTunables = true;
+ #     ProtectKernelModules = true;
+ #     ProtectControlGroups = true;
+ #     ProtectClock = true;
+ #     ProtectProc = "invisible";
+ #     ProcSubset = "pid";
+ #     PrivateTmp = true;
+ #     MemoryDenyWriteExecute = true;
+ #     NoNewPrivileges = true;
+ #     LockPersonality = true;
+ #     RestrictRealtime = true;
+ #     SystemCallFilter = [ 
+ #       "write" 
+ #       "read" 
+ #       "openat" 
+ #       "close" 
+ #       "brk" 
+ #       "fstat"
+ #       "fstatat" 
+ #       "lseek" 
+ #       "mmap" 
+ #       "mprotect" 
+ #       "munmap" 
+ #       "rt_sigaction" 
+ #       "rt_sigprocmask" 
+ #       "ioctl" 
+ #       "nanosleep" 
+ #       "select" 
+ #       "access" 
+ #       "execve" 
+ #       "getuid" 
+ #       "arch_prctl" 
+ #       "set_tid_address" 
+ #       "set_robust_list" 
+ #       "prlimit64" 
+ #       "pread64" 
+ #       "getrandom"
+ #     ];
+ #     SystemCallArchitectures = "native";
+ #     UMask = "0077";
+ #     IPAddressDeny = "any";
+ #   };
+ # };
 
   systemd.services.systemd-journald = {
     serviceConfig = {

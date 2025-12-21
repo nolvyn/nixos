@@ -1,6 +1,3 @@
-# disko.nix
-{ config, pkgs, lib, ... }:
-
 {
   disko.devices = {
     disk = {
