@@ -66,6 +66,7 @@
     cryptomator
     unrar
     arduino
+    walker
   ];
 
   # Define a user account. 
