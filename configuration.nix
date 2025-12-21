@@ -39,7 +39,6 @@
     exiftool              # Show metadata for media files
     fastfetch             # Show system info in terminal
     filen-desktop         # Cloud Storage App
-    fuzzel                # App launcher for Wayland
     ghostty               # Terminal Emulator
     kdePackages.dolphin   # File Manager
     kitty                 # Terminal Emulator
@@ -63,9 +62,7 @@
     zoom-us               # Video calls and meetings
 
     inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default # Quickshell
-    cryptomator
     unrar
-    arduino
     walker
   ];
 
