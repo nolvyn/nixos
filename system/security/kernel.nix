@@ -2,6 +2,8 @@
 { config, pkgs, lib, ... }:
 
 {
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
   # security.lockKernelModules = true; # Causes too many problems. Will get back to later
   security.protectKernelImage = true;
 
