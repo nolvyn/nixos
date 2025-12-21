@@ -35,21 +35,21 @@
   }:
   
   let
-    lib = stable.lib;
+    lib = unstable.lib;
     system = "x86_64-linux";
     
-    pkgs = import stable {
+    pkgs = import unstable {
       inherit system;
       config.allowUnfree = true;
     };
 
-    u = import unstable {
+    s = import unstable {
       inherit system;
       config.allowUnfree = true;
     };
 
-    unstableOverlay = finl: prev: {
-      unstable = u;
+    stableOverlay = finl: prev: {
+      stable = s;
     };
 
     commonNixosModules = [
@@ -58,7 +58,7 @@
       hjem.nixosModules.hjem
       nix-flatpak.nixosModules.nix-flatpak
 
-      { nixpkgs.overlays = [ unstableOverlay ]; }
+      { nixpkgs.overlays = [ stableOverlay ]; }
     ];
   in
 

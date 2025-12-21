@@ -3,25 +3,25 @@
 
 {
   environment.systemPackages = with pkgs; [
-    unstable.micromamba
+    micromamba
 
     neovim
     vscode
     zed-editor
 
-    unstable.gcc
+    gcc
 
-    unstable.zig
+    zig
 
-    unstable.rustc
-    unstable.cargo
-    unstable.rustfmt
-    unstable.clippy
-    unstable.rust-analyzer
+    rustc
+    cargo
+    rustfmt
+    clippy
+    rust-analyzer
   ];
 
   environment.sessionVariables = {
-    RUST_SRC_PATH = "${pkgs.unstable.rust.packages.stable.rustPlatform.rustLibSrc}";
+    RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
   };
   
   qt.enable = true;
