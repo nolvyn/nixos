@@ -6,6 +6,7 @@
     ./system/audio.nix
     ./system/bluetooth.nix
     ./system/brave.nix
+    ./system/btrfs.nix
     ./system/dev.nix
     ./system/file.nix
     ./system/firefox.nix
