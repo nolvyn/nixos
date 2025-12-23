@@ -6,15 +6,11 @@
     ../../system/tlp.nix
   ];
 
-  environment.systemPackages = with pkgs; [
-    # arduino
-  ];
+  environment.systemPackages = with pkgs; [];
 
   networking.hostName = "MoeNote";
 
-  users.users.${config.user.name} = {
-    # extraGroups = [ "dialout" ];
-  };
+  users.users.${config.user.name} = {};
 
   services.upower.enable = true;
 

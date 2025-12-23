@@ -13,6 +13,6 @@
   };
 
   environment.systemPackages = with pkgs; [
-    pwvucontrol # Volume control GUI
+    pwvucontrol # Audio control GUI
   ];
 }

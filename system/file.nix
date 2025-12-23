@@ -13,7 +13,6 @@
       ".local/share/applications/yazi.desktop".source = ../applications/yazi.desktop;
       ".local/share/applications/nvim.desktop".source = ../applications/nvim.desktop;
       ".local/share/applications/neovim.desktop".source = ../applications/neovim.desktop;
-
     };
   };
 }

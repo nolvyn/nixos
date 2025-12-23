@@ -18,7 +18,7 @@
     ./system/keyboard.nix
     ./system/locale.nix
     ./system/optimizations.nix
-    ./system/printing.nix
+    # ./system/printing.nix
     ./system/sddm.nix
     ./system/theme.nix
 
@@ -56,21 +56,25 @@
     spotify               # Music streaming app
     totem                 # GNOME video player
     tree                  # Show folder structure
+    unrar
     vesktop               # Discord Client
+    walker
     waybar                # Status bar for Wayland
     wget                  # Download files from web
     yazi                  # Terminal File Manager
     zoom-us               # Video calls and meetings
 
     inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default # Quickshell
-    unrar
-    walker
   ];
 
   # Define a user account. 
   users.users.${config.user.name} = {
     isNormalUser = true;
-    extraGroups = [ "dialout" "networkmanager" "wheel" ];
+    extraGroups = [
+      # "dialout"
+      "networkmanager"
+      "wheel"
+    ];
     packages = with pkgs; [];
   };
 
