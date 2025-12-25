@@ -16,6 +16,12 @@
     ];
   };
 
+  environment.variables = {
+    XCURSOR_THEME = "Bibata-Modern-Ice";
+    XCURSOR_SIZE = "24";
+    HYPRCURSOR_SIZE = "24";
+  };
+
   environment.systemPackages = with pkgs; [
     gnome-themes-extra # Extra GTK themes
   ];

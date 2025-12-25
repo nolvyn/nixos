@@ -35,6 +35,7 @@
   networking.networkmanager.enable = true;
 
   environment.systemPackages = with pkgs; [
+    bibata-cursors
     brightnessctl         # Control screen brightness
     dunst                 # Notification popups
     exiftool              # Show metadata for media files
@@ -54,7 +55,6 @@
     ripunzip              # Extract zip files
     slack                 # Team chat app
     spotify               # Music streaming app
-    totem                 # GNOME video player
     tree                  # Show folder structure
     unrar
     vesktop               # Discord Client
@@ -65,6 +65,8 @@
     zoom-us               # Video calls and meetings
 
     inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default # Quickshell
+    vlc
+    mpv
   ];
 
   # Define a user account. 
