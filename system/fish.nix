@@ -20,6 +20,8 @@
       dore = "doas reboot";
       rup = "ripunzip unzip-file";
       codium = "flatpak run com.vscodium.codium";
+
+      sudo = "doas";
     };
   };
 

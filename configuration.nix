@@ -66,7 +66,8 @@
 
     inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default # Quickshell
     vlc
-    mpv
+    # mpv
+    vlc
   ];
 
   # Define a user account. 

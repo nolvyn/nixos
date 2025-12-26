@@ -4,6 +4,7 @@
   imports = [
     ./weebmachine-hardware.nix
     ../../system/gaming.nix
+    ../../system/jellyfin.nix
     # ../../system/searxng.nix
     # ../../system/virtualization.nix
   ];
