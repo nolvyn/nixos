@@ -1,6 +1,10 @@
 # configuration.nix
 { pkgs, config, lib, inputs, ... }:
 
+let 
+  quickshell = inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default;
+in 
+
 {
   imports = [
     ./system/audio.nix
@@ -21,6 +25,7 @@
     # ./system/printing.nix
     ./system/sddm.nix
     ./system/theme.nix
+    ./system/user.nix
 
     # Security
     # ./system/security/firejail.nix
@@ -35,7 +40,6 @@
   networking.networkmanager.enable = true;
 
   environment.systemPackages = with pkgs; [
-    bibata-cursors
     brightnessctl         # Control screen brightness
     dunst                 # Notification popups
     exiftool              # Show metadata for media files
@@ -50,6 +54,7 @@
     onlyoffice-desktopeditors        # Office suite
     playerctl             # Control media players
     protonvpn-gui         # ProtonVPN desktop app
+    quickshell
     resources             # Simple system monitor
     ripgrep               # Fast search in files
     ripunzip              # Extract zip files
@@ -58,46 +63,13 @@
     tree                  # Show folder structure
     unrar
     vesktop               # Discord Client
+    vlc
     walker
     waybar                # Status bar for Wayland
     wget                  # Download files from web
     yazi                  # Terminal File Manager
     zoom-us               # Video calls and meetings
-
-    inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default # Quickshell
-    vlc
-    # mpv
-    vlc
   ];
-
-  # Define a user account. 
-  users.users.${config.user.name} = {
-    isNormalUser = true;
-    extraGroups = [
-      # "dialout"
-      "networkmanager"
-      "wheel"
-    ];
-    packages = with pkgs; [];
-  };
-
-  hjem.users.${config.user.name} = {
-    enable = true;
-    clobberFiles = lib.mkForce true;
-    files = {
-      ".config/waybar/config".source = ./config/waybar/config;
-      ".config/waybar/style.css".source = ./config/waybar/style.css;
-      ".config/fuzzel/fuzzel.ini".source = ./config/fuzzel.ini;
-      ".config/walker/init.txt".text = "";
-      ".config/fastfetch/config.jsonc".source = ./config/fastfetch/config.jsonc;
-
-      ".config/kitty/kitty.conf".source = ./config/kitty.conf;
-
-      ".config/vesktop/settings.json".source = ./config/vesktop/vesktop-settings.json;
-      ".config/vesktop/settings/settings.json".source = ./config/vesktop/vencord-settings.json;
-
-    };
-  };
 
   nixpkgs.config.allowUnfree = true;  # Allow unfree packages like Steam
 

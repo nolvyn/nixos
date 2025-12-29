@@ -24,5 +24,6 @@
 
   environment.systemPackages = with pkgs; [
     gnome-themes-extra # Extra GTK themes
+    bibata-cursors
   ];
 }
