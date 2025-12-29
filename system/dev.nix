@@ -1,12 +1,33 @@
 # dev.nix
 { config, pkgs, lib, ... }:
 
+let
+  personal-vscode =
+    (pkgs.vscode-with-extensions.override {
+      vscode = pkgs.vscode;
+
+      vscodeExtensions =
+        (with pkgs.vscode-extensions; [
+          jnoortheen.nix-ide
+          rust-lang.rust-analyzer
+        ])
+        ++ (pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+          {
+            name = "adblock";
+            publisher = "adguard";
+            version = "1.1.17";
+            sha256 = "sha256-EbNKHjWIbn7YkaWyIjXF9wSqw4ql4n4DpACQkwT5L+0=";
+          }
+        ]);
+    });
+in
+
 {
   environment.systemPackages = with pkgs; [
     micromamba
 
     neovim
-    vscode
+    personal-vscode
     zed-editor
 
     gcc
