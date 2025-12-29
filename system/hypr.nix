@@ -26,6 +26,9 @@
 
       ".config/hypr/keybinds.conf".source = ../config/hypr/modules/keybinds.conf;
       ".config/hypr/monitors.conf".source = ../config/hypr/modules/monitors.conf; 
+      ".config/hypr/autostart.conf".source = ../config/hypr/modules/autostart.conf; 
+      ".config/hypr/input.conf".source = ../config/hypr/modules/input.conf; 
+      ".config/hypr/workspaces.conf".source = ../config/hypr/modules/workspaces.conf; 
     };
   };
 }
