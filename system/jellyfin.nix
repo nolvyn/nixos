@@ -1,4 +1,4 @@
-# keyboard.nix
+# jellyfin.nix
 { config, pkgs, lib, ... }:
 
 {

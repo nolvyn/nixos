@@ -100,4 +100,8 @@
   };
 
   nixpkgs.config.allowUnfree = true;  # Allow unfree packages like Steam
+
+  # DO NOT CHANGE **YOUR** DEFAULT VALUE HERE UNLESS YOU KNOW WHAT YOU ARE DOING 
+  # For more information see https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
+  system.stateVersion = "25.11";
 }
