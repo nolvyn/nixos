@@ -11,14 +11,10 @@ let
           jnoortheen.nix-ide
           rust-lang.rust-analyzer
         ])
-        ++ (pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-          {
-            name = "adblock";
-            publisher = "adguard";
-            version = "1.1.17";
-            sha256 = "sha256-EbNKHjWIbn7YkaWyIjXF9wSqw4ql4n4DpACQkwT5L+0=";
-          }
-        ]);
+        ++ [
+          pkgs.vscode-marketplace.adguard.adblock
+          pkgs.vscode-marketplace.theqtcompany.qt-qml
+        ];
     });
 in
 

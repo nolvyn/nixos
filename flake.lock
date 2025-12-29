@@ -4,7 +4,7 @@
       "inputs": {
         "nix-darwin": "nix-darwin",
         "nixpkgs": [
-          "stable"
+          "unstable"
         ],
         "smfh": "smfh"
       },
@@ -59,23 +59,23 @@
         "type": "github"
       }
     },
-    "quickshell": {
+    "nix-vscode-extensions": {
       "inputs": {
         "nixpkgs": [
-          "stable"
+          "unstable"
         ]
       },
       "locked": {
-        "lastModified": 1766725085,
-        "narHash": "sha256-O2aMFdDUYJazFrlwL7aSIHbUSEm3ADVZjmf41uBJfHs=",
-        "owner": "quickshell-mirror",
-        "repo": "quickshell",
-        "rev": "41828c4180fb921df7992a5405f5ff05d2ac2fff",
+        "lastModified": 1766974745,
+        "narHash": "sha256-6qxu2VZiPrKzFN3G6FjoiXO9cPSLDJp437/64B3M1l0=",
+        "owner": "nix-community",
+        "repo": "nix-vscode-extensions",
+        "rev": "6b07c9fdf88e9c1e75e164e9ef387e29e0c2a613",
         "type": "github"
       },
       "original": {
-        "owner": "quickshell-mirror",
-        "repo": "quickshell",
+        "owner": "nix-community",
+        "repo": "nix-vscode-extensions",
         "type": "github"
       }
     },
@@ -83,7 +83,7 @@
       "inputs": {
         "hjem": "hjem",
         "nix-flatpak": "nix-flatpak",
-        "quickshell": "quickshell",
+        "nix-vscode-extensions": "nix-vscode-extensions",
         "stable": "stable",
         "unstable": "unstable"
       }

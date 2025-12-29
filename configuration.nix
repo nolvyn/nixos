@@ -1,10 +1,6 @@
 # configuration.nix
 { pkgs, config, lib, inputs, ... }:
 
-let 
-  quickshell = inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default;
-in 
-
 {
   imports = [
     ./system/audio.nix

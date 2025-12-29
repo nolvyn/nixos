@@ -11,16 +11,16 @@
 
     hjem = {
       url = "github:feel-co/hjem";
-      inputs.nixpkgs.follows = "stable";
+      inputs.nixpkgs.follows = "unstable";
     };
 
     nix-flatpak = {
       url = "github:gmodena/nix-flatpak/?ref=latest";
     };
 
-    quickshell = {
-      url = "github:quickshell-mirror/quickshell";
-      inputs.nixpkgs.follows = "stable";
+    nix-vscode-extensions = {
+      url = "github:nix-community/nix-vscode-extensions";
+      inputs.nixpkgs.follows = "unstable";
     };
   };
 
@@ -30,7 +30,7 @@
     unstable,
     hjem,
     nix-flatpak,
-    quickshell,
+    nix-vscode-extensions,
     ... 
   }:
   
@@ -41,6 +41,9 @@
     pkgs = import unstable {
       inherit system;
       config.allowUnfree = true;
+      overlays = [
+        inputs.nix-vscode-extensions.overlays.default
+      ];
     };
 
     s = import unstable {
@@ -58,7 +61,12 @@
       hjem.nixosModules.hjem
       nix-flatpak.nixosModules.nix-flatpak
 
-      { nixpkgs.overlays = [ stableOverlay ]; }
+      { 
+        nixpkgs.overlays = [ 
+          stableOverlay
+          inputs.nix-vscode-extensions.overlays.default
+        ];
+      }
     ];
   in
 
