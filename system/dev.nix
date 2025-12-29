@@ -14,6 +14,7 @@ let
         ++ [
           pkgs.vscode-marketplace.adguard.adblock
           pkgs.vscode-marketplace.theqtcompany.qt-qml
+          pkgs.vscode-marketplace.theqtcompany.qt-core
         ];
     });
 in

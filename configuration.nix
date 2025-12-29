@@ -9,7 +9,7 @@
     ./system/btrfs.nix
     ./system/dev.nix
     ./system/file.nix
-    ./system/firefox.nix
+    # ./system/firefox.nix
     ./system/fish.nix
     ./system/flatpak.nix
     ./system/fonts.nix
@@ -36,35 +36,35 @@
   networking.networkmanager.enable = true;
 
   environment.systemPackages = with pkgs; [
-    brightnessctl         # Control screen brightness
-    dunst                 # Notification popups
-    exiftool              # Show metadata for media files
-    fastfetch             # Show system info in terminal
-    filen-desktop         # Cloud Storage App
-    ghostty               # Terminal Emulator
-    kdePackages.dolphin   # File Manager
-    kitty                 # Terminal Emulator
-    lynis                 # System security checker
-    mediainfo             # Show media file info
-    networkmanagerapplet  # Wi-Fi/VPN tray icon
-    onlyoffice-desktopeditors        # Office suite
-    playerctl             # Control media players
-    protonvpn-gui         # ProtonVPN desktop app
+    brightnessctl
+    dunst
+    exiftool
+    fastfetch
+    filen-desktop
+    ghostty
+    kdePackages.dolphin
+    kitty
+    lynis
+    mediainfo
+    networkmanagerapplet
+    onlyoffice-desktopeditors
+    playerctl
+    protonvpn-gui
     quickshell
-    resources             # Simple system monitor
-    ripgrep               # Fast search in files
-    ripunzip              # Extract zip files
-    slack                 # Team chat app
-    spotify               # Music streaming app
-    tree                  # Show folder structure
+    resources
+    ripgrep
+    ripunzip
+    slack
+    spotify
+    tree
     unrar
-    vesktop               # Discord Client
+    vesktop
     vlc
     walker
-    waybar                # Status bar for Wayland
-    wget                  # Download files from web
-    yazi                  # Terminal File Manager
-    zoom-us               # Video calls and meetings
+    waybar
+    wget
+    yazi
+    zoom-us
   ];
 
   nixpkgs.config.allowUnfree = true;  # Allow unfree packages like Steam

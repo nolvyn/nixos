@@ -20,7 +20,8 @@
       ".config/waybar/config".source = ../config/waybar/config;
       ".config/waybar/style.css".source = ../config/waybar/style.css;
       ".config/fuzzel/fuzzel.ini".source = ../config/fuzzel.ini;
-      ".config/walker/init.txt".text = "";
+      ".config/walker/.ini".text = "";
+      "torrents/.ini".text = "";
       ".config/fastfetch/config.jsonc".source = ../config/fastfetch/config.jsonc;
 
       ".config/kitty/kitty.conf".source = ../config/kitty.conf;
