@@ -6,7 +6,7 @@
   users.users.${config.user.name} = {
     isNormalUser = true;
     extraGroups = [
-      # "dialout"
+      # "dialout" # Needed for arduino
       "networkmanager"
       "wheel"
     ];

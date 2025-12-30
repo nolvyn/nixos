@@ -42,7 +42,6 @@ in
     RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
   };
   
-  qt.enable = true;
   programs.direnv.enable = true;
 
   hjem.users.${config.user.name} = {
