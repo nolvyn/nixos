@@ -1,3 +1,4 @@
+# fish.nix
 { config, pkgs, lib, ... }:
 
 {
@@ -7,6 +8,11 @@
     enable = true;
     interactiveShellInit = ''
       set fish_greeting # Disable greeting
+
+      set -gx MAMBA_ROOT_PREFIX "$HOME/.local/share/micromamba"
+      set -gx MAMBA_EXE "${pkgs.micromamba}/bin/micromamba"
+      set -gx CONDA_OVERRIDE_ARCHSPEC "haswell"
+      $MAMBA_EXE shell hook --shell fish --root-prefix $MAMBA_ROOT_PREFIX | source
     '';
     shellAliases = {
       des = "cd && doas nixos-rebuild switch --flake /home/weeb/nixos#WeebMachine";
@@ -19,7 +25,7 @@
 
       dore = "doas reboot";
       rup = "ripunzip unzip-file";
-      codium = "flatpak run com.vscodium.codium";
+      fcode = "flatpak run com.visualstudio.code";
 
       sudo = "doas";
     };

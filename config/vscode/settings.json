@@ -22,5 +22,9 @@
   "workbench.enableExperiments": false,
   "workbench.settings.applyToAllProfiles": [],
 
-  "zig.zls.enabled": "on"
+  "zig.zls.enabled": "on",
+
+  "python.condaPath": "/home/weeb/.local/share/micromamba/bin/micromamba",
+  "python.venvPath": "/home/weeb/.local/share/micromamba/envs",
+  "python.defaultInterpreterPath": "/home/weeb/.local/share/micromamba/envs/igwn/bin/python"
 }

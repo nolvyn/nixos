@@ -1,3 +1,4 @@
+# gaming.nix
 { config, pkgs, lib, ... }:
 
 {
@@ -6,10 +7,10 @@
   programs.steam = {
     enable = true;
     
-    gamescopeSession.enable = false; # Sets option to login with a gamescope session in display manager
-    dedicatedServer.openFirewall = false; # Whether to open ports in the firewall for Source Dedicated Server
-    localNetworkGameTransfers.openFirewall = false; # Whether to open ports in the firewall for Steam Local Network Game Transfers
-    remotePlay.openFirewall = false; # Whether to open ports in the firewall for Steam Remote Play
+    gamescopeSession.enable = false; # Sets option to allow login with a gamescope session in display manager
+    dedicatedServer.openFirewall = false;
+    localNetworkGameTransfers.openFirewall = false;
+    remotePlay.openFirewall = false;
     
     extraCompatPackages = with pkgs; [
       proton-ge-bin
@@ -17,10 +18,9 @@
   };
 
   environment.systemPackages = with pkgs; [
-    # lutris # Game Launcher
-    heroic # Game Launcher for Epic, GOG, and more
-    prismlauncher # Game Launcher for Minecraft
-    protonup-qt # GUI for Managing Proton Versions
+    heroic
+    prismlauncher
+    protonup-qt
   ];
 
   services.flatpak = {
@@ -37,10 +37,6 @@
     ];
 
     packages = [
-      {
-        appId = "com.usebottles.bottles";
-        origin = "flathub";
-      }
       {
         appId = "net.lutris.Lutris";
         origin = "flathub";

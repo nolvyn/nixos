@@ -37,6 +37,7 @@
 
   environment.systemPackages = with pkgs; [
     brightnessctl
+    celluloid
     dunst
     exiftool
     fastfetch
@@ -59,7 +60,6 @@
     tree
     unrar
     vesktop
-    vlc
     walker
     waybar
     wget

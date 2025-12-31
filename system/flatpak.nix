@@ -5,9 +5,7 @@ let
   gameLibraryPath = "home/Games";
   vnLibraryPath = "home/vns";
 
-  projectPaths = [
-    
-  ];
+  projectPaths = [];
 
   animeLauncherOverrides = {
     Context = {
@@ -21,8 +19,8 @@ let
       ];
     };
   };
-
 in
+
 {
   services.flatpak = {
     enable = true;
@@ -41,18 +39,12 @@ in
 
     packages = [
       {
-        appId = "com.vscodium.codium";
+        appId = "com.visualstudio.code";
         origin = "flathub";
       }
     ];
 
     overrides = {
-      global = {
-        Environment = {
-          # XCURSOR_PATH = "/run/host/user-share/icons:/run/host/share/icons";
-        };
-      };
-
       /* "com.vscodium.codium" = {
         Context = {
           sockets = [ "x11" "wayland" ];
@@ -65,19 +57,7 @@ in
         };
       }; */
 
-      "com.usebottles.bottles" = {
-        Context = {
-          shared = [ "network" "ipc" ];
-          sockets = [ "x11" "wayland" "pulseaudio" ];
-          devices = [ "all" ];
-          filesystems = [ 
-            gameLibraryPath
-            vnLibraryPath
-          ];
-        };
-      };
-
-      /* "net.lutris.Lutris" = {
+      "net.lutris.Lutris" = {
         Context = {
           shared = [ "network" "ipc" ];
           sockets = [ "x11" "wayland" "pulseaudio" ];
@@ -86,13 +66,11 @@ in
             "!home"
             "!/media"
             "!/run/media"
-            "xdg-config/MangoHud:ro"
-            "home/.var/app/com.valvesoftware.Steam:ro"
             gameLibraryPath
             vnLibraryPath
           ];
         };
-      }; */
+      };
 
       "moe.launcher.an-anime-game-launcher" = animeLauncherOverrides;
       "moe.launcher.the-honkers-railway-launcher" = animeLauncherOverrides;

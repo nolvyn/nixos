@@ -10,6 +10,14 @@ let
         (with pkgs.vscode-extensions; [
           jnoortheen.nix-ide
           rust-lang.rust-analyzer
+          ms-python.python
+          ms-python.debugpy
+          ms-python.vscode-pylance
+          ms-toolsai.jupyter
+          ms-toolsai.vscode-jupyter-slideshow
+          ms-toolsai.vscode-jupyter-cell-tags
+          ms-toolsai.jupyter-keymap
+          ms-toolsai.jupyter-renderers
         ])
         ++ [
           pkgs.vscode-marketplace.adguard.adblock
@@ -47,8 +55,10 @@ in
   hjem.users.${config.user.name} = {
     enable = true;
     files = {
+      ".config/Code/User/settings.json".source = ../config/vscode/settings.json;
       ".config/Code/User/keybindings.json".source = ../config/vscode/keybindings.json;
-      ".config/Code/User/settings.json".source    = ../config/vscode/settings.json;
+      ".var/app/com.visualstudio.code/config/Code/User/settings.json".source = ../config/vscode/settings.json;
+      ".var/app/com.visualstudio.code/config/Code/User/keybindings.json".source = ../config/vscode/keybindings.json;
 
       # "cpp/.envrc".text = "use flake";
 
