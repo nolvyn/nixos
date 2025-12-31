@@ -25,7 +25,7 @@
 
       dore = "doas reboot";
       rup = "ripunzip unzip-file";
-      fcode = "flatpak run com.visualstudio.code";
+      codium = "flatpak run com.vscodium.codium";
 
       sudo = "doas";
     };
