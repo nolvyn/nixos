@@ -1,10 +1,24 @@
 {
+  // Language Specific Settings
   "C_Cpp.default.cppStandard": "c++23",
 
+  "python.condaPath": "/home/weeb/.local/share/micromamba/bin/micromamba",
+  "python.venvPath": "/home/weeb/.local/share/micromamba/envs",
+  "python.defaultInterpreterPath": "/home/weeb/.local/share/micromamba/envs/igwn/bin/python",
+
+  "zig.zls.enabled": "on",
+
+  "qt-qml.qmlls.useQmlImportPathEnvVar": true,
+
+  // General VS Code Setting
   "editor.detectIndentation": false,
   "editor.insertSpaces": true,
   "editor.lineNumbers": "on",
-  "editor.tabSize": 2,
+  "editor.tabSize": 4,
+  "[json]": { "editor.tabSize": 2 },
+  "[jsonc]": { "editor.tabSize": 2 },
+  "[yaml]": { "editor.tabSize": 2 },
+  "[nix]": { "editor.tabSize": 2 },
   "explorer.confirmDelete": true,
   "explorer.confirmDragAndDrop": false,
   "extensions.autoCheckUpdates": false,
@@ -14,17 +28,10 @@
   "files.autoSaveDelay": 1000,
   "files.insertFinalNewline": true,
   "markdown.preview.breaks": false,
-  "qt-qml.qmlls.useQmlImportPathEnvVar": true,
   "security.workspace.trust.enabled": true,
   "security.workspace.trust.untrustedFiles": "prompt",
   "telemetry.telemetryLevel": "off",
   "update.mode": "none",
   "workbench.enableExperiments": false,
-  "workbench.settings.applyToAllProfiles": [],
-
-  "zig.zls.enabled": "on",
-
-  "python.condaPath": "/home/weeb/.local/share/micromamba/bin/micromamba",
-  "python.venvPath": "/home/weeb/.local/share/micromamba/envs",
-  "python.defaultInterpreterPath": "/home/weeb/.local/share/micromamba/envs/igwn/bin/python"
+  "workbench.settings.applyToAllProfiles": []
 }

@@ -72,8 +72,7 @@ in
           devices = [ "!devices=all" ];
           filesystems = [
             "!host"
-            "home/.micromaba-root"
-            "home/.conda"
+            "home/.local/share/micromamba"
           ] ++ projectPaths;
         };
       }; */
