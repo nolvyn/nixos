@@ -9,7 +9,7 @@
     ./system/btrfs.nix
     ./system/dev.nix
     ./system/file.nix
-    ./system/firefox.nix
+    # ./system/firefox.nix
     ./system/fish.nix
     ./system/flatpak.nix
     ./system/fonts.nix
@@ -36,6 +36,7 @@
   networking.networkmanager.enable = true;
 
   environment.systemPackages = with pkgs; [
+    anki
     brightnessctl
     celluloid
     dunst
@@ -43,6 +44,7 @@
     fastfetch
     filen-desktop
     ghostty
+    gzip
     kdePackages.dolphin
     kitty
     lynis

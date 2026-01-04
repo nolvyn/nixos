@@ -28,9 +28,11 @@
         "discord": "",
         "steam": "",
         "slack": "",
-        "anime": "󰊗",
+        "anime": "",
+        "games": "󰊗",
         "qbitorrent": "󰃘",
-        "terminal": ""
+        "terminal": "",
+        "vscode": ""
       }
     },
     "layer": "top",
