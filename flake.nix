@@ -46,7 +46,7 @@
       ];
     };
 
-    s = import unstable {
+    s = import stable {
       inherit system;
       config.allowUnfree = true;
     };

@@ -61,7 +61,7 @@
     spotify
     tree
     unrar
-    vesktop
+    stable.vesktop
     walker
     waybar
     wget
