@@ -14,7 +14,7 @@
     ./system/flatpak.nix
     ./system/fonts.nix
     ./system/git.nix
-    ./system/hypr.nix
+    ./config/hypr/hypr.nix
     ./system/keyboard.nix
     ./system/locale.nix
     ./system/optimizations.nix
@@ -45,7 +45,6 @@
     filen-desktop
     ghostty
     gzip
-    kdePackages.dolphin
     kitty
     lynis
     mediainfo
@@ -59,6 +58,7 @@
     ripunzip
     slack
     spotify
+    thunar
     tree
     unrar
     stable.vesktop

@@ -5,6 +5,7 @@
   "python.condaPath": "/home/weeb/.local/share/micromamba/bin/micromamba",
   "python.venvPath": "/home/weeb/.local/share/micromamba/envs",
   "python.defaultInterpreterPath": "/home/weeb/.local/share/micromamba/envs/igwn/bin/python",
+  "jupyter.askForKernelRestart": false,
 
   "zig.zls.enabled": "on",
 
