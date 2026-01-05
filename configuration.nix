@@ -58,6 +58,7 @@
     ripunzip
     slack
     spotify
+    spotify-player
     thunar
     tree
     unrar
