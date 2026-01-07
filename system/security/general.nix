@@ -12,7 +12,7 @@
   security.doas.enable = true;
   security.doas.extraRules = [{
     users = ["weeb"];
-    keepEnv = true;
+    keepEnv = false;
     persist = true;
   }];
 

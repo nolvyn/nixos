@@ -2,8 +2,8 @@
 { config, pkgs, lib, ... }:
 
 let
-  gameLibraryPath = "home/Games";
-  vnLibraryPath = "home/vns";
+  gameLibraryPath = "/home/weeb/Games";
+  vnLibraryPath = "/home/weeb/vns";
 
   animeLauncherOverrides = {
     Context = {

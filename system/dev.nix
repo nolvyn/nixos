@@ -27,9 +27,6 @@ let
         ];
     });
 
-  projectPaths = [
-    "home/gw-analysis"
-  ];
 in
 
 {
@@ -66,16 +63,19 @@ in
     ];
 
     overrides = {
-      /* "com.vscodium.codium" = {
+      "com.vscodium.codium" = {
         Context = {
+          shared = [ "network" ];
           sockets = [ "x11" "wayland" ];
-          devices = [ "!devices=all" ];
+          devices = [ "dri" ];
           filesystems = [
             "!host"
-            "home/.local/share/micromamba"
-          ] ++ projectPaths;
+            "!home"
+            "/home/weeb/.local/share/micromamba"
+            "/home/weeb/gw-analysis"
+          ];
         };
-      }; */
+      };
     };
   };
 
@@ -86,8 +86,6 @@ in
       ".config/Code/User/keybindings.json".source = ../config/vscode/keybindings.json;
       ".var/app/com.vscodium.codium/config/VSCodium/User/settings.json".source = ../config/vscode/settings.json;
       ".var/app/com.vscodium.codium/config/VSCodium/User/keybindings.json".source = ../config/vscode/keybindings.json;
-
-      # "cpp/.envrc".text = "use flake";
 
       ".condarc".text = ''
         channels:
