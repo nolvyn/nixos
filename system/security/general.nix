@@ -26,7 +26,7 @@
   # For more information see https://mynixos.com/nixpkgs/option/environment.memoryAllocator.provider
   # environment.memoryAllocator.provider = "libc"; # scudo and mimalloc mess up my system
 
-  boot.kernel.sysctl = {
+  /* boot.kernel.sysctl = {
     "dev.tty.ldisc_autoload" = 0;
     "fs.protected_fifos" = 2;
     "fs.protected_regular" = 2;
@@ -65,16 +65,16 @@
 
   security.apparmor = {
     enable = true;
-    killUnconfinedConfinables = true;
+    # killUnconfinedConfinables = true;
     packages = [pkgs.apparmor-profiles];
   };
 
   fileSystems."/proc" = {
     device = "proc";
     fsType = "proc";
-    options = ["defaults" "hidepid=2"];
+    options = ["defaults" "hidepid=1"];
     neededForBoot = true;
   };
 
-  services.dbus.implementation = "broker";
+  services.dbus.implementation = "broker"; */
 }

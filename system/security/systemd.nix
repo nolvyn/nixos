@@ -8,7 +8,7 @@
 
   systemd.services.NetworkManager-wait-online.enable = false; # Speed up boot time
 
-  systemd.services.systemd-rfkill = {
+  /* systemd.services.systemd-rfkill = {
     serviceConfig = {
       ProtectSystem = "strict";
       ProtectHome = true;
@@ -16,8 +16,8 @@
       ProtectKernelModules = true;
       ProtectControlGroups = true;
       ProtectClock = true;
-      ProtectProc = "invisible";
-      ProcSubset = "pid";
+      # ProtectProc = "invisible";
+      # ProcSubset = "pid";
       PrivateTmp = true;
       MemoryDenyWriteExecute = true;
       NoNewPrivileges = true;
@@ -87,8 +87,8 @@
       PrivateUsers= true;
       PrivateTmp= true;
       UMask= "0077";
-      RestrictNamespace = true;
-      ProtectProc= "invisible";
+      # RestrictNamespace = true;
+      # ProtectProc= "invisible";
       ProtectHome= true;
       DeviceAllow= false;
       ProtectSystem = "full";
@@ -106,7 +106,7 @@
       MemoryDenyWriteExecute= true;
       # ProtectProc = "invisible";
       # ProcSubset = "pid";  
-      RestrictNamespaces = true;
+      # RestrictNamespaces = true;
       # ProtectKernelTunables= true;
       ProtectHome = true;
       PrivateTmp = true;
@@ -123,8 +123,8 @@
       ProtectKernelLogs = true;
       ProtectHostname = true;
       ProtectClock = true;
-      ProtectProc = "invisible";
-      ProcSubset = "pid";
+      # ProtectProc = "invisible";
+      # ProcSubset = "pid";
       PrivateUsers = true;
       PrivateDevices = true;
       MemoryDenyWriteExecute = true;
@@ -133,7 +133,7 @@
       RestrictRealtime = true;
       RestrictSUIDSGID = true;
       # RestrictAddressFamilies = "AF_INET";
-      RestrictNamespaces = true;
+      # RestrictNamespaces = true;
       SystemCallArchitectures = "native";
       UMask = "0077";
       # IPAddressDeny = "any";
@@ -146,5 +146,5 @@
       ProtectKernelModules = true; 
       ProtectKernelLogs = true;
     };
-  };
+  }; */
 }
