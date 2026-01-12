@@ -37,8 +37,10 @@ in
 
   environment.systemPackages = with pkgs; [
     heroic
+    lutris
     prismlauncher
     protonup-qt
+    wineWowPackages.stable # 32 and 64 bit
   ];
 
   services.flatpak = {
@@ -50,10 +52,6 @@ in
     ];
 
     packages = [
-      {
-        appId = "net.lutris.Lutris";
-        origin = "flathub";
-      }
       {
         appId = "moe.launcher.an-anime-game-launcher";
         origin = "launcher.moe";
@@ -73,21 +71,6 @@ in
     ];
 
     overrides = {
-      "net.lutris.Lutris" = {
-        Context = {
-          shared = [ "network" "ipc" ];
-          sockets = [ "x11" "wayland" "pulseaudio" ];
-          devices = [ "all" ];
-          filesystems = [
-            "!home"
-            "!/media"
-            "!/run/media"
-            gameLibraryPath
-            vnLibraryPath
-          ];
-        };
-      };
-
       "moe.launcher.an-anime-game-launcher" = animeLauncherOverrides;
       "moe.launcher.the-honkers-railway-launcher" = animeLauncherOverrides;
       "moe.launcher.honkers-launcher" = animeLauncherOverrides;

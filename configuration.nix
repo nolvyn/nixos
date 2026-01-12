@@ -68,6 +68,8 @@
     wget
     yazi
     zoom-us
+
+    
   ];
 
   nixpkgs.config.allowUnfree = true;  # Allow unfree packages like Steam

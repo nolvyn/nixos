@@ -33,6 +33,8 @@ in
   environment.systemPackages = with pkgs; [
     micromamba
 
+    helix
+    lapce
     neovim
     personal-vscode
     zed-editor
@@ -63,7 +65,7 @@ in
     ];
 
     overrides = {
-      "com.vscodium.codium" = {
+      /* "com.vscodium.codium" = {
         Context = {
           shared = [ "network" ];
           sockets = [ "x11" "wayland" ];
@@ -71,11 +73,12 @@ in
           filesystems = [
             "!host"
             "!home"
+            "/home/weeb/.var/app/com.vscodium.codium"
             "/home/weeb/.local/share/micromamba"
             "/home/weeb/gw-analysis"
           ];
         };
-      };
+      }; */
     };
   };
 
