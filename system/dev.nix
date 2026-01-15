@@ -26,7 +26,6 @@ let
           pkgs.vscode-marketplace.theqtcompany.qt-core
         ];
     });
-
 in
 
 {
