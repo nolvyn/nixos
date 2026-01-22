@@ -75,9 +75,11 @@
       "ShowCastIconInToolbar" = false;
       "SpellCheckServiceEnabled" = false;
       "ClearBrowsingDataOnExitList" = [
-        "download_history"
-        "password_signin"
         "autofill"
+        "browsing_history"
+        "download_history"
+        "hosted_app_data"
+        "password_signin"
       ];
     };
   };

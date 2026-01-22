@@ -39,34 +39,27 @@ in
     heroic
     lutris
     prismlauncher
-    protonup-qt
+    protonplus
     wineWowPackages.stable # 32 and 64 bit
   ];
 
   services.flatpak = {
-    remotes = [
-      {
-        name = "launcher.moe";
-        location = "https://gol.launcher.moe/gol.launcher.moe.flatpakrepo";
-      }
-    ];
-
     packages = [
       {
         appId = "moe.launcher.an-anime-game-launcher";
-        origin = "launcher.moe";
+        origin = "flathub";
       }
       {
         appId = "moe.launcher.the-honkers-railway-launcher";
-        origin = "launcher.moe";
+        origin = "flathub";
       }
       {
         appId = "moe.launcher.honkers-launcher";
-        origin = "launcher.moe";
+        origin = "flathub";
       }
       {
         appId = "moe.launcher.sleepy-launcher";
-        origin = "launcher.moe";
+        origin = "flathub";
       }
     ];
 
