@@ -1,7 +1,7 @@
 [
   {
     "clock": {
-      "format": "󰥔  {:%H:%M %A}",
+    "format": "󰥔  {:%I:%M %p %A}",
       "format-alt": "󰃭 {:%Y年%m月%d日 %A}",
       "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
     },
