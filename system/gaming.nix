@@ -45,22 +45,10 @@ in
 
   services.flatpak = {
     packages = [
-      {
-        appId = "moe.launcher.an-anime-game-launcher";
-        origin = "flathub";
-      }
-      {
-        appId = "moe.launcher.the-honkers-railway-launcher";
-        origin = "flathub";
-      }
-      {
-        appId = "moe.launcher.honkers-launcher";
-        origin = "flathub";
-      }
-      {
-        appId = "moe.launcher.sleepy-launcher";
-        origin = "flathub";
-      }
+      # "moe.launcher.honkers-launcher"
+      # "moe.launcher.an-anime-game-launcher"
+      "moe.launcher.the-honkers-railway-launcher"
+      "moe.launcher.sleepy-launcher"
     ];
 
     overrides = {
