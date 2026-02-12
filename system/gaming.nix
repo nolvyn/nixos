@@ -43,6 +43,8 @@ in
     wineWowPackages.stable # 32 and 64 bit
   ];
 
+  boot.kernelModules = [ "ntsync" ]; # Fix Endfield crashing
+
   services.flatpak = {
     packages = [
       # "moe.launcher.honkers-launcher"

@@ -51,7 +51,7 @@
     networkmanagerapplet
     onlyoffice-desktopeditors
     playerctl
-    protonvpn-gui
+    stable.protonvpn-gui
     quickshell
     resources
     ripgrep
@@ -63,13 +63,11 @@
     tree
     unrar
     stable.vesktop
-    walker
+    stable.walker
     waybar
     wget
     yazi
     zoom-us
-
-    
   ];
 
   nixpkgs.config.allowUnfree = true;  # Allow unfree packages like Steam

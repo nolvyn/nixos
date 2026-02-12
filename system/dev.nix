@@ -9,6 +9,7 @@ let
       vscodeExtensions =
         (with pkgs.vscode-extensions; [
           jnoortheen.nix-ide
+          golang.go
           rust-lang.rust-analyzer
 
           /* ms-python.python
@@ -33,12 +34,13 @@ in
     micromamba
 
     helix
-    lapce
     neovim
     personal-vscode
     zed-editor
 
     gcc
+
+    go
 
     zig
 
