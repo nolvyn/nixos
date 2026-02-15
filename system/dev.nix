@@ -41,8 +41,9 @@ in
     gcc
 
     go
-
-    zig
+    wails
+    pkg-config
+    gtk3
 
     rustc
     cargo
