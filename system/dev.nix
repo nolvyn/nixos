@@ -41,9 +41,8 @@ in
     gcc
 
     go
-    wails
-    pkg-config
-    gtk3
+    # wails
+    (callPackage ../pkgs/wails3 {})
 
     rustc
     cargo
