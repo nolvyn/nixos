@@ -41,7 +41,7 @@ in
     gcc
 
     go
-    # wails
+    fyne
     (callPackage ../pkgs/wails3 {})
 
     rustc

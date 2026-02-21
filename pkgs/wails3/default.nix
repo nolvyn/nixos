@@ -22,12 +22,12 @@ buildGoModule rec {
     owner = "wailsapp";
     repo = "wails";
     tag = "v${version}";
-    hash = "sha256-H1Nml2vhCx4IB/CT+kDro5joAw8ewpxoQjDgvqamAr8=";
+    hash = "sha256-5lkXG25Lg1LTp4VPQuiuFj6Aq/8lirhScOONF3tulXw=";
   };
 
   sourceRoot = "${src.name}/v3";
 
-  vendorHash = "sha256-RgRrKok06HDg6j5tbOmtX9mOl/t6eXuCwQ2OhOXbHUU=";
+  vendorHash = "sha256-6nuopdlOLidZUCFVcTl+9Jz8H0zhFJHIm5VDRqo0gGg=";
 
   proxyVendor = true;
 
@@ -63,7 +63,7 @@ buildGoModule rec {
 
   # As Wails calls a compiler, certain apps and libraries need to be made available.
   postFixup = ''
-    wrapProgram $out/bin/wails \
+    wrapProgram $out/bin/wails3 \
       --prefix PATH : ${
         lib.makeBinPath [
           pkg-config
@@ -91,7 +91,7 @@ buildGoModule rec {
     homepage = "https://wails.io";
     license = lib.licenses.mit;
     maintainers = with lib.maintainers; [ nolvyn ];
-    mainProgram = "wails";
+    mainProgram = "wails3";
     platforms = lib.platforms.unix;
   };
 }
