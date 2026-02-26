@@ -40,7 +40,7 @@ in
     lutris
     prismlauncher
     protonplus
-    wineWowPackages.stable # 32 and 64 bit
+    wineWow64Packages.stable # 32 and 64 bit
   ];
 
   boot.kernelModules = [ "ntsync" ]; # Fix Endfield crashing

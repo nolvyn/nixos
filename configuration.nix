@@ -36,7 +36,7 @@
   networking.networkmanager.enable = true;
 
   environment.systemPackages = with pkgs; [
-    anki
+    stable.anki
     brightnessctl
     celluloid
     dunst
