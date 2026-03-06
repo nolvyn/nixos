@@ -12,6 +12,7 @@
         noto-fonts-cjk-serif
         noto-fonts-color-emoji
         dejavu_fonts
+        corefonts
     ];
 
     fontconfig = {
