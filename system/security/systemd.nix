@@ -23,33 +23,6 @@
       NoNewPrivileges = true;
       LockPersonality = true;
       RestrictRealtime = true;
-      SystemCallFilter = [ 
-        "write" 
-        "read" 
-        "openat" 
-        "close" 
-        "brk" 
-        "fstat"
-        "fstatat" 
-        "lseek" 
-        "mmap" 
-        "mprotect" 
-        "munmap" 
-        "rt_sigaction" 
-        "rt_sigprocmask" 
-        "ioctl" 
-        "nanosleep" 
-        "select" 
-        "access" 
-        "execve" 
-        "getuid" 
-        "arch_prctl" 
-        "set_tid_address" 
-        "set_robust_list" 
-        "prlimit64" 
-        "pread64" 
-        "getrandom"
-      ];
       SystemCallArchitectures = "native";
       UMask = "0077";
       IPAddressDeny = "any";
@@ -58,59 +31,24 @@
 
   systemd.services.systemd-journald = {
     serviceConfig = {
-      UMask = 0077;
-      PrivateNetwork = true;
+      UMask = "0077";
       ProtectHostname = true;
       ProtectKernelModules = true;
-    };
-  };
-
-  systemd.services.syslog = {
-    serviceConfig = {
-      PrivateNetwork= true;
-      CapabilityBoundingSet= [
-        "CAP_DAC_READ_SEARCH" 
-        "CAP_SYSLOG" 
-        "CAP_NET_BIND_SERVICE"
-      ];
-      NoNewPrivileges= true;
-      PrivateDevices= true;
-      ProtectClock= true;
-      ProtectKernelLogs= true;
-      ProtectKernelModules= true;
-      PrivateMounts= true;
-      SystemCallArchitectures= "native";
-      MemoryDenyWriteExecute= true;
-      LockPersonality= true;
-      ProtectKernelTunables= true;
-      RestrictRealtime= true;
-      PrivateUsers= true;
-      PrivateTmp= true;
-      UMask= "0077";
-      # RestrictNamespace = true;
-      # ProtectProc= "invisible";
-      ProtectHome= true;
-      DeviceAllow= false;
-      ProtectSystem = "full";
     };
   };
 
   systemd.services.NetworkManager = {
     serviceConfig = {
       NoNewPrivileges = true;
-      ProtectClock = true;
       ProtectKernelLogs = true;
       ProtectControlGroups = true;
-      ProtectKernelModules = true; 
+      ProtectKernelModules = true;
       SystemCallArchitectures = "native";
-      MemoryDenyWriteExecute= true;
       # ProtectProc = "invisible";
-      # ProcSubset = "pid";  
+      # ProcSubset = "pid";
       # RestrictNamespaces = true;
-      # ProtectKernelTunables= true;
-      ProtectHome = true;
+      # ProtectKernelTunables = true;
       PrivateTmp = true;
-      UMask = "0077";
     };
   };
 
@@ -125,13 +63,8 @@
       ProtectClock = true;
       # ProtectProc = "invisible";
       # ProcSubset = "pid";
-      PrivateUsers = true;
-      PrivateDevices = true;
-      MemoryDenyWriteExecute = true;
       NoNewPrivileges = true;
       LockPersonality = true;
-      RestrictRealtime = true;
-      RestrictSUIDSGID = true;
       # RestrictAddressFamilies = "AF_INET";
       # RestrictNamespaces = true;
       SystemCallArchitectures = "native";
@@ -143,8 +76,11 @@
   systemd.services.display-manager = {
     serviceConfig = {
       ProtectKernelTunables = true;
-      ProtectKernelModules = true; 
+      ProtectKernelModules = true;
       ProtectKernelLogs = true;
+      PrivateTmp = true;
+      NoNewPrivileges = true;
+      LockPersonality = true;
     };
   }; */
 }
