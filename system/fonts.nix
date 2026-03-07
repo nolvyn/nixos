@@ -12,7 +12,7 @@
         noto-fonts-cjk-serif
         noto-fonts-color-emoji
         dejavu_fonts
-        corefonts
+        corefonts # Microsoft fonts (Arial, Times New Roman, etc)
     ];
 
     fontconfig = {
