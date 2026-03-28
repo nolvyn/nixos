@@ -36,7 +36,7 @@
   networking.networkmanager.enable = true;
 
   environment.systemPackages = with pkgs; [
-    stable.anki
+    anki
     brightnessctl
     celluloid
     dunst
@@ -51,7 +51,7 @@
     networkmanagerapplet
     onlyoffice-desktopeditors
     playerctl
-    stable.protonvpn-gui
+    proton-vpn
     quickshell
     resources
     ripgrep
@@ -62,7 +62,7 @@
     thunar
     tree
     unrar
-    stable.vesktop
+    vesktop
     stable.walker
     waybar
     wget
