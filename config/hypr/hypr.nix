@@ -24,7 +24,7 @@
       ".config/hypr/hyprpaper.conf".source = ./hyprpaper.conf;
       ".config/hypr/hyprlock.conf".source = ./hyprlock.conf;
 
-      ".config/hypr/autostart-base.conf".source = ./modules/autostart-based.conf;
+      ".config/hypr/autostart-base.conf".source = ./modules/autostart-base.conf;
       ".config/hypr/keybinds.conf".source = ./modules/keybinds.conf;
       ".config/hypr/monitors.conf".source = ./modules/monitors.conf;
       ".config/hypr/input.conf".source = ./modules/input.conf;
