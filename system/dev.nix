@@ -38,7 +38,6 @@ in
     zed-editor
 
     # Python
-    micromamba
     python3
     uv
 
@@ -48,11 +47,11 @@ in
     (callPackage ../pkgs/wails3 {})
 
     # Rust
-    rustc
     cargo
-    rustfmt
     clippy
     rust-analyzer
+    rustc
+    rustfmt
 
     # C++
     gcc
