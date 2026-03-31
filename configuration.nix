@@ -30,10 +30,6 @@
     ./system/security/kernel.nix
     ./system/security/systemd.nix
   ];
-  
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  
-  networking.networkmanager.enable = true;
 
   environment.systemPackages = with pkgs; [
     anki
@@ -52,7 +48,7 @@
     networkmanagerapplet
     onlyoffice-desktopeditors
     playerctl
-    proton-vpn
+    stable.protonvpn-gui
     quickshell
     resources
     ripgrep
@@ -71,9 +67,13 @@
     zoom-us
   ];
 
-  nixpkgs.config.allowUnfree = true;  # Allow unfree packages like Steam
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  
+  networking.networkmanager.enable = true;
 
-  # DO NOT CHANGE **YOUR** DEFAULT VALUE HERE UNLESS YOU KNOW WHAT YOU ARE DOING 
+  nixpkgs.config.allowUnfree = true;  # Allow closed source packages like Steam
+
+  # DO NOT CHANGE THIS VALUE UNLESS YOU KNOW WHAT YOU ARE DOING 
   # For more information see https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "25.11";
 }
