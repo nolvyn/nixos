@@ -42,6 +42,7 @@
     dunst
     exiftool
     fastfetch
+    file
     filen-desktop
     ghostty
     gzip

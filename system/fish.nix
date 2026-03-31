@@ -19,7 +19,7 @@
       lap = "cd && doas nixos-rebuild switch --flake /home/weeb/nixos#MoeNote";
       nfu = "cd /home/weeb/nixos && nix flake update && cd";
 
-      ga = "cd /home/weeb/nixos && git add *";
+      ga = "cd /home/weeb/nixos && git add .";
       gc = "git commit -m";
       gp = "git push origin main && cd";
 

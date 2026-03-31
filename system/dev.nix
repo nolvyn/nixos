@@ -31,31 +31,38 @@ in
 
 {
   environment.systemPackages = with pkgs; [
-    python3
-    micromamba
-
+    # Text Editors / IDEs
     helix
     neovim
     personal-vscode
     zed-editor
 
-    gcc
+    # Python
+    micromamba
+    python3
+    uv
 
+    # Go
     go
     fyne
     (callPackage ../pkgs/wails3 {})
 
+    # Rust
     rustc
     cargo
     rustfmt
     clippy
     rust-analyzer
+
+    # C++
+    gcc
   ];
 
   environment.sessionVariables = {
     RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
   };
   
+  programs.nix-ld.enable = true;
   programs.direnv.enable = true;
 
   services.flatpak = {
