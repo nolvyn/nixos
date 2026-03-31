@@ -9,7 +9,7 @@
     ./system/btrfs.nix
     ./system/dev.nix
     ./system/file.nix
-    ./system/firefox.nix
+    # ./system/firefox.nix
     ./system/fish.nix
     ./system/flatpak.nix
     ./system/fonts.nix
@@ -59,7 +59,7 @@
     ripunzip
     slack
     spotify
-    spotify-player
+    # spotify-player
     thunar
     tree
     unrar
