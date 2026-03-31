@@ -12,14 +12,12 @@ let
           golang.go
           rust-lang.rust-analyzer
 
-          /* ms-python.python
+          ms-python.python
           ms-python.debugpy
           ms-python.vscode-pylance
           ms-toolsai.jupyter
-          ms-toolsai.vscode-jupyter-slideshow
-          ms-toolsai.vscode-jupyter-cell-tags
-          ms-toolsai.jupyter-keymap
-          ms-toolsai.jupyter-renderers */
+          # ms-toolsai.jupyter-keymap
+          # ms-toolsai.jupyter-renderers
         ])
         ++ [
           pkgs.vscode-marketplace.adguard.adblock

@@ -37,7 +37,6 @@
       "DefaultSerialGuardSetting" = 2;
 
       # Reporting & Telemetry
-      "CloudReportingEnabled" = false;
       "MetricsReportingEnabled" = false;
       "UrlKeyedAnonymizedDataCollectionEnabled" = false;
 
@@ -60,11 +59,7 @@
       "EnableMediaRouter" = false;
       "ForceGoogleSafeSearch" = false;
       "HttpsOnlyMode" = "force_enabled";
-      "RelatedWebsiteSetsEnabled" = false;
       "ShoppingListEnabled" = false;
-      "PrivacySandboxAdTopicsEnabled" = false;
-      "PrivacySandboxSiteEnabledAdsEnabled" = false;
-      "PrivacySandboxAdMeasurementEnabled" = false;
       "WebRtcIPHandling" = "disable_non_proxied_udp";
 
       # Browser Behavior
