@@ -2,7 +2,11 @@
 
 # For more information see https://nixos.wiki/wiki/Storage_optimization
 {
-  nix.settings.auto-optimise-store = true;
+  nix.settings = {
+    auto-optimise-store = true;
+    max-jobs = "auto";
+    cores = 0;
+  };
 
   programs.nh.clean = {
     enable = true;
