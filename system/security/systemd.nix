@@ -8,7 +8,7 @@
 
   systemd.services.NetworkManager-wait-online.enable = false; # Speed up boot time
 
-  /* systemd.services.systemd-rfkill = {
+  systemd.services.systemd-rfkill = {
     serviceConfig = {
       ProtectSystem = "strict";
       ProtectHome = true;
@@ -26,29 +26,35 @@
       SystemCallArchitectures = "native";
       UMask = "0077";
       IPAddressDeny = "any";
+      RestrictSUIDSGID = true;
+      ProtectKernelLogs = true;
+      ProtectHostname = true;
     };
-  }; */
+  };
 
   systemd.services.systemd-journald = {
     serviceConfig = {
       UMask = "0077";
       ProtectHostname = true;
       ProtectKernelModules = true;
+      RestrictSUIDSGID = true;
     };
   };
 
-  /* systemd.services.NetworkManager = {
+  systemd.services.NetworkManager = {
     serviceConfig = {
       NoNewPrivileges = true;
       ProtectKernelLogs = true;
       ProtectControlGroups = true;
       ProtectKernelModules = true;
-      SystemCallArchitectures = "native";
+      # SystemCallArchitectures = "native";
       # ProtectProc = "invisible";
       # ProcSubset = "pid";
       # RestrictNamespaces = true;
       # ProtectKernelTunables = true;
-      PrivateTmp = true;
+      # PrivateTmp = true;
+      RestrictSUIDSGID = true;
+      ProtectHostname = true;
     };
   };
 
@@ -70,17 +76,7 @@
       SystemCallArchitectures = "native";
       UMask = "0077";
       # IPAddressDeny = "any";
+      RestrictSUIDSGID = true;
     };
   };
-
-  systemd.services.display-manager = {
-    serviceConfig = {
-      ProtectKernelTunables = true;
-      ProtectKernelModules = true;
-      ProtectKernelLogs = true;
-      PrivateTmp = true;
-      NoNewPrivileges = true;
-      LockPersonality = true;
-    };
-  }; */
 }
