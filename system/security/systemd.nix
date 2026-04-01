@@ -27,7 +27,7 @@
       UMask = "0077";
       IPAddressDeny = "any";
     };
-  };
+  }; */
 
   systemd.services.systemd-journald = {
     serviceConfig = {
@@ -37,7 +37,7 @@
     };
   };
 
-  systemd.services.NetworkManager = {
+  /* systemd.services.NetworkManager = {
     serviceConfig = {
       NoNewPrivileges = true;
       ProtectKernelLogs = true;

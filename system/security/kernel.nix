@@ -29,6 +29,18 @@
     "rose"
     "sctp"
     "tipc"
+    "n_hdlc"
+    "x25"
+    "decnet"
+    "econet"
+    "af_802154"
+    "ipx"
+    "appletalk"
+    "psnap"
+    "p8023"
+    "p8022"
+    "can"
+    "atm"
 
     # Infrared
     "irda"

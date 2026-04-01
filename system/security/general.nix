@@ -70,7 +70,7 @@
   fileSystems."/proc" = {
     device = "proc";
     fsType = "proc";
-    options = ["defaults" "hidepid=1"];
+    options = ["defaults" "hidepid=2"];
     neededForBoot = true;
   };
 
