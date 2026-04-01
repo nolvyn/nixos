@@ -65,6 +65,8 @@
     wget
     yazi
     zoom-us
+
+    xclip
   ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
