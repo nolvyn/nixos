@@ -3,10 +3,11 @@
 # For more information see https://nixos.wiki/wiki/Storage_optimization
 {
   nix.settings.auto-optimise-store = true;
-  nix.gc = {
-    automatic = true;
+
+  programs.nh.clean = {
+    enable = true;
     dates = "weekly";
-    options = "--delete-older-than 30d";
+    extraArgs = "--keep 25 --keep-since 30d";
   };
 
   systemd.user.services.empty-trash = {

@@ -9,12 +9,10 @@
     interactiveShellInit = ''
       set fish_greeting # Disable greeting
 
-      set -gx MAMBA_ROOT_PREFIX "$HOME/.local/share/micromamba"
-      set -gx MAMBA_EXE "${pkgs.micromamba}/bin/micromamba"
-      set -gx CONDA_OVERRIDE_ARCHSPEC "haswell"
-      $MAMBA_EXE shell hook --shell fish --root-prefix $MAMBA_ROOT_PREFIX | source
+      set -gx NH_FLAKE "/home/weeb/nixos"
     '';
     shellAliases = {
+      nhs = "nh os switch";
       des = "cd && doas nixos-rebuild switch --flake /home/weeb/nixos#WeebMachine";
       lap = "cd && doas nixos-rebuild switch --flake /home/weeb/nixos#MoeNote";
       nfu = "cd /home/weeb/nixos && nix flake update && cd";

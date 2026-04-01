@@ -65,11 +65,14 @@
     wget
     yazi
     zoom-us
-
-    xclip
   ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  programs.nh = {
+    enable = true;
+    flake = "/home/weeb/nixos";
+  };
   
   networking.networkmanager.enable = true;
 
