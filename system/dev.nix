@@ -9,15 +9,17 @@ let
       vscodeExtensions =
         (with pkgs.vscode-extensions; [
           jnoortheen.nix-ide
-          golang.go
           rust-lang.rust-analyzer
+          golang.go
 
           ms-python.python
           ms-python.debugpy
           ms-python.vscode-pylance
           ms-toolsai.jupyter
-          # ms-toolsai.jupyter-keymap
-          # ms-toolsai.jupyter-renderers
+          ms-toolsai.jupyter-keymap
+          ms-toolsai.jupyter-renderers
+
+          tamasfe.even-better-toml
         ])
         ++ [
           pkgs.vscode-marketplace.adguard.adblock
@@ -36,12 +38,10 @@ in
     zed-editor
 
     # Python
-    python3
     uv
 
     # Go
     go
-    fyne
     (callPackage ../pkgs/wails3 {})
 
     # Rust
