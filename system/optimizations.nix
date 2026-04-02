@@ -4,8 +4,6 @@
 {
   nix.settings = {
     auto-optimise-store = true;
-    keep-derivations = true;
-    keep-outputs = true;
     max-jobs = "auto";
     cores = 0;
   };

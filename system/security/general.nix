@@ -7,7 +7,7 @@
   programs.seahorse.enable = true;  # GUI Keyring Manager
 
   security.sudo.enable = false;
-  security.sudo.execWheelOnly = true;
+  security.sudo.execWheelOnly = true; # Keeping just in case I switch back to sudo
 
   security.doas.enable = true;
   security.doas.extraRules = [{

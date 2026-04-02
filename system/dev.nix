@@ -62,45 +62,11 @@ in
   programs.nix-ld.enable = true;
   programs.direnv.enable = true;
 
-  services.flatpak = {
-    packages = [
-      {
-        appId = "com.vscodium.codium";
-        origin = "flathub";
-      }
-    ];
-
-    overrides = {
-      /* "com.vscodium.codium" = {
-        Context = {
-          shared = [ "network" ];
-          sockets = [ "x11" "wayland" ];
-          devices = [ "dri" ];
-          filesystems = [
-            "!host"
-            "!home"
-            "/home/weeb/.var/app/com.vscodium.codium"
-            "/home/weeb/.local/share/micromamba"
-            "/home/weeb/gw-analysis"
-          ];
-        };
-      }; */
-    };
-  };
-
   hjem.users.${config.user.name} = {
     enable = true;
     files = {
       ".config/Code/User/settings.json".source = ../config/vscode/settings.json;
       ".config/Code/User/keybindings.json".source = ../config/vscode/keybindings.json;
-      ".var/app/com.vscodium.codium/config/VSCodium/User/settings.json".source = ../config/vscode/settings.json;
-      ".var/app/com.vscodium.codium/config/VSCodium/User/keybindings.json".source = ../config/vscode/keybindings.json;
-
-      ".condarc".text = ''
-        channels:
-          - conda-forge
-        channel_priority: strict
-      '';
     };
   };
 }

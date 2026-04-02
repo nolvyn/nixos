@@ -3,7 +3,6 @@
 {
   imports = [
     ./weebmachine-hardware.nix
-    # ../../system/btrfs.nix
     ../../system/gaming.nix
     # ../../system/jellyfin.nix
     # ../../system/searxng.nix
