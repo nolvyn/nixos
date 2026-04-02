@@ -3,9 +3,13 @@
 # For more information see https://nixos.wiki/wiki/Storage_optimization
 {
   nix.settings = {
-    auto-optimise-store = true;
     max-jobs = "auto";
     cores = 0;
+  };
+
+  nix.optimise = {
+    automatic = true;
+    dates = [ "weekly "];
   };
 
   programs.nh.clean = {

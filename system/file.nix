@@ -2,7 +2,7 @@
 
 {
   xdg.mime.defaultApplications = {
-    "inode/directory" = [ "org.kde.dolphin.desktop" ];
+    "inode/directory" = [ "thunar.desktop" ];
   };
 
   hjem.users.${config.user.name} = {
