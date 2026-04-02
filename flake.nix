@@ -1,4 +1,3 @@
-# flake.nix
 {
   inputs = {
     stable = {
@@ -24,35 +23,23 @@
     };
   };
 
-  outputs = inputs@ { 
+  outputs = inputs@{ 
     self, 
-    stable,
-    unstable,
-    hjem,
-    nix-flatpak,
-    nix-vscode-extensions,
+    unstable, 
+    hjem, 
+    nix-flatpak, 
+    nix-vscode-extensions, 
     ... 
   }:
-  
+
   let
     lib = unstable.lib;
-    system = "x86_64-linux";
-    
-    pkgs = import unstable {
-      inherit system;
-      config.allowUnfree = true;
-      overlays = [
-        inputs.nix-vscode-extensions.overlays.default
-      ];
-    };
 
-    s = import stable {
-      inherit system;
-      config.allowUnfree = true;
-    };
-
-    stableOverlay = finl: prev: {
-      stable = s;
+    stableOverlay = final: prev: {
+      stable = import inputs.stable {
+        system = prev.stdenv.hostPlatform.system;
+        config.allowUnfree = true;
+      };
     };
 
     commonNixosModules = [
@@ -60,12 +47,12 @@
       ./system/options.nix
       hjem.nixosModules.hjem
       nix-flatpak.nixosModules.nix-flatpak
-
-      { 
-        nixpkgs.overlays = [ 
+      {
+        nixpkgs.overlays = [
           stableOverlay
-          inputs.nix-vscode-extensions.overlays.default
+          nix-vscode-extensions.overlays.default
         ];
+        nixpkgs.config.allowUnfree = true;
       }
     ];
   in
@@ -73,17 +60,17 @@
   {
     nixosConfigurations = {
       WeebMachine = lib.nixosSystem {
-        inherit system;
+        system = "x86_64-linux";
         specialArgs = { inherit inputs; };
-        modules = [ 
+        modules = [
           ./hosts/weebmachine/weebmachine.nix
         ] ++ commonNixosModules;
       };
 
       MoeNote = lib.nixosSystem {
-        inherit system;
+        system = "x86_64-linux";
         specialArgs = { inherit inputs; };
-        modules = [ 
+        modules = [
           ./hosts/moenote/moenote.nix
         ] ++ commonNixosModules;
       };
