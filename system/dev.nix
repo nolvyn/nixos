@@ -42,7 +42,7 @@ in
 
     # Go
     go
-    (callPackage ../pkgs/wails3 {})
+    # (callPackage ../pkgs/wails3 {})
 
     # Rust
     cargo
