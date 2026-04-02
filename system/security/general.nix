@@ -8,7 +8,7 @@
 
   security.sudo.enable = false;
   security.sudo-rs.enable = true;
-  
+
   nix.settings.allowed-users = [ "@users" ];
 
   services.openssh.enable = false;
@@ -55,7 +55,7 @@
 
   security.apparmor = {
     enable = true;
-    # killUnconfinedConfinables = true;
+    killUnconfinedConfinables = true;
     packages = [pkgs.apparmor-profiles];
   };
 

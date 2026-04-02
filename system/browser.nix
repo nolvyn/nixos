@@ -2,6 +2,11 @@
 { config, pkgs, lib, ... }:
 
 {
+  environment.systemPackages = with pkgs; [
+    brave
+    vivaldi
+  ];
+
   programs.chromium = {
     enable = true;
 
@@ -78,9 +83,4 @@
       ];
     };
   };
-
-  environment.systemPackages = with pkgs; [
-    brave
-    vivaldi
-  ];
 }

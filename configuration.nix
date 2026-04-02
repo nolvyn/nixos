@@ -5,7 +5,7 @@
   imports = [
     ./system/audio.nix
     ./system/bluetooth.nix
-    ./system/brave.nix
+    ./system/browser.nix
     ./system/btrfs.nix
     ./system/cache.nix
     ./system/dev.nix
