@@ -13,19 +13,16 @@
     '';
     shellAliases = {
       nhs = "nh os switch";
-      des = "cd && doas nixos-rebuild switch --flake /home/weeb/nixos#WeebMachine";
-      lap = "cd && doas nixos-rebuild switch --flake /home/weeb/nixos#MoeNote";
-      nfu = "cd /home/weeb/nixos && nix flake update && cd";
+      des = "sudo nixos-rebuild switch --flake /home/weeb/nixos#WeebMachine";
+      lap = "sudo nixos-rebuild switch --flake /home/weeb/nixos#MoeNote";
+      nfu = "cd /home/weeb/nixos && nix flake update";
 
       ga = "cd /home/weeb/nixos && git add .";
       gc = "git commit -m";
-      gp = "git push origin main && cd";
+      gp = "git push origin main";
 
-      dore = "doas reboot";
+      sure = "sudo reboot";
       rup = "ripunzip unzip-file";
-      codium = "flatpak run com.vscodium.codium";
-
-      sudo = "doas";
     };
   };
 

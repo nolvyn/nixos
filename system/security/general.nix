@@ -7,16 +7,8 @@
   programs.seahorse.enable = true;  # GUI Keyring Manager
 
   security.sudo.enable = false;
-  security.sudo.execWheelOnly = true; # Keeping just in case I switch back to sudo
-
-  security.doas.enable = true;
-  security.doas.extraRules = [{
-    users = ["weeb"];
-    keepEnv = false;
-    persist = true;
-  }];
-  environment.systemPackages = [ pkgs.git ]; # Needed for system rebuilds when using doas in flake based systems
-
+  security.sudo-rs.enable = true;
+  
   nix.settings.allowed-users = [ "@users" ];
 
   services.openssh.enable = false;
