@@ -13,6 +13,7 @@
     # ente-desktop
     # ladybird
     qbittorrent
+    # servo
     # sherlock
   ];
 

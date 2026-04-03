@@ -18,10 +18,6 @@
       inputs.nixpkgs.follows = "unstable";
     };
 
-    nix-flatpak = {
-      url = "github:gmodena/nix-flatpak/?ref=latest";
-    };
-
     nix-vscode-extensions = {
       url = "github:nix-community/nix-vscode-extensions";
       inputs.nixpkgs.follows = "unstable";
@@ -33,7 +29,6 @@
     unstable,
     aagl,
     hjem,
-    nix-flatpak,
     nix-vscode-extensions,
     ... 
   }:
@@ -53,7 +48,6 @@
       ./system/options.nix
       aagl.nixosModules.default
       hjem.nixosModules.hjem
-      nix-flatpak.nixosModules.nix-flatpak
       {
         nixpkgs.overlays = [
           stableOverlay

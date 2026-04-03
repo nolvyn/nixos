@@ -167,5 +167,9 @@
     # Other
     "mac_hid"
     "vivid"
+    "dccp"
+    "sctp"
+    "rds"
+    "tipc"
   ];
 }
