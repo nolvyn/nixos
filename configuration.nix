@@ -75,8 +75,6 @@
     flake = "/home/weeb/nixos";
   };
   
-  networking.networkmanager.enable = true;
-
   nixpkgs.config.allowUnfree = true;  # Allow closed source packages like Steam
 
   # DO NOT CHANGE THIS VALUE UNLESS YOU KNOW WHAT YOU ARE DOING 

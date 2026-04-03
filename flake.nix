@@ -22,6 +22,11 @@
       url = "github:nix-community/nix-vscode-extensions";
       inputs.nixpkgs.follows = "unstable";
     };
+
+    stevenblack-hosts = {
+      url = "github:StevenBlack/hosts";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs@{ 
@@ -30,6 +35,7 @@
     aagl,
     hjem,
     nix-vscode-extensions,
+    stevenblack-hosts,
     ... 
   }:
 
@@ -48,6 +54,7 @@
       ./system/options.nix
       aagl.nixosModules.default
       hjem.nixosModules.hjem
+      stevenblack-hosts.nixosModules
       {
         nixpkgs.overlays = [
           stableOverlay
