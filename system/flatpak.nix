@@ -1,5 +1,4 @@
 # flatpak.nix
-{ config, pkgs, lib, ... }:
 
 {
   services.flatpak = {

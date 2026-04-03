@@ -1,5 +1,5 @@
 # virtualization.nix
-{ config, pkgs, lib, ... }:
+{ config, ... }:
 
 {
   # For more information see https://nixos.wiki/wiki/Virt-manager

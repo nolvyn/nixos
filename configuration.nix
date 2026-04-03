@@ -1,5 +1,5 @@
 # configuration.nix
-{ pkgs, config, lib, inputs, ... }:
+{ pkgs, ... }:
 
 {
   imports = [

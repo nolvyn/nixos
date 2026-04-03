@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+# bluetooth.nix
 
 # For more information see https://nixos.wiki/wiki/Bluetooth
 {

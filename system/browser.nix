@@ -1,5 +1,5 @@
 # browser.nix
-{ config, pkgs, lib, ... }:
+{ pkgs, ... }:
 
 {
   environment.systemPackages = with pkgs; [

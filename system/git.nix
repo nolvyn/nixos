@@ -1,5 +1,5 @@
 # git.nix
-{ config, pkgs, lib, ... }:
+{ ... }:
 
 # Check out https://www.youtube.com/watch?v=20BN4gqHwaQ
 {

@@ -1,5 +1,5 @@
 # fish.nix
-{ config, pkgs, lib, ... }:
+{ pkgs, ... }:
 
 {
   # For more information see https://nixos.wiki/wiki/Fish

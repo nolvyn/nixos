@@ -1,4 +1,5 @@
-{ config, pkgs, lib, ... }:
+# optimizations.nix
+{ pkgs, ... }:
 
 # For more information see https://nixos.wiki/wiki/Storage_optimization
 {

@@ -1,5 +1,4 @@
 # firefox.nix
-{ config, pkgs, lib, ... }:
 
 let
   lock = val: { Value = val; Status = "locked"; };

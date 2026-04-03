@@ -1,5 +1,5 @@
 # general.nix
-{ config, pkgs, lib, ... }:
+{ pkgs, ... }:
 
 {
   # Keyring/Wallet Stuff

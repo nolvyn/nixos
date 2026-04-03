@@ -1,5 +1,5 @@
 # searxng.nix
-{ config, pkgs, lib, ... }:
+{ lib, ... }:
 
 {
   services.searx = {

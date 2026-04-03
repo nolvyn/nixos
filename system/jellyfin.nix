@@ -1,5 +1,5 @@
 # jellyfin.nix
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 {
   services.jellyfin = {

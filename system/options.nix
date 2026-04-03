@@ -1,5 +1,5 @@
 # options.nix
-{ config, pkgs, lib, ... }:
+{ lib, ... }:
 
 {
   options.user.name = lib.mkOption {

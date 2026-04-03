@@ -1,4 +1,5 @@
-{ config, pkgs, lib, ... }:
+# printing.nix
+{ pkgs, ... }:
 
 # For more information see https://wiki.nixos.org/wiki/Printing
 # Can also configure it imperatively (sin) through http://localhost:631/

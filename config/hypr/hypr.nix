@@ -1,5 +1,5 @@
 # hypr.nix
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 {
   programs.hyprland = {

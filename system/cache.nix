@@ -1,5 +1,4 @@
 # cache.nix
-{ config, pkgs, lib, ... }:
 
 {
   nix.settings = {

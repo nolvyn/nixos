@@ -7,6 +7,12 @@
   "zig.zls.enabled": "on",
 
   "qt-qml.qmlls.useQmlImportPathEnvVar": true,
+  
+  "nix.enableLanguageServer": true,
+  "nix.serverPath": "nixd",
+  "nix.hiddenLanguageServerErrors": [
+      "textDocument/definition"
+  ],
 
   // General VS Code Setting
   "editor.detectIndentation": false,

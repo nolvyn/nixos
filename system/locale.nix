@@ -1,5 +1,4 @@
 # locale.nix
-{ config, pkgs, lib, ... }:
 
 {
   # Set your time zone.

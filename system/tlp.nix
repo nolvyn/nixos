@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+# tlp.nix
 
 # For more information see https://nixos.wiki/wiki/Laptop
 {

@@ -1,5 +1,5 @@
 # keyboard.nix
-{ config, pkgs, lib, ... }:
+{ pkgs, ... }:
 
 {  
   # Configure keymap in X11

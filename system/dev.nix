@@ -1,5 +1,5 @@
 # dev.nix
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 let
   personal-vscode =
@@ -37,12 +37,18 @@ in
     personal-vscode
     zed-editor
 
-    # Python
-    uv
+    # C++
+    gcc
 
     # Go
     go
     # (callPackage ../pkgs/wails3 {})
+
+    # Nix
+    nixd
+
+    # Python
+    uv
 
     # Rust
     cargo
@@ -51,8 +57,6 @@ in
     rustc
     rustfmt
 
-    # C++
-    gcc
   ];
 
   environment.sessionVariables = {

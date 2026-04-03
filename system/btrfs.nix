@@ -1,5 +1,4 @@
 # btrfs.nix
-{ config, pkgs, lib, ... }:
 
 {
   services.btrfs.autoScrub = {

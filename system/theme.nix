@@ -1,5 +1,5 @@
 # theme.nix
-{ config, pkgs, lib, ... }:
+{ pkgs, ... }:
 
 {
   programs.dconf = {

@@ -1,5 +1,4 @@
 # systemd.nix
-{ config, pkgs, lib, ... }:
 
 {
   # Bootloader.

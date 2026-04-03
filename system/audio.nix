@@ -1,4 +1,5 @@
-{ config, pkgs, lib, ... }:
+# audio.nix
+{ pkgs, ... }:
 
 # For more information see https://wiki.nixos.org/wiki/Category:Audio
 {
