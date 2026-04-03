@@ -8,6 +8,11 @@
       url = "github:nixos/nixpkgs/nixos-unstable";
     };
 
+    aagl = {
+      url = "github:ezKEa/aagl-gtk-on-nix";
+      inputs.nixpkgs.follows = "unstable";
+    };
+
     hjem = {
       url = "github:feel-co/hjem";
       inputs.nixpkgs.follows = "unstable";
@@ -25,10 +30,11 @@
 
   outputs = inputs@{ 
     self, 
-    unstable, 
-    hjem, 
-    nix-flatpak, 
-    nix-vscode-extensions, 
+    unstable,
+    aagl,
+    hjem,
+    nix-flatpak,
+    nix-vscode-extensions,
     ... 
   }:
 
@@ -45,6 +51,7 @@
     commonNixosModules = [
       ./configuration.nix
       ./system/options.nix
+      aagl.nixosModules.default
       hjem.nixosModules.hjem
       nix-flatpak.nixosModules.nix-flatpak
       {

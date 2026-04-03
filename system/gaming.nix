@@ -1,40 +1,7 @@
 # gaming.nix
 { config, pkgs, lib, ... }:
 
-let
-  gameLibraryPath = "/home/weeb/Games";
-  vnLibraryPath = "/home/weeb/vns";
-
-  animeLauncherOverrides = {
-    Context = {
-      shared = [ "network" "ipc" ];
-      sockets = [ "x11" "wayland" "pulseaudio" ];
-      devices = [ "all" ];
-      filesystems = [
-        "!/media"
-        "!/mnt"
-        "!/run/media"
-      ];
-    };
-  };
-in
-
 {
-  # For more information see https://nixos.wiki/wiki/Steam
-  # "SteamDeck=1 %command%", "SteamOS=1 %command%", or "UMU_ID=0 %command%" needed for some games to run properly
-  programs.steam = {
-    enable = true;
-
-    gamescopeSession.enable = false; # Sets option to allow login with a gamescope session in display manager
-    dedicatedServer.openFirewall = false;
-    localNetworkGameTransfers.openFirewall = false;
-    remotePlay.openFirewall = false;
-    
-    extraCompatPackages = with pkgs; [
-      proton-ge-bin
-    ];
-  };
-
   environment.systemPackages = with pkgs; [
     heroic
     lutris
@@ -43,21 +10,21 @@ in
     wineWow64Packages.stable # 32 and 64 bit
   ];
 
-  boot.kernelModules = [ "ntsync" ]; # Fix Endfield crashing
-
-  services.flatpak = {
-    packages = [
-      # "moe.launcher.honkers-launcher"
-      # "moe.launcher.an-anime-game-launcher"
-      "moe.launcher.the-honkers-railway-launcher"
-      "moe.launcher.sleepy-launcher"
+  # For more information see https://nixos.wiki/wiki/Steam
+  # "SteamDeck=1 %command%", "SteamOS=1 %command%", or "UMU_ID=0 %command%" needed for some games to run properly
+  programs.steam = {
+    enable = true;
+    dedicatedServer.openFirewall = false;
+    gamescopeSession.enable = false; # Sets option to allow login with a gamescope session in display manager
+    localNetworkGameTransfers.openFirewall = false;
+    remotePlay.openFirewall = false;
+    extraCompatPackages = with pkgs; [
+      proton-ge-bin
     ];
-
-    overrides = {
-      "moe.launcher.an-anime-game-launcher" = animeLauncherOverrides;
-      "moe.launcher.the-honkers-railway-launcher" = animeLauncherOverrides;
-      "moe.launcher.honkers-launcher" = animeLauncherOverrides;
-      "moe.launcher.sleepy-launcher" = animeLauncherOverrides;
-    };
   };
+
+  programs.honkers-railway-launcher.enable = true;
+  programs.sleepy-launcher.enable = true;
+
+  boot.kernelModules = [ "ntsync" ]; # Fix Endfield crashing
 }

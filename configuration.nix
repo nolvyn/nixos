@@ -12,7 +12,7 @@
     ./system/file.nix
     # ./system/firefox.nix
     ./system/fish.nix
-    ./system/flatpak.nix
+    # ./system/flatpak.nix
     ./system/fonts.nix
     ./system/git.nix
     ./config/hypr/hypr.nix
