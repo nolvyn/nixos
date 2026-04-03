@@ -26,7 +26,7 @@
 
     # Security
     # ./system/security/firejail.nix
-    ./system/security/firewall.nix
+    ./system/security/network.nix
     ./system/security/general.nix
     ./system/security/kernel.nix
     ./system/security/systemd.nix

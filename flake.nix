@@ -25,7 +25,7 @@
 
     stevenblack-hosts = {
       url = "github:StevenBlack/hosts";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "unstable";
     };
   };
 
@@ -54,7 +54,7 @@
       ./system/options.nix
       aagl.nixosModules.default
       hjem.nixosModules.hjem
-      stevenblack-hosts.nixosModules
+      stevenblack-hosts.nixosModule
       {
         nixpkgs.overlays = [
           stableOverlay
