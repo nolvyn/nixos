@@ -2,8 +2,8 @@
 { config, pkgs, ... }:
 
 let
-  personal-vscode =
-    (pkgs.vscode-with-extensions.override {
+  personal-vscode = (
+    pkgs.vscode-with-extensions.override {
       vscode = pkgs.vscode;
 
       vscodeExtensions =
@@ -12,6 +12,7 @@ let
           rust-lang.rust-analyzer
           golang.go
 
+          charliermarsh.ruff
           ms-python.python
           ms-python.debugpy
           ms-python.vscode-pylance
@@ -26,7 +27,8 @@ let
           pkgs.vscode-marketplace.theqtcompany.qt-qml
           pkgs.vscode-marketplace.theqtcompany.qt-core
         ];
-    });
+    }
+  );
 in
 
 {
@@ -46,8 +48,10 @@ in
 
     # Nix
     nixd
+    nixfmt
 
     # Python
+    ruff
     uv
 
     # Rust
@@ -56,13 +60,12 @@ in
     rust-analyzer
     rustc
     rustfmt
-
   ];
 
   environment.sessionVariables = {
     RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
   };
-  
+
   programs.nix-ld.enable = true;
   programs.direnv.enable = true;
 

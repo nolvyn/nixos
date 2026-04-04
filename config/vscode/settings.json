@@ -1,28 +1,50 @@
 {
-  // Language Specific Settings
+  // C++
   "C_Cpp.default.cppStandard": "c++23",
-
-  "jupyter.askForKernelRestart": false,
-
-  "zig.zls.enabled": "on",
-
-  "qt-qml.qmlls.useQmlImportPathEnvVar": true,
-  
+  // Nix
   "nix.enableLanguageServer": true,
   "nix.serverPath": "nixd",
   "nix.hiddenLanguageServerErrors": [
-      "textDocument/definition"
+    "textDocument/definition"
   ],
-
+  "[nix]": {
+    "editor.defaultFormatter": "jnoortheen.nix-ide",
+    "editor.tabSize": 2
+  },
+  // Python
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "jupyter.askForKernelRestart": false,
+  // Qt
+  "qt-qml.qmlls.useQmlImportPathEnvVar": true,
+  // Rust
+  "rust-analyzer.check.command": "clippy",
+  "rust-analyzer.cargo.features": "all",
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  },
+  // Zig
+  "zig.zls.enabled": "on",
   // General VS Code Setting
+  "diffEditor.ignoreTrimWhitespace": true,
+  "editor.breadcrumbs.enabled": true,
   "editor.detectIndentation": false,
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
   "editor.insertSpaces": true,
   "editor.lineNumbers": "on",
+  "editor.minimap.enabled": false,
   "editor.tabSize": 4,
-  "[json]": { "editor.tabSize": 2 },
-  "[jsonc]": { "editor.tabSize": 2 },
-  "[yaml]": { "editor.tabSize": 2 },
-  "[nix]": { "editor.tabSize": 2 },
+  "[json]": {
+    "editor.tabSize": 2
+  },
+  "[jsonc]": {
+    "editor.tabSize": 2
+  },
+  "[yaml]": {
+    "editor.tabSize": 2
+  },
   "explorer.confirmDelete": true,
   "explorer.confirmDragAndDrop": false,
   "extensions.autoCheckUpdates": false,
@@ -31,11 +53,15 @@
   "files.autoSave": "afterDelay",
   "files.autoSaveDelay": 1000,
   "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "files.trimFinalNewlines": true,
   "markdown.preview.breaks": false,
   "security.workspace.trust.enabled": true,
   "security.workspace.trust.untrustedFiles": "prompt",
   "telemetry.telemetryLevel": "off",
   "update.mode": "none",
   "workbench.enableExperiments": false,
-  "workbench.settings.applyToAllProfiles": []
+  "workbench.settings.applyToAllProfiles": [],
+  "workbench.startupEditor": "none",
+  "workbench.tree.indent": 16
 }
