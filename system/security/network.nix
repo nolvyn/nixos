@@ -8,8 +8,8 @@
     nftables.enable = true;
     firewall = {
       enable = true;
-      allowedTCPPorts = [];
-      allowedUDPPorts = [];
+      allowedTCPPorts = [ ];
+      allowedUDPPorts = [ ];
       allowPing = false;
       rejectPackets = false; # Explicity ensures packets are silently dropped instead of rejected.
       logRefusedConnections = true; # The logs are found in the kernel logs, i.e. dmesg or journalctl -k.
@@ -20,6 +20,4 @@
       blockGambling = true;
     };
   };
-  
-
 }

@@ -6,9 +6,9 @@
 {
   services.printing = {
     enable = true;
-    drivers = [ 
-      pkgs.brlaser 
-      pkgs.brgenml1lpr 
+    drivers = [
+      pkgs.brlaser
+      pkgs.brgenml1lpr
       pkgs.brgenml1cupswrapper
     ];
     openFirewall = true;

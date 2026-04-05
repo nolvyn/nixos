@@ -5,11 +5,12 @@
   programs.dconf = {
     enable = true;
     profiles.user.databases = [
-      { settings = {
+      {
+        settings = {
           "org/gnome/desktop/interface" = {
             color-scheme = "prefer-dark";
-            gtk-theme    = "Adwaita-dark";
-            icon-theme   = "Adwaita";
+            gtk-theme = "Adwaita-dark";
+            icon-theme = "Adwaita";
           };
         };
       }

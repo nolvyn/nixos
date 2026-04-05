@@ -1,8 +1,13 @@
 # user.nix
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
-  # Define a user account. 
+  # Define a user account.
   users.users.${config.user.name} = {
     isNormalUser = true;
     extraGroups = [
@@ -10,7 +15,7 @@
       "networkmanager"
       "wheel"
     ];
-    packages = with pkgs; [];
+    packages = with pkgs; [ ];
   };
 
   hjem.users.${config.user.name} = {

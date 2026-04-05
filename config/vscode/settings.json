@@ -6,7 +6,7 @@
   "nix.serverPath": "nixd",
   "nix.hiddenLanguageServerErrors": [
     "textDocument/definition"
-  ],
+],
   "[nix]": {
     "editor.defaultFormatter": "jnoortheen.nix-ide",
     "editor.tabSize": 2
@@ -16,8 +16,14 @@
     "editor.defaultFormatter": "charliermarsh.ruff"
   },
   "jupyter.askForKernelRestart": false,
-  // Qt
+  // Qt/QML
+  "qt-qml.qmlls.customExePath": "/run/current-system/sw/bin/qmlls",
+  "qt-qml.doNotAskForQmllsDownload": true,
   "qt-qml.qmlls.useQmlImportPathEnvVar": true,
+  "workbench.editorAssociations": {
+    "{git,gitlens,chat-editing-snapshot-text-model,copilot,git-graph,git-graph-3}:/**/*.qrc": "default",
+    "*.qrc": "qt-core.qrcEditor"
+  },
   // Rust
   "rust-analyzer.check.command": "clippy",
   "rust-analyzer.cargo.features": "all",

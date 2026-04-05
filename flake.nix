@@ -13,6 +13,11 @@
       inputs.nixpkgs.follows = "unstable";
     };
 
+    disko = {
+      url = "github:nix-community/disko/latest";
+      inputs.nixpkgs.follows = "unstable";
+    };
+
     hjem = {
       url = "github:feel-co/hjem";
       inputs.nixpkgs.follows = "unstable";
@@ -29,14 +34,14 @@
     };
   };
 
-  outputs = inputs@{ 
-    self, 
+  outputs = inputs@{
+    self,
     unstable,
     aagl,
     hjem,
     nix-vscode-extensions,
     stevenblack-hosts,
-    ... 
+    ...
   }:
 
   let

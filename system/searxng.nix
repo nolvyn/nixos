@@ -72,7 +72,6 @@
         # without furhter subgrouping
         "wikidata".disabled = true;
 
-
         # IMAGES
         # icons
         "material icons".disabled = true;
@@ -88,7 +87,7 @@
         "presearch images".disabled = true;
         "qwant images".disabled = true;
         "startpage images".disabled = false;
-        
+
         # without further subgrouping
         "artic".disabled = true;
         "deviantart".disabled = true;
@@ -99,7 +98,6 @@
         "unsplash".disabled = true;
         "wikicommons.images".disabled = true;
 
-
         # VIDEOS
         # web
         "bing videos".disabled = true;
@@ -107,7 +105,6 @@
         "duckduckgo videos".disabled = true;
         "google videos".disabled = true;
         "qwant videos".disabled = true;
-
 
         # NEWS
         # web

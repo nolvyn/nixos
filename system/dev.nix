@@ -54,6 +54,13 @@ in
     ruff
     uv
 
+    # Qt/QML
+    kdePackages.qtdeclarative
+    kdePackages.qtimageformats
+    kdePackages.qtmultimedia
+    kdePackages.qtsvg
+    quickshell
+
     # Rust
     cargo
     clippy
@@ -61,6 +68,15 @@ in
     rustc
     rustfmt
   ];
+
+  system.userActivationScripts.quickshellQmllsIni = {
+    text = ''
+      mkdir -p "$HOME/.config/quickshell"
+      if [ ! -f "$HOME/.config/quickshell/.qmlls.ini" ]; then
+        touch "$HOME/.config/quickshell/.qmlls.ini"
+      fi
+    '';
+  };
 
   environment.sessionVariables = {
     RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
