@@ -17,7 +17,10 @@
     # sherlock
   ];
 
-  networking.hostName = "WeebMachine";
+  networking = {
+    hostName = "WeebMachine";
+    networkmanager.settings.connectivity.enabled = false; # Speed up boot time
+  };
 
   users.users.${config.user.name} = { };
 

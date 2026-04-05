@@ -38,6 +38,7 @@
     self,
     unstable,
     aagl,
+    disko,
     hjem,
     nix-vscode-extensions,
     stevenblack-hosts,
@@ -58,6 +59,7 @@
       ./configuration.nix
       ./system/options.nix
       aagl.nixosModules.default
+      disko.nixosModules.disko
       hjem.nixosModules.hjem
       stevenblack-hosts.nixosModule
       {

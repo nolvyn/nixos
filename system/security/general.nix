@@ -23,7 +23,7 @@
     "fs.suid_dumpable" = 0;
     "kernel.kptr_restrict" = 2;
     "kernel.sysrq" = 0;
-    
+
     "kernel.unprivileged_bpf_disabled" = 1;
     "net.core.bpf_jit_harden" = 2;
 
@@ -34,11 +34,11 @@
 
     "net.ipv4.conf.all.log_martians" = 1;
     "net.ipv4.conf.default.log_martians" = 1;
-    
+
     # Setting this to 1 breaks my internet
     "net.ipv4.conf.all.rp_filter" = 2;
     "net.ipv4.conf.default.rp_filter" = 2;
-    
+
     "net.ipv4.conf.all.send_redirects" = 0;
     "net.ipv4.conf.default.send_redirects" = 0;
 
@@ -67,4 +67,7 @@
   };
 
   services.dbus.implementation = "broker";
+
+  boot.initrd.compressor = "zstd";
+  boot.initrd.compressorArgs = [ "-19" "-T0" ];
 }
