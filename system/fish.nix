@@ -6,10 +6,12 @@
   # Enable fish and set it as interactive shell only
   programs.fish = {
     enable = true;
-    interactiveShellInit = ''
+    shellInit = ''
       set fish_greeting # Disable greeting
 
-      set -gx NH_FLAKE "/home/weeb/nixos"
+      set -gx NH_FLAKE "$HOME/nixos"
+      set -gx GOPATH "$HOME/.local/share/go"
+      set -gx PATH "$PATH:$GOPATH/bin"
     '';
     shellAliases = {
       nhs = "nh os switch";
