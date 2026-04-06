@@ -13,6 +13,11 @@
       inputs.nixpkgs.follows = "unstable";
     };
 
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "unstable";
+    };
+
     disko = {
       url = "github:nix-community/disko/latest";
       inputs.nixpkgs.follows = "unstable";
@@ -38,6 +43,7 @@
     self,
     unstable,
     aagl,
+    agenix,
     disko,
     hjem,
     nix-vscode-extensions,
@@ -59,6 +65,7 @@
       ./configuration.nix
       ./system/options.nix
       aagl.nixosModules.default
+      agenix.nixosModules.default
       disko.nixosModules.disko
       hjem.nixosModules.hjem
       stevenblack-hosts.nixosModule
