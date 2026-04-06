@@ -31,6 +31,8 @@
 
       ".config/hypr/autostart-mn.conf".text = "";
       ".config/hypr/autostart-wm.conf".source = ../../config/hypr/modules/autostart-wm.conf;
+
+      "torrents/.ini".text = "";
     };
   };
 }
