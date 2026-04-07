@@ -9,7 +9,9 @@
     shellInit = ''
       set fish_greeting # Disable greeting
 
+      set -gx EDITOR code
       set -gx NH_FLAKE "$HOME/nixos"
+
       set -gx GOPATH "$HOME/.local/share/go"
       set -gx PATH "$PATH:$GOPATH/bin"
     '';
