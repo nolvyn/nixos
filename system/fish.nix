@@ -9,7 +9,7 @@
     shellInit = ''
       set fish_greeting # Disable greeting
 
-      set -gx EDITOR nano
+      set -gx EDITOR "nano --nownewlines"
       set -gx NH_FLAKE "$HOME/nixos"
 
       set -gx GOPATH "$HOME/.local/share/go"
