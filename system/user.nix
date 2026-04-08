@@ -12,7 +12,7 @@
   };
 
   users.users.${config.user.name} = {
-    # hashedPasswordFile = config.age.secrets.weeb-password.path;
+    hashedPasswordFile = config.age.secrets.weeb-password.path;
     isNormalUser = true;
     extraGroups = [
       # "dialout" # Needed for arduino

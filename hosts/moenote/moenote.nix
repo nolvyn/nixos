@@ -7,6 +7,7 @@
 {
   imports = [
     ./moenote-hardware.nix
+    ../../system/disko-btrfs.nix
     ../../system/tlp.nix
   ];
 
