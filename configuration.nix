@@ -30,6 +30,7 @@
     ./system/security/general.nix
     ./system/security/kernel.nix
     ./system/security/systemd.nix
+    ./system/security/openssh.nix
   ];
 
   environment.systemPackages = with pkgs; [

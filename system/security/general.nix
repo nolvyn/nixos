@@ -11,8 +11,6 @@
 
   nix.settings.allowed-users = [ "@users" ];
 
-  services.openssh.enable = false;
-
   # For more information see https://mynixos.com/nixpkgs/option/environment.memoryAllocator.provider
   # environment.memoryAllocator.provider = "libc"; # scudo and mimalloc mess up my system
 
