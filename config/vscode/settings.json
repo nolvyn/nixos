@@ -6,7 +6,7 @@
   "nix.serverPath": "nixd",
   "nix.hiddenLanguageServerErrors": [
     "textDocument/definition"
-],
+  ],
   "[nix]": {
     "editor.defaultFormatter": "jnoortheen.nix-ide",
     "editor.tabSize": 2
@@ -69,5 +69,6 @@
   "workbench.enableExperiments": false,
   "workbench.settings.applyToAllProfiles": [],
   "workbench.startupEditor": "none",
-  "workbench.tree.indent": 16
+  "workbench.tree.indent": 16,
+  "update.showReleaseNotes": false
 }

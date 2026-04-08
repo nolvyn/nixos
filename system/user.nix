@@ -7,8 +7,10 @@
 }:
 
 {
+  users.mutableUsers = false;
+
   users.users.root = {
-    # hashedPasswordFile = config.age.secrets.root-password.path;
+    hashedPasswordFile = config.age.secrets.root-password.path;
   };
 
   users.users.${config.user.name} = {
