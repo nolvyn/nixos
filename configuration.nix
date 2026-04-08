@@ -3,6 +3,7 @@
 
 {
   imports = [
+    ./system/agenix.nix
     ./system/audio.nix
     ./system/bluetooth.nix
     ./system/browser.nix
