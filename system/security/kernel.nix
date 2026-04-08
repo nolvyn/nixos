@@ -5,7 +5,7 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # security.lockKernelModules = true; # Causes too many problems. Will get back to later
-  security.protectKernelImage = true;
+  security.protectKernelImage = true; # Must be disabled on target machine when using NixOS Anywhere
 
   boot.kernelModules = [
     # Needed for VPN
