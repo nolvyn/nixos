@@ -6,7 +6,6 @@ in
 {
   "weeb-password.age".publicKeys = allHosts;
   "root-password.age".publicKeys = allHosts;
-  "wifi-secrets.age".publicKeys = allHosts;
 
   "syncthing-weebmachine-key.age".publicKeys = [ weebmachine ];
   "syncthing-weebmachine-cert.age".publicKeys = [ weebmachine ];

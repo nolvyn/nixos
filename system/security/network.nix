@@ -1,34 +1,8 @@
 # network.nix
-{config, ...}:
-
 # For more information see https://nixos.wiki/wiki/Firewall
 {
   networking = {
-    networkmanager.enable = false;
-
-    wireless = {
-      enable = true;
-      userControlled = true;
-      secretsFile = config.age.secrets.wifi-secrets.path;
-
-      networks = {
-        ZYQX5 = {
-          pskRaw   = "ext:HOME_PSK";
-          priority = 100;
-        };
-
-        eduroam = {
-          priority = 90;
-          auth = ''
-            key_mgmt=WPA-EAP
-            eap=PEAP
-            phase2="auth=MSCHAPV2"
-            identity="ext:EDUROAM_IDENTITY"
-            password="ext:EDUROAM_PASSWORD"
-          '';
-        };
-      };
-    };
+    networkmanager.enable = true;
 
     nftables.enable = true;
     firewall = {
