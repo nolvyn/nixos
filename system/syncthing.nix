@@ -63,6 +63,17 @@ in
             params.cleanoutDays = "30";
           };
         };
+        "school" = {
+          path = "/home/${config.user.name}/school";
+          devices = [
+            "WeebMachine"
+            "MoeNote"
+          ];
+          versioning = {
+            type = "trashcan";
+            params.cleanoutDays = "30";
+          };
+        };
       };
     };
   };
