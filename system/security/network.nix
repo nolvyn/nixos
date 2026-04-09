@@ -12,7 +12,7 @@
       secretsFile = config.age.secrets.wifi-secrets.path;
 
       networks = {
-        "ext:HOME_SSID" = {
+        ZYQX5 = {
           pskRaw   = "ext:HOME_PSK";
           priority = 100;
         };

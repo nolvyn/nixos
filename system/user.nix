@@ -1,7 +1,6 @@
 # user.nix
 {
   config,
-  pkgs,
   lib,
   ...
 }:
@@ -21,7 +20,6 @@
       # "networkmanager"
       "wheel"
     ];
-    packages = with pkgs; [ ];
   };
 
   hjem.users.${config.user.name} = {

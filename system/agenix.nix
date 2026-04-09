@@ -12,7 +12,10 @@
   age.secrets = {
     weeb-password.file = ../secrets/weeb-password.age;
     root-password.file = ../secrets/root-password.age;
-    wifi-secrets.file = ../secrets/wifi-secrets.age;
+    wifi-secrets = {
+      file = ../secrets/wifi-secrets.age;
+      mode = "0444";
+    };
   }
   // lib.optionalAttrs (config.networking.hostName == "WeebMachine") {
     syncthing-weebmachine-key.file = ../secrets/syncthing-weebmachine-key.age;
