@@ -18,7 +18,7 @@
     isNormalUser = true;
     extraGroups = [
       # "dialout" # Needed for arduino
-      "networkmanager"
+      # "networkmanager"
       "wheel"
     ];
     packages = with pkgs; [ ];

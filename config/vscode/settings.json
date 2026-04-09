@@ -69,6 +69,6 @@
   "workbench.enableExperiments": false,
   "workbench.settings.applyToAllProfiles": [],
   "workbench.startupEditor": "none",
-  "workbench.tree.indent": 16,
+  "workbench.tree.indent": 12,
   "update.showReleaseNotes": false
 }

@@ -3,14 +3,12 @@
 
 # For more information see https://nixos.wiki/wiki/Firewall
 {
-  age.secrets.wifi-secrets.file = ../../secrets/wifi-secrets.age;
-
   networking = {
     networkmanager.enable = false;
 
     wireless = {
       enable = true;
-      userControlled.enable = true;
+      userControlled = true;
       secretsFile = config.age.secrets.wifi-secrets.path;
 
       networks = {

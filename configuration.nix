@@ -22,6 +22,7 @@
     ./system/optimizations.nix
     # ./system/printing.nix
     ./system/sddm.nix
+    ./system/syncthing.nix
     ./system/theme.nix
     ./system/user.nix
 
