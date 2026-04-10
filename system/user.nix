@@ -16,7 +16,6 @@
     hashedPasswordFile = config.age.secrets.weeb-password.path;
     isNormalUser = true;
     extraGroups = [
-      # "dialout" # Needed for arduino
       "networkmanager"
       "wheel"
     ];

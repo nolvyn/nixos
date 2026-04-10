@@ -22,11 +22,11 @@ let
 
           tamasfe.even-better-toml
         ])
-        ++ [
-          pkgs.vscode-marketplace.adguard.adblock
-          pkgs.vscode-marketplace.theqtcompany.qt-qml
-          pkgs.vscode-marketplace.theqtcompany.qt-core
-        ];
+        ++ (with pkgs.vscode-marketplace; [
+          adguard.adblock
+          theqtcompany.qt-qml
+          theqtcompany.qt-core
+        ]);
     }
   );
 in
