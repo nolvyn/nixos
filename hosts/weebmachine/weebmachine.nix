@@ -12,6 +12,7 @@
   environment.systemPackages = with pkgs; [
     # ente-desktop
     # ladybird
+    microfetch
     qbittorrent
     # servo
     # sherlock

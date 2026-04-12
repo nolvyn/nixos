@@ -36,6 +36,7 @@ Item {
                 id: volumeText
 
                 color: Theme.text
+
                 text: root.sink && root.sink.audio ? (root.sink.audio.muted ? "Muted" : Math.round(root.sink.audio.volume * 100) + "%") : "N/A"
             }
         }
