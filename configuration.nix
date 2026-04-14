@@ -25,6 +25,7 @@
     ./system/syncthing.nix
     ./system/theme.nix
     ./system/user.nix
+    ./system/yazi.nix
 
     # Security
     # ./system/security/firejail.nix
@@ -65,7 +66,6 @@
     stable.walker
     waybar
     wget
-    yazi
     zoom-us
   ];
 
