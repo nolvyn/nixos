@@ -1,5 +1,5 @@
 # gaming.nix
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 
 {
   environment.systemPackages = with pkgs; [
@@ -20,6 +20,7 @@
     remotePlay.openFirewall = false;
     extraCompatPackages = with pkgs; [
       proton-ge-bin
+      inputs.moe-gaming.packages.${pkgs.stdenv.hostPlatform.system}.dw-proton-bin
     ];
   };
 

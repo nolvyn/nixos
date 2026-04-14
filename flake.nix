@@ -28,6 +28,11 @@
       inputs.nixpkgs.follows = "unstable";
     };
 
+    moe-gaming = {
+      url = "github:nolvyn/moe-gaming-nix";
+      input.nixpkgs.follows = "unstable";
+    };
+
     nix-vscode-extensions = {
       url = "github:nix-community/nix-vscode-extensions";
       inputs.nixpkgs.follows = "unstable";
@@ -39,63 +44,67 @@
     };
   };
 
-  outputs = inputs@{
-    self,
-    unstable,
-    aagl,
-    agenix,
-    disko,
-    hjem,
-    nix-vscode-extensions,
-    stevenblack-hosts,
-    ...
-  }:
+  outputs =
+    inputs@{
+      self,
+      unstable,
+      aagl,
+      agenix,
+      disko,
+      hjem,
+      moe-gaming,
+      nix-vscode-extensions,
+      stevenblack-hosts,
+      ...
+    }:
 
-  let
-    lib = unstable.lib;
+    let
+      lib = unstable.lib;
 
-    stableOverlay = final: prev: {
-      stable = import inputs.stable {
-        system = prev.stdenv.hostPlatform.system;
-        config.allowUnfree = true;
+      stableOverlay = final: prev: {
+        stable = import inputs.stable {
+          system = prev.stdenv.hostPlatform.system;
+          config.allowUnfree = true;
+        };
+      };
+
+      commonNixosModules = [
+        ./configuration.nix
+        ./system/options.nix
+        aagl.nixosModules.default
+        agenix.nixosModules.default
+        disko.nixosModules.disko
+        hjem.nixosModules.hjem
+        stevenblack-hosts.nixosModule
+        {
+          nixpkgs.overlays = [
+            stableOverlay
+            nix-vscode-extensions.overlays.default
+          ];
+          nixpkgs.config.allowUnfree = true;
+        }
+      ];
+    in
+
+    {
+      nixosConfigurations = {
+        WeebMachine = lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = { inherit inputs; };
+          modules = [
+            ./hosts/weebmachine/weebmachine.nix
+          ]
+          ++ commonNixosModules;
+        };
+
+        MoeNote = lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = { inherit inputs; };
+          modules = [
+            ./hosts/moenote/moenote.nix
+          ]
+          ++ commonNixosModules;
+        };
       };
     };
-
-    commonNixosModules = [
-      ./configuration.nix
-      ./system/options.nix
-      aagl.nixosModules.default
-      agenix.nixosModules.default
-      disko.nixosModules.disko
-      hjem.nixosModules.hjem
-      stevenblack-hosts.nixosModule
-      {
-        nixpkgs.overlays = [
-          stableOverlay
-          nix-vscode-extensions.overlays.default
-        ];
-        nixpkgs.config.allowUnfree = true;
-      }
-    ];
-  in
-
-  {
-    nixosConfigurations = {
-      WeebMachine = lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = { inherit inputs; };
-        modules = [
-          ./hosts/weebmachine/weebmachine.nix
-        ] ++ commonNixosModules;
-      };
-
-      MoeNote = lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = { inherit inputs; };
-        modules = [
-          ./hosts/moenote/moenote.nix
-        ] ++ commonNixosModules;
-      };
-    };
-  };
 }
