@@ -30,7 +30,7 @@
 
     moe-gaming = {
       url = "github:nolvyn/moe-gaming-nix";
-      input.nixpkgs.follows = "unstable";
+      inputs.nixpkgs.follows = "unstable";
     };
 
     nix-vscode-extensions = {
