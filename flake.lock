@@ -153,11 +153,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1776125897,
-        "narHash": "sha256-44K56vJ/1bn7R0LOvLSHT9mECdh/Rck5kVkIHY2uuLI=",
+        "lastModified": 1776129902,
+        "narHash": "sha256-7TbM8tO7H8/vOs29rgA6PO2XyUJJ009X8VIiAo+UIMs=",
         "owner": "nolvyn",
         "repo": "moe-gaming-nix",
-        "rev": "5658dcbc3ca647fbece978a96e6332515cb067b6",
+        "rev": "1fa88767e6d874b66a8300b9b4d56cd152361290",
         "type": "github"
       },
       "original": {

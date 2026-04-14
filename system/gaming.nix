@@ -1,12 +1,11 @@
 # gaming.nix
-{ inputs, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   environment.systemPackages = with pkgs; [
     heroic
     lutris
     prismlauncher
-    protonplus
     wineWow64Packages.stable # 32 and 64 bit
   ];
 
@@ -20,9 +19,10 @@
     remotePlay.openFirewall = false;
     extraCompatPackages = with pkgs; [
       proton-ge-bin
-      inputs.moe-gaming.packages.${pkgs.stdenv.hostPlatform.system}.dw-proton-bin
     ];
   };
+
+  moe-gaming.dw-proton-bin.enable = true;
 
   programs.honkers-railway-launcher.enable = true;
   programs.sleepy-launcher.enable = true;

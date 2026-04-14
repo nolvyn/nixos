@@ -75,10 +75,12 @@
         agenix.nixosModules.default
         disko.nixosModules.disko
         hjem.nixosModules.hjem
+        moe-gaming.nixosModules.default
         stevenblack-hosts.nixosModule
         {
           nixpkgs.overlays = [
             stableOverlay
+            moe-gaming.overlays.default
             nix-vscode-extensions.overlays.default
           ];
           nixpkgs.config.allowUnfree = true;
