@@ -1,8 +1,11 @@
 { config, ... }:
 
 {
-  xdg.mime.defaultApplications = {
-    "inode/directory" = [ "thunar.desktop" ];
+  xdg.mime = {
+    enable = true;
+    defaultApplications = {
+      "inode/directory" = [ "yazi.desktop" "thunar.desktop" ];
+    };
   };
 
   hjem.users.${config.user.name} = {

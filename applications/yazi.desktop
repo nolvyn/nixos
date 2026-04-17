@@ -2,7 +2,7 @@
 Type=Application
 Name=Yazi
 Comment=Terminal file manager
-Exec=kitty -e yazi %F
+Exec=kitty -e yazi %u
 Icon=folder
 Terminal=false
 Categories=System;FileManager;
