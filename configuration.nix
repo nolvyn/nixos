@@ -75,14 +75,7 @@
     "flakes"
   ];
 
-  programs.nh = {
-    enable = true;
-    flake = "/home/weeb/nixos";
-  };
-
   nixpkgs.config.allowUnfree = true; # Allow closed source packages like Steam
 
-  # DO NOT CHANGE THIS VALUE UNLESS YOU KNOW WHAT YOU ARE DOING
-  # For more information see https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = "25.11";
+  system.stateVersion = "25.11"; # Do not change unless you know what you are doing
 }

@@ -13,10 +13,14 @@
     dates = [ "weekly" ];
   };
 
-  programs.nh.clean = {
+  programs.nh = {
     enable = true;
-    dates = "weekly";
-    extraArgs = "--keep 25 --keep-since 30d";
+    clean = {
+      enable = true;
+      dates = "weekly";
+      extraArgs = "--keep 25 --keep-since 30d";
+    };
+    flake = "/home/weeb/nixos";
   };
 
   systemd.user.services.empty-trash = {

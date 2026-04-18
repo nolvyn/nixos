@@ -1,4 +1,4 @@
-{lib, ...}:
+{ lib, ... }:
 
 {
   disko.devices = {
@@ -53,6 +53,13 @@
                         "noatime"
                       ];
                     };
+                    /* "@persistent" = {
+                      mountpoint = "/persistent";
+                      mountOptions = [
+                        "compress=zstd"
+                        "noatime"
+                      ];
+                    }; */
                   };
                 };
               };

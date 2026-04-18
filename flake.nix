@@ -28,6 +28,10 @@
       inputs.nixpkgs.follows = "unstable";
     };
 
+    impermanence = {
+      url = "github:nix-community/impermanence";
+    };
+
     moe-gaming = {
       url = "github:nolvyn/moe-gaming-nix";
       inputs.nixpkgs.follows = "unstable";
@@ -52,6 +56,7 @@
       agenix,
       disko,
       hjem,
+      impermanence,
       moe-gaming,
       nix-vscode-extensions,
       stevenblack-hosts,
@@ -75,6 +80,7 @@
         agenix.nixosModules.default
         disko.nixosModules.disko
         hjem.nixosModules.hjem
+        impermanence.nixosModules.impermanence
         moe-gaming.nixosModules.default
         stevenblack-hosts.nixosModule
         {
