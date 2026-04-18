@@ -27,6 +27,7 @@
     ./system/user.nix
     ./system/yazi.nix
     ./system/disko-btrfs.nix
+    ./system/impermanence.nix
 
     # Security
     # ./system/security/firejail.nix
