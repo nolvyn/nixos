@@ -26,6 +26,7 @@
     ./system/theme.nix
     ./system/user.nix
     ./system/yazi.nix
+    ./system/disko-btrfs.nix
 
     # Security
     # ./system/security/firejail.nix
