@@ -25,8 +25,17 @@ PanelWindow {
         barHeight: topBar.implicitHeight
     }
 
-    Workspaces {
+    Battery {
+        id: battery
         anchors.left: audio.right
+        anchors.leftMargin: 4
+        anchors.verticalCenter: parent.verticalCenter
+    }
+
+    Workspaces {
+        id: workspaces
+
+        anchors.left: battery.right
         anchors.leftMargin: 4
         anchors.verticalCenter: parent.verticalCenter
 

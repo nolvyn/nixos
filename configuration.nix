@@ -28,6 +28,7 @@
     ./system/yazi.nix
     ./system/disko-btrfs.nix
     ./system/impermanence.nix
+    ./system/location.nix
 
     # Security
     # ./system/security/firejail.nix
@@ -69,6 +70,8 @@
     waybar
     wget
     zoom-us
+
+    glib
   ];
 
   nix.settings.experimental-features = [

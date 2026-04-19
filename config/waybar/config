@@ -1,56 +1,11 @@
 [
   {
-    "clock": {
-    "format": "󰥔  {:%I:%M %p %A}",
-      "format-alt": "󰃭 {:%Y年%m月%d日 %A}",
-      "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
-    },
+
     "battery": {
       "format": "{icon} {capacity}%",
       "format-icons": ["󰂃", "󰁻", "󰁾", "󰂂", "󰁹"],
       "format-charging": "󱟠 {capacity}%"
     },
-    "hyprland/workspaces": {
-      "format": "{icon}",
-      "format-icons": {
-        "1": "一",
-        "2": "二",
-        "3": "三",
-        "4": "四",
-        "5": "五",
-        "6": "六",
-        "7": "七",
-        "8": "八",
-        "9": "九",
-        "10": "十",
-        "browser": "󰳉",
-        "spotify": "",
-        "discord": "",
-        "steam": "",
-        "slack": "",
-        "anime": "",
-        "games": "󰊗",
-        "qbitorrent": "󰃘",
-        "terminal": "",
-        "vscode": ""
-      }
-    },
-    "layer": "top",
-    "margin-left": 4,
-    "margin-right": 4,
-    "margin-top": 4,
-    "modules-center": [
-      "hyprland/workspaces"
-    ],
-    "modules-left": [
-      "clock",
-      "battery"
-    ],
-    "modules-right": [
-      "tray",
-      "pulseaudio"
-    ],
-    "position": "top",
     "pulseaudio": {
       "format": "{icon}  {volume}%",
       "format-icons": {
@@ -66,11 +21,6 @@
       "format-muted": "󰸈 Muted",
       "on-click": "pwvucontrol",
       "scroll-step": 5
-    },
-    "spacing": 4,
-    "tray": {
-      "icon-size": 18,
-      "spacing": 8
     }
   }
 ]

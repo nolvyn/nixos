@@ -11,7 +11,32 @@ Item {
     implicitHeight: root.barHeight
 
     PwObjectTracker {
-        objects: [Pipewire.defaultAudioSink]
+        objects: [root.sink]
+    }
+
+    readonly property bool isHeadphone: {
+        if (!root.sink || !root.sink.properties["device.form-factor"])
+            return false;
+        if (root.sink.properties["device.form-factor"].includes("headphone") || root.sink.properties["device.form-factor"].includes("headset"))
+            return true;
+
+        return false;
+    }
+
+    readonly property string icon: {
+        if (!root.sink || !root.sink.audio)
+            return "";
+        if (root.isHeadphone)
+            return "󰋋";
+        if (root.sink.audio.muted)
+            return "󰸈";
+        if (root.sink.audio.volume <= 0.33)
+            return "󰕿";
+        if (root.sink.audio.volume <= 0.67)
+            return "󰖀";
+        if (root.sink.audio.volume > 0.67)
+            return "󰕾";
+        return "";
     }
 
     Rectangle {
@@ -33,6 +58,14 @@ Item {
             anchors.centerIn: parent
 
             Text {
+                id: iconText
+
+                color: Theme.text
+
+                text: root.icon
+            }
+
+            Text {
                 id: volumeText
 
                 color: Theme.text
@@ -49,7 +82,7 @@ Item {
             if (root.sink && root.sink.audio) {
                 const step = 0.05;
                 const delta = wheel.angleDelta.y > 0 ? step : -step;
-                root.sink.audio.volume = Math.max(0.0, Math.min(1.5, parseFloat((root.sink.audio.volume + delta).toFixed(2))));
+                root.sink.audio.volume = Math.max(0.0, Math.min(1.25, parseFloat((root.sink.audio.volume + delta).toFixed(2))));
             }
         }
         onClicked: {

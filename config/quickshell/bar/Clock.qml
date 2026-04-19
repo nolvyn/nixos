@@ -29,7 +29,7 @@ Item {
             anchors.centerIn: parent
 
             color: Theme.text
-            text: Qt.formatDateTime(clock.date, "dddd hh:mm AP - MM-dd-yyyy")
+            text: Qt.formatDateTime(clock.date, "󰥔  hh:mm AP dddd 󰃭  MM-dd-yyyy")
         }
     }
 }
