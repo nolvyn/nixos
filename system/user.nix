@@ -25,8 +25,6 @@
     enable = true;
     clobberFiles = lib.mkForce true;
     files = {
-      ".config/waybar/config".source = ../config/waybar/config;
-      ".config/waybar/style.css".source = ../config/waybar/style.css;
       ".config/fuzzel/fuzzel.ini".source = ../config/fuzzel.ini;
       ".config/walker/.ini".text = "";
       ".config/fastfetch/config.jsonc".source = ../config/fastfetch/config.jsonc;

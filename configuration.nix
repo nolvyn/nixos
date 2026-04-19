@@ -67,7 +67,6 @@
     unrar
     vesktop
     stable.walker
-    waybar
     wget
     zoom-us
 
