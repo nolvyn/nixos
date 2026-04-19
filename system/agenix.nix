@@ -11,7 +11,7 @@
 
   age.identityPaths = [ "/persistent/etc/ssh/ssh_host_ed25519_key" ];
 
- age.secrets = {
+  age.secrets = {
     weeb-password.file = ../secrets/weeb-password.age;
     root-password.file = ../secrets/root-password.age;
   }

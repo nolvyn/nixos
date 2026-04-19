@@ -6,7 +6,7 @@ import Quickshell.Services.SystemTray
 import Quickshell.Widgets
 
 Rectangle {
-    id: pill
+    id: root
 
     required property PanelWindow window
 
@@ -39,7 +39,7 @@ Rectangle {
                 QsMenuAnchor {
                     id: trayMenu
 
-                    anchor.window: pill.window
+                    anchor.window: root.window
                     menu: icon.modelData.menu
                 }
 

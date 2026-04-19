@@ -17,11 +17,20 @@ PanelWindow {
     color: Theme.barColor
 
     Audio {
+        id: audio
         anchors.left: parent.left
         anchors.leftMargin: 4
         anchors.verticalCenter: parent.verticalCenter
 
         barHeight: topBar.implicitHeight
+    }
+
+    Workspaces {
+        anchors.left: audio.right
+        anchors.leftMargin: 4
+        anchors.verticalCenter: parent.verticalCenter
+
+        screen: topBar.screen
     }
 
     Clock {
