@@ -71,6 +71,7 @@
     zoom-us
 
     glib
+    matugen
   ];
 
   nix.settings.experimental-features = [

@@ -52,7 +52,7 @@
   };
 
   security.apparmor = {
-    # enable = true;
+    # enable = true; # Fixes pam regression as of 04/20/2026
     killUnconfinedConfinables = true;
     packages = [pkgs.apparmor-profiles];
   };

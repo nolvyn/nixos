@@ -18,15 +18,15 @@ Item {
             return "";
         if (UPower.displayDevice.state === UPowerDeviceState.Charging || UPower.displayDevice.state === UPowerDeviceState.FullyCharged)
             return "󱟠";
-        if (UPower.displayDevice.percentage <= 25)
+        if (UPower.displayDevice.percentage * 100 <= 25)
             return "󰂃";
-        if (UPower.displayDevice.percentage <= 50)
+        if (UPower.displayDevice.percentage * 100 <= 50)
             return "󰁻";
-        if (UPower.displayDevice.percentage <= 75)
+        if (UPower.displayDevice.percentage * 100 <= 75)
             return "󰁾";
-        if (UPower.displayDevice.percentage < 100)
+        if (UPower.displayDevice.percentage * 100 < 100)
             return "󰂂";
-        if (UPower.displayDevice.percentage === 100)
+        if (UPower.displayDevice.percentage * 100 === 100)
             return "󰁹";
         return "";
     }
@@ -63,7 +63,7 @@ Item {
 
                 color: Theme.text
 
-                text: root.isReady ? Math.round(UPower.displayDevice.percentage) + "%" : ""
+                text: root.isReady ? Math.round(UPower.displayDevice.percentage * 100) + "%" : ""
             }
         }
     }
