@@ -62,7 +62,7 @@ Rectangle {
                 Text {
                     anchors.centerIn: parent
 
-                    text: root.icons[modelData.name] ?? modelData.name
+                    text: root.icons[workspace.modelData.name] ?? workspace.modelData.name
 
                     color: Theme.subtext1
                 }
@@ -70,7 +70,7 @@ Rectangle {
                 MouseArea {
                     anchors.fill: parent
 
-                    onClicked: modelData.activate()
+                    onClicked: workspace.modelData.activate()
                 }
             }
         }

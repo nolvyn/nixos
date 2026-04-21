@@ -93,6 +93,7 @@ in
     files = {
       ".config/Code/User/settings.json".source = ../config/vscode/settings.json;
       ".config/Code/User/keybindings.json".source = ../config/vscode/keybindings.json;
+      ".config/zed/settings.json".source = ../config/zed/settings.json;
     };
   };
 }
