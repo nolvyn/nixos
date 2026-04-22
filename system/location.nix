@@ -8,8 +8,4 @@
       isSystem = false;
     };
   };
-
-  services.avahi = {
-    enable = true;
-  };
 }

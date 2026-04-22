@@ -42,13 +42,6 @@ in
     # C++
     gcc
 
-    # Dart/Flutter
-    flutter
-
-    # Go
-    go
-    # (callPackage ../pkgs/wails3 {})
-
     # Nix
     nixd
     nixfmt

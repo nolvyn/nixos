@@ -52,7 +52,7 @@ case $choice in
         ;;
     2)
         read -rp "MoeNote IP: " ip
-        reinstall "MoteNote" "$ip" "$FLAKE_DIR/secrets/host-keys/moenote/ssh_host_ed25519_key"
+        reinstall "MoeNote" "$ip" "$FLAKE_DIR/secrets/host-keys/moenote/ssh_host_ed25519_key"
         ;;
     3)
         read -rp "Hostname (must match flake nixosConfigurations): " host

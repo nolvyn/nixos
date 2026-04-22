@@ -4,7 +4,7 @@
 {
   # Keyring/Wallet Stuff
   services.gnome.gnome-keyring.enable = true;
-  programs.seahorse.enable = true;  # GUI Keyring Manager
+  programs.seahorse.enable = true; # GUI Keyring Manager
 
   security.sudo.enable = false;
   security.sudo-rs.enable = true;
@@ -54,18 +54,24 @@
   security.apparmor = {
     # enable = true; # Fixes pam regression as of 04/20/2026
     killUnconfinedConfinables = true;
-    packages = [pkgs.apparmor-profiles];
+    packages = [ pkgs.apparmor-profiles ];
   };
 
   fileSystems."/proc" = {
     device = "proc";
     fsType = "proc";
-    options = ["defaults" "hidepid=2"];
+    options = [
+      "defaults"
+      "hidepid=2"
+    ];
     neededForBoot = true;
   };
 
   services.dbus.implementation = "broker";
 
   boot.initrd.compressor = "zstd";
-  boot.initrd.compressorArgs = [ "-19" "-T0" ];
+  boot.initrd.compressorArgs = [
+    "-3"
+    "-T0"
+  ];
 }

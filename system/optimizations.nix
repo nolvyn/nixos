@@ -20,7 +20,7 @@
       dates = "weekly";
       extraArgs = "--keep 25 --keep-since 30d";
     };
-    flake = "/home/weeb/nixos";
+    flake = "$HOME/nixos";
   };
 
   systemd.user.services.empty-trash = {

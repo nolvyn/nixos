@@ -25,8 +25,7 @@
     enable = true;
     clobberFiles = lib.mkForce true;
     files = {
-      ".config/fuzzel/fuzzel.ini".source = ../config/fuzzel.ini;
-      ".config/walker/.ini".text = "";
+      ".config/walker/.init".text = "";
       ".config/fastfetch/config.jsonc".source = ../config/fastfetch/config.jsonc;
 
       ".config/kitty/kitty.conf".source = ../config/kitty.conf;

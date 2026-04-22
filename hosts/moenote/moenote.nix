@@ -1,20 +1,15 @@
 {
   config,
-  pkgs,
   ...
 }:
 
 {
   imports = [
-    ./moenote-hardware.nix
+    ./hardware.nix
     ../../system/tlp.nix
   ];
 
-  environment.systemPackages = with pkgs; [ ];
-
   networking.hostName = "MoeNote";
-
-  users.users.${config.user.name} = { };
 
   hjem.users.${config.user.name} = {
     files = {

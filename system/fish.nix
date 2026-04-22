@@ -17,8 +17,6 @@
     '';
     shellAliases = {
       nhs = "nh os switch";
-      des = "sudo nixos-rebuild switch --flake /home/weeb/nixos#WeebMachine";
-      lap = "sudo nixos-rebuild switch --flake /home/weeb/nixos#MoeNote";
       nfu = "cd /home/weeb/nixos && nix flake update";
 
       ga = "cd /home/weeb/nixos && git add .";

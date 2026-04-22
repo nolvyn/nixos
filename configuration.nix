@@ -68,7 +68,6 @@
     vesktop
     stable.walker
     wget
-    zoom-us
 
     glib
     matugen
@@ -79,7 +78,7 @@
     "flakes"
   ];
 
-  nixpkgs.config.allowUnfree = true; # Allow closed source packages like Steam
+  services.fwupd.enable = true;
 
   system.stateVersion = "25.11"; # Do not change unless you know what you are doing
 }

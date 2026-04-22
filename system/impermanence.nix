@@ -49,7 +49,6 @@
         ".ssh"
         ".steam"
         ".vscode"
-        ".zoom"
 
         # Selective Cache
         ".cache/mesa_shader_cache"

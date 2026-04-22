@@ -6,19 +6,19 @@
   fonts = {
     enableDefaultPackages = false;
     packages = with pkgs; [
-        inter
-        nerd-fonts.jetbrains-mono
-        noto-fonts
-        noto-fonts-cjk-sans
-        noto-fonts-cjk-serif
-        noto-fonts-color-emoji
-        dejavu_fonts
-        corefonts # Microsoft fonts (Arial, Times New Roman, etc)
+      inter
+      nerd-fonts.jetbrains-mono
+      noto-fonts
+      noto-fonts-cjk-sans
+      noto-fonts-cjk-serif
+      noto-fonts-color-emoji
+      dejavu_fonts
+      corefonts # Microsoft fonts (Arial, Times New Roman, etc)
     ];
 
     fontconfig = {
       defaultFonts = {
-        monospace = [ 
+        monospace = [
           "JetBrainsMono Nerd Font"
           "Noto Sans Mono"
           "DejaVu Sans Mono"
@@ -30,7 +30,10 @@
         ];
         serif = [
           "Noto Serif"
-          "DejaVu Serif" 
+          "DejaVu Serif"
+        ];
+        emoji = [
+          "Noto Color Emoji"
         ];
       };
     };
