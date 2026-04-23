@@ -25,12 +25,19 @@
     enable = true;
     clobberFiles = lib.mkForce true;
     files = {
+      ".config/btop/btop.conf".text = ''
+        color_theme = "matugen"
+        theme_background = False
+      '';
+
       ".config/fastfetch/config.jsonc".source = ../config/fastfetch/config.jsonc;
 
       ".config/kitty/kitty.conf".source = ../config/kitty/kitty.conf;
 
       ".config/vesktop/settings.json".source = ../config/vesktop/vesktop-settings.json;
       ".config/vesktop/settings/settings.json".source = ../config/vesktop/vencord-settings.json;
+
+      ".config/yazi/yazi.toml".source = ../config/yazi/yazi.toml;
     };
   };
 }

@@ -25,7 +25,6 @@
     ./system/syncthing.nix
     ./system/theme.nix
     ./system/user.nix
-    ./system/yazi.nix
     ./system/disko-btrfs.nix
     ./system/impermanence.nix
     ./system/location.nix
@@ -42,6 +41,7 @@
   environment.systemPackages = with pkgs; [
     anki
     brightnessctl
+    btop
     celluloid
     dunst
     exiftool
@@ -69,6 +69,7 @@
     vesktop
     stable.walker
     wget
+    yazi
   ];
 
   nix.settings.experimental-features = [
