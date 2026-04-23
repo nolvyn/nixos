@@ -1,7 +1,13 @@
 # theme.nix
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
+  environment.systemPackages = with pkgs; [
+    bibata-cursors
+    gnome-themes-extra
+    matugen
+  ];
+
   programs.dconf = {
     enable = true;
     profiles.user.databases = [
@@ -23,8 +29,9 @@
     HYPRCURSOR_SIZE = "24";
   };
 
-  environment.systemPackages = with pkgs; [
-    gnome-themes-extra
-    bibata-cursors
-  ];
+  hjem.users.${config.user.name} = {
+    files = {
+      ".config/matugen/config.toml".source = ../config/matugen/config.toml;
+    };
+  };
 }

@@ -10,7 +10,6 @@ let
         (with pkgs.vscode-extensions; [
           jnoortheen.nix-ide
           rust-lang.rust-analyzer
-          golang.go
 
           charliermarsh.ruff
           ms-python.python
@@ -34,7 +33,6 @@ in
 {
   environment.systemPackages = with pkgs; [
     # Text Editors / IDEs
-    helix
     neovim
     personal-vscode
     zed-editor

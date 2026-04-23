@@ -23,6 +23,8 @@
     flake = "$HOME/nixos";
   };
 
+  services.fwupd.enable = true; # Updates for certain hardware
+
   systemd.user.services.empty-trash = {
     description = "Empty trash files older than 30 days";
     serviceConfig = {

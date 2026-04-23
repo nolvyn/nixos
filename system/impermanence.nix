@@ -12,12 +12,10 @@
       "/var/lib/nixos"
       "/var/lib/bluetooth"
       "/var/lib/blueman"
+      "/var/lib/fprint"
       "/var/lib/systemd/coredump"
       "/var/lib/systemd/timers"
       "/etc/NetworkManager/system-connections"
-    ]
-    ++ lib.optionals (config.networking.hostName == "MoeNote") [
-      "/var/lib/fprint"
     ];
 
     files = [
@@ -31,12 +29,10 @@
         # Personal
         "Documents"
         "Downloads"
-        "Games"
         "gw-analysis"
         "nixos"
         "projects"
         "school"
-        "torrents"
 
         # Dotfiles
         ".config"
@@ -47,7 +43,6 @@
         ".local"
         ".pki"
         ".ssh"
-        ".steam"
         ".vscode"
 
         # Selective Cache
@@ -59,7 +54,15 @@
         ".cache/Proton"
         ".cache/umu"
         ".cache/umu-protonfixes"
+
+        # Selective Config
+      ]
+      ++ lib.optionals (config.networking.hostName == "WeebMachine") [
+        "Games"
+        "torrents"
+        ".steam"
       ];
+
       files = [
         ".gitconfig"
       ];

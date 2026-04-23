@@ -1,0 +1,11 @@
+[config]
+
+[templates.kitty]
+input_path = '~/nixos/config/matugen/templates/kitty.conf'
+output_path = '~/.config/kitty/colors.conf'
+post_hook = 'pkill -SIGUSR1 kitty'
+
+[templates.hyprland]
+input_path = '~/nixos/config/matugen/templates/hyprland.conf'
+output_path = '~/.config/hypr/colors.conf'
+post_hook = 'hyprctl reload'

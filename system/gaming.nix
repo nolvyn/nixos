@@ -4,9 +4,7 @@
 {
   environment.systemPackages = with pkgs; [
     heroic
-    lutris
     prismlauncher
-    wineWow64Packages.stable # 32 and 64 bit
   ];
 
   # For more information see https://nixos.wiki/wiki/Steam
@@ -27,5 +25,5 @@
   programs.honkers-railway-launcher.enable = true;
   programs.sleepy-launcher.enable = true;
 
-  boot.kernelModules = [ "ntsync" ]; # Fix Endfield crashing
+  boot.kernelModules = [ "ntsync" ];
 }

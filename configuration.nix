@@ -49,6 +49,7 @@
     file
     filen-desktop
     ghostty
+    glib
     gzip
     kitty
     lynis
@@ -68,17 +69,12 @@
     vesktop
     stable.walker
     wget
-
-    glib
-    matugen
   ];
 
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
   ];
-
-  services.fwupd.enable = true;
 
   system.stateVersion = "25.11"; # Do not change unless you know what you are doing
 }
