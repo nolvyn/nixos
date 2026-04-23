@@ -1,11 +1,23 @@
 [config]
 
+[templates.heroic]
+input_path = '~/nixos/config/matugen/templates/heroic.css'
+output_path = '~/.config/heroic/themes/matugen.css'
+
+[templates.hyprland]
+input_path = '~/nixos/config/matugen/templates/hypr.conf'
+output_path = '~/.config/hypr/colors.conf'
+post_hook = 'hyprctl reload'
+
 [templates.kitty]
 input_path = '~/nixos/config/matugen/templates/kitty.conf'
 output_path = '~/.config/kitty/colors.conf'
 post_hook = 'pkill -SIGUSR1 kitty'
 
-[templates.hyprland]
-input_path = '~/nixos/config/matugen/templates/hyprland.conf'
-output_path = '~/.config/hypr/colors.conf'
-post_hook = 'hyprctl reload'
+[templates.quickshell]
+input_path = '~/nixos/config/matugen/templates/quickshell.json'
+output_path = '~/.local/state/quickshell/generated/colors.json'
+
+[templates.vivaldi]
+input_path = '~/nixos/config/matugen/templates/vivaldi.css'
+output_path = '~/.config/vivaldi/themes/matugen.css'

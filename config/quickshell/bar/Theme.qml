@@ -4,37 +4,6 @@ import Quickshell
 import QtQuick
 
 Singleton {
-    // Color Pallete
-    property color base: "#1e1e2e"
-    property color mantle: "#181825"
-    property color crust: "#11111b"
-    property color surface0: "#313244"
-    property color surface1: "#45475a"
-    property color surface2: "#585b70"
-    property color overlay0: "#6c7086"
-    property color overlay1: "#7f849c"
-    property color overlay2: "#9399b2"
-
-    property color text: "#cdd6f4"
-    property color subtext0: "#a6adc8"
-    property color subtext1: "#bac2de"
-
-    property color lavender: "#b4befe"
-    property color blue: "#89b4fa"
-    property color sapphire: "#74c7ec"
-    property color sky: "#89dceb"
-    property color teal: "#94e2d5"
-    property color green: "#a6e3a1"
-    property color yellow: "#f9e2af"
-    property color peach: "#fab387"
-    property color maroon: "#eba0ac"
-    property color red: "#f38ba8"
-    property color mauve: "#cba6f7"
-    property color pink: "#f5c2e7"
-    property color flamingo: "#f2cdcd"
-    property color rosewater: "#f5e0dc"
-
-    // Other
     property color barColor: Qt.rgba(0.118, 0.118, 0.180, 0.85)
     property real barHeight: 32
     property real fontSize: 20

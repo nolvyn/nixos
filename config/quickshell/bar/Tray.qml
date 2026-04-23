@@ -13,7 +13,7 @@ Rectangle {
     width: row.implicitWidth + 10
     height: Theme.barHeight - 4
 
-    color: Theme.surface0
+    color: Colors.md3.surface_container
     radius: height / 2
 
     Row {

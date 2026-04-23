@@ -20,7 +20,7 @@ Item {
 
         anchors.centerIn: parent
 
-        color: Theme.surface0
+        color: Colors.md3.surface_container
         radius: height / 2
 
         Text {
@@ -28,7 +28,7 @@ Item {
 
             anchors.centerIn: parent
 
-            color: Theme.text
+            color: Colors.md3.on_surface
             text: Qt.formatDateTime(clock.date, "󰥔  hh:mm AP dddd 󰃭  MM-dd-yyyy")
         }
     }

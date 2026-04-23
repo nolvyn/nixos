@@ -9,7 +9,7 @@ Rectangle {
     width: row.implicitWidth + 10
     height: Theme.barHeight - 4
 
-    color: Theme.surface0
+    color: Colors.md3.surface_container
     radius: height / 2
 
     required property var screen
@@ -57,14 +57,14 @@ Rectangle {
 
                 radius: height / 2
 
-                color: modelData.focused ? Theme.overlay1 : Theme.surface1
+                color: modelData.focused ? Colors.md3.outline : Colors.md3.surface_container_low
 
                 Text {
                     anchors.centerIn: parent
 
                     text: root.icons[workspace.modelData.name] ?? workspace.modelData.name
 
-                    color: Theme.subtext1
+                    color: workspace.modelData.focused ? Colors.md3.inverse_on_surface : Colors.md3.on_surface
                 }
 
                 MouseArea {

@@ -41,7 +41,7 @@ Item {
 
         radius: height / 2
 
-        color: Theme.surface0
+        color: Colors.md3.surface_container
 
         Row {
             id: row
@@ -53,7 +53,7 @@ Item {
             Text {
                 id: iconText
 
-                color: Theme.text
+                color: Colors.md3.on_surface
 
                 text: root.icon
             }
@@ -61,7 +61,7 @@ Item {
             Text {
                 id: batteryText
 
-                color: Theme.text
+                color: Colors.md3.on_surface
 
                 text: root.isReady ? Math.round(UPower.displayDevice.percentage * 100) + "%" : ""
             }

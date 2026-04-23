@@ -14,7 +14,12 @@ PanelWindow {
         right: true
     }
 
-    color: Theme.barColor
+    color: Qt.rgba(
+    Colors.md3.surface.r,
+    Colors.md3.surface.g,
+    Colors.md3.surface.b,
+    0.85
+)
 
     Audio {
         id: audio

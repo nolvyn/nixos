@@ -47,7 +47,7 @@ Item {
 
         anchors.centerIn: parent
 
-        color: Theme.surface0
+        color: Colors.md3.surface_container
         radius: height / 2
 
         Row {
@@ -60,7 +60,7 @@ Item {
             Text {
                 id: iconText
 
-                color: Theme.text
+                color: Colors.md3.on_surface
 
                 text: root.icon
             }
@@ -68,7 +68,7 @@ Item {
             Text {
                 id: volumeText
 
-                color: Theme.text
+                color: Colors.md3.on_surface
 
                 text: root.sink && root.sink.audio ? (root.sink.audio.muted ? "Muted" : Math.round(root.sink.audio.volume * 100) + "%") : "N/A"
             }
