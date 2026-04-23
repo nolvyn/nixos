@@ -2,6 +2,8 @@
 { config, pkgs, ... }:
 
 {
+  # Most matugen templates are stolen from https://github.com/InioX/matugen-themes
+
   environment.systemPackages = with pkgs; [
     bibata-cursors
     gnome-themes-extra
