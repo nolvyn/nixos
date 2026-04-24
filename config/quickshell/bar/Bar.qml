@@ -18,7 +18,7 @@ PanelWindow {
     Colors.md3.surface.r,
     Colors.md3.surface.g,
     Colors.md3.surface.b,
-    0.85
+    0.00
 )
 
     Audio {
