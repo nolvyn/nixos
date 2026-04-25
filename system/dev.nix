@@ -19,6 +19,9 @@ let
           ms-toolsai.jupyter-keymap
           ms-toolsai.jupyter-renderers
 
+          dart-code.dart-code
+          dart-code.flutter
+
           tamasfe.even-better-toml
         ])
         ++ (with pkgs.vscode-marketplace; [

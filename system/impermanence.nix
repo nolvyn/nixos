@@ -35,12 +35,8 @@
         "school"
 
         # Dotfiles
-        ".config"
-        ".dart-tool"
-        ".flutter"
-        ".ipython"
-        ".jupyter"
-        ".local"
+        # ".config"
+        # ".local"
         ".pki"
         ".ssh"
         ".vscode"
@@ -48,7 +44,6 @@
         # Selective Cache
         ".cache/mesa_shader_cache"
         ".cache/radv_builtin_shaders"
-        ".cache/sleepy-launcher"
         ".cache/spotify"
         ".cache/qtshadercache-x86_64-little_endian-lp64"
         ".cache/Proton"
@@ -56,11 +51,60 @@
         ".cache/umu-protonfixes"
 
         # Selective Config
+        ".config/BraveSoftware"
+        ".config/btop"
+        ".config/celluloid"
+        ".config/Code"
+        ".config/dconf"
+        ".config/dunst"
+        ".config/fcitx"
+        ".config/fcitx5"
+        ".config/@filen"
+        ".config/ghostty"
+        ".config/gtk-3.0"
+        ".config/gtk-4.0"
+        ".config/hypr"
+        ".config/kitty"
+        ".config/mozc"
+        ".config/Proton"
+        ".config/Slack"
+        ".config/spotify"
+        ".config/Thunar"
+        ".config/vesktop"
+        ".config/vivaldi"
+        ".config/walker"
+        ".config/yazi"
+        ".config/zed"
+
+        # Selective Local
+        ".local/lib/vivaldi"
+
+        ".local/share/Anki2"
+        ".local/share/fish"
+        ".local/share/jupyter"
+        ".local/share/keyrings"
+        ".local/share/nvim"
+        ".local/share/umu"
+        ".local/share/uv"
+        ".local/share/zed"
+
+        ".local/state/nvim"
+        ".local/state/quickshell"
+        ".local/state/wireplumber"
+        ".local/state/yazi"
       ]
       ++ lib.optionals (config.networking.hostName == "WeebMachine") [
         "Games"
         "torrents"
-        ".steam"
+        ".cache/sleepy-launcher"
+        ".config/heroic"
+        ".config/qBittorrent"
+        ".local/share/honkers-railway-launcher"
+        ".local/share/PrismLauncher"
+        ".local/share/qBittorrent"
+        ".local/share/sleepy-launcher"
+        ".local/share/Steam"
+        ".local/state/Heroic"
       ];
 
       files = [
