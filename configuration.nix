@@ -55,7 +55,7 @@
     lynis
     mediainfo
     networkmanagerapplet
-    onlyoffice-desktopeditors
+    # onlyoffice-desktopeditors
     playerctl
     stable.protonvpn-gui
     resources

@@ -35,6 +35,8 @@
         "school"
 
         # Dotfiles
+        ".android"
+        ".dart-tool"
         # ".config"
         # ".local"
         ".pki"
@@ -60,6 +62,7 @@
         ".config/fcitx"
         ".config/fcitx5"
         ".config/@filen"
+        ".config/flutter"
         ".config/ghostty"
         ".config/gtk-3.0"
         ".config/gtk-4.0"
@@ -108,6 +111,7 @@
       ];
 
       files = [
+        ".flutter"
         ".gitconfig"
       ];
     };

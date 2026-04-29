@@ -66,21 +66,14 @@ in
     rustfmt
   ];
 
-  system.userActivationScripts.quickshellQmllsIni = {
-    text = ''
-      mkdir -p "$HOME/.config/quickshell"
-      if [ ! -f "$HOME/.config/quickshell/.qmlls.ini" ]; then
-        touch "$HOME/.config/quickshell/.qmlls.ini"
-      fi
-    '';
-  };
-
   environment.sessionVariables = {
     RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
   };
 
   programs.nix-ld.enable = true;
   programs.direnv.enable = true;
+
+  users.users.${config.user.name}.extraGroups = [ "kvm" ]; # Needed for Android emulator hardware acceleration
 
   hjem.users.${config.user.name} = {
     enable = true;
