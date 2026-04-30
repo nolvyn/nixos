@@ -11,16 +11,13 @@
     ./system/cache.nix
     ./system/dev.nix
     ./system/file.nix
-    # ./system/firefox.nix
     ./system/fish.nix
-    # ./system/flatpak.nix
     ./system/fonts.nix
     ./system/git.nix
     ./config/hypr/hypr.nix
     ./system/keyboard.nix
     ./system/locale.nix
     ./system/optimizations.nix
-    # ./system/printing.nix
     ./system/sddm.nix
     ./system/syncthing.nix
     ./system/theme.nix
@@ -30,11 +27,7 @@
     ./system/location.nix
 
     # Security
-    ./system/security/network.nix
-    ./system/security/general.nix
-    ./system/security/kernel.nix
-    ./system/security/systemd.nix
-    ./system/security/openssh.nix
+    ./system/security
   ];
 
   environment.systemPackages = with pkgs; [
@@ -61,6 +54,7 @@
     resources
     ripgrep
     ripunzip
+    sherlock
     slack
     spotify
     thunar

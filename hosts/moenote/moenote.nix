@@ -9,6 +9,8 @@
     ../../system/tlp.nix
   ];
 
+  machine.isLaptop = true;
+
   networking.hostName = "MoeNote";
 
   hjem.users.${config.user.name} = {

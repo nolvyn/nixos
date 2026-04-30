@@ -5,6 +5,7 @@
     ./hardware.nix
     ../../system/gaming.nix
     # ../../system/jellyfin.nix
+    ../../system/printing.nix
     # ../../system/searxng.nix
     # ../../system/virtualization.nix
   ];
@@ -15,13 +16,11 @@
     microfetch
     qbittorrent
     # servo
-    # sherlock
   ];
 
-  networking = {
-    hostName = "WeebMachine";
-    networkmanager.settings.connectivity.enabled = false; # Speed up boot time
-  };
+  machine.isDesktop = true;
+
+  networking.hostName = "WeebMachine";
 
   hjem.users.${config.user.name} = {
     files = {

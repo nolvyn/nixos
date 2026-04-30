@@ -96,7 +96,7 @@
         ".local/state/wireplumber"
         ".local/state/yazi"
       ]
-      ++ lib.optionals (config.networking.hostName == "WeebMachine") [
+      ++ lib.optionals config.machine.isDesktop [
         "Games"
         "torrents"
         ".cache/sleepy-launcher"

@@ -1,5 +1,3 @@
-# openssh.nix
-
 {
   services.openssh = {
     enable = true;

@@ -1,5 +1,5 @@
 # fish.nix
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   # For more information see https://nixos.wiki/wiki/Fish
@@ -11,7 +11,7 @@
       set fish_greeting # Disable greeting
 
       set -gx EDITOR "nano -L"
-      set -gx NH_FLAKE "$HOME/nixos"
+      set -gx NH_FLAKE "${config.user.flakeDir}"
 
       set -gx GOPATH "$HOME/.local/share/go"
       set -gx PATH "$PATH:$GOPATH/bin"
