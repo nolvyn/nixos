@@ -76,7 +76,6 @@ in
   users.users.${config.user.name}.extraGroups = [ "kvm" ]; # Needed for Android emulator hardware acceleration
 
   hjem.users.${config.user.name} = {
-    enable = true;
     files = {
       ".config/Code/User/settings.json".source = ../config/vscode/settings.json;
       ".config/Code/User/keybindings.json".source = ../config/vscode/keybindings.json;

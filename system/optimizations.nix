@@ -20,7 +20,7 @@
       dates = "weekly";
       extraArgs = "--keep 25 --keep-since 30d";
     };
-    flake = "$HOME/nixos";
+    flake = "$HOME/nixos"; # Doesn't do anything with fish
   };
 
   services.fwupd.enable = true; # Updates for certain hardware

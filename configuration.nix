@@ -30,7 +30,6 @@
     ./system/location.nix
 
     # Security
-    # ./system/security/firejail.nix
     ./system/security/network.nix
     ./system/security/general.nix
     ./system/security/kernel.nix
@@ -51,6 +50,7 @@
     ghostty
     glib
     gzip
+    jq
     kitty
     lynis
     mediainfo

@@ -4,6 +4,7 @@
 {
   # For more information see https://nixos.wiki/wiki/Fish
   # Enable fish and set it as interactive shell only
+  # NH_FLAKE needed for fish specifically
   programs.fish = {
     enable = true;
     shellInit = ''
@@ -17,9 +18,9 @@
     '';
     shellAliases = {
       nhs = "nh os switch";
-      nfu = "cd /home/weeb/nixos && nix flake update";
+      nfu = "cd $HOME/nixos && nix flake update";
 
-      ga = "cd /home/weeb/nixos && git add .";
+      ga = "cd $HOME/nixos && git add .";
       gc = "git commit -m";
       gp = "git push origin main";
 
