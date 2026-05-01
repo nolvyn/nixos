@@ -12,10 +12,12 @@
       "/var/lib/nixos"
       "/var/lib/bluetooth"
       "/var/lib/blueman"
-      "/var/lib/fprint"
       "/var/lib/systemd/coredump"
       "/var/lib/systemd/timers"
       "/etc/NetworkManager/system-connections"
+    ]
+    ++ lib.optionals config.services.fprintd.enable [
+      "/var/lib/fprint"
     ];
 
     files = [

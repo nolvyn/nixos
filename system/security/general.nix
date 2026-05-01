@@ -52,7 +52,7 @@
   };
 
   security.apparmor = {
-    # enable = true; # Fixes pam regression as of 04/20/2026
+    enable = true;
     killUnconfinedConfinables = true;
     packages = [ pkgs.apparmor-profiles ];
   };
@@ -62,7 +62,7 @@
     fsType = "proc";
     options = [
       "defaults"
-      "hidepid=2"
+      "hidepid=invisible"
     ];
     neededForBoot = true;
   };

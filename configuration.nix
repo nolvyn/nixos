@@ -10,23 +10,22 @@
     ./system/btrfs.nix
     ./system/cache.nix
     ./system/dev.nix
+    ./system/disko-btrfs.nix
     ./system/file.nix
     ./system/fish.nix
     ./system/fonts.nix
     ./system/git.nix
     ./config/hypr/hypr.nix
+    ./system/impermanence.nix
     ./system/keyboard.nix
     ./system/locale.nix
+    ./system/location.nix
     ./system/optimizations.nix
     ./system/options.nix
     ./system/sddm.nix
     ./system/syncthing.nix
     ./system/theme.nix
     ./system/user.nix
-
-    ./system/disko-btrfs.nix
-    ./system/impermanence.nix
-    ./system/location.nix
 
     # Security
     ./system/security

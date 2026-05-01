@@ -30,7 +30,7 @@
       "BraveTalkDisabled" = true;
       "BraveVPNDisabled" = true;
       "BraveWalletDisabled" = true;
-      "BraveWaybackMachineEnabled" = true;
+      "BraveWaybackMachineEnabled" = false;
       "BraveWebDiscoveryEnabled" = false;
       "TorDisabled" = true;
 
