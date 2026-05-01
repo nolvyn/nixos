@@ -7,8 +7,8 @@
     enable = true;
     lfs.enable = true;
     config = {
-      user.name = "nolvyn";
-      user.email = "245221879+nolvyn@users.noreply.github.com";
+      user.name = config.user.git.userName;
+      user.email = config.user.git.userEmail;
       init.defaultBranch = "main";
       safe.directory = [ config.user.flakeDir ];
     };

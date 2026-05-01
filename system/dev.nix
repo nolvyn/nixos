@@ -66,10 +66,6 @@ in
     rustfmt
   ];
 
-  environment.sessionVariables = {
-    RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
-  };
-
   programs.nix-ld.enable = true;
   programs.direnv.enable = true;
 

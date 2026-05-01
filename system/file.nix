@@ -6,7 +6,7 @@
     defaultApplications = {
       "inode/directory" = [
         "yazi.desktop"
-        "thunar.desktop"
+        "nautilus.desktop"
       ];
     };
   };

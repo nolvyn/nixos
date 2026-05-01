@@ -18,10 +18,12 @@
     ./system/keyboard.nix
     ./system/locale.nix
     ./system/optimizations.nix
+    ./system/options.nix
     ./system/sddm.nix
     ./system/syncthing.nix
     ./system/theme.nix
     ./system/user.nix
+
     ./system/disko-btrfs.nix
     ./system/impermanence.nix
     ./system/location.nix
@@ -47,6 +49,7 @@
     kitty
     lynis
     mediainfo
+    nautilus
     networkmanagerapplet
     # onlyoffice-desktopeditors
     playerctl
@@ -57,7 +60,6 @@
     sherlock
     slack
     spotify
-    thunar
     tree
     unrar
     vesktop

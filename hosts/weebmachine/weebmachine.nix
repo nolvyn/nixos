@@ -4,10 +4,7 @@
   imports = [
     ./hardware.nix
     ../../system/gaming.nix
-    # ../../system/jellyfin.nix
     ../../system/printing.nix
-    # ../../system/searxng.nix
-    # ../../system/virtualization.nix
   ];
 
   environment.systemPackages = with pkgs; [

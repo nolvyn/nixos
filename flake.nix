@@ -76,7 +76,6 @@
 
       commonNixosModules = [
         ./configuration.nix
-        ./system/options.nix
         aagl.nixosModules.default
         agenix.nixosModules.default
         disko.nixosModules.disko
@@ -93,27 +92,20 @@
           nixpkgs.config.allowUnfree = true;
         }
       ];
+
+      mkSystem =
+        hostModule:
+        lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = { inherit inputs; };
+          modules = [ hostModule ] ++ commonNixosModules;
+        };
     in
 
     {
       nixosConfigurations = {
-        WeebMachine = lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { inherit inputs; };
-          modules = [
-            ./hosts/weebmachine/weebmachine.nix
-          ]
-          ++ commonNixosModules;
-        };
-
-        MoeNote = lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { inherit inputs; };
-          modules = [
-            ./hosts/moenote/moenote.nix
-          ]
-          ++ commonNixosModules;
-        };
+        WeebMachine = mkSystem ./hosts/weebmachine/weebmachine.nix;
+        MoeNote = mkSystem ./hosts/moenote/moenote.nix;
       };
     };
 }
