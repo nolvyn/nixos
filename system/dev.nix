@@ -9,6 +9,7 @@ let
       vscodeExtensions =
         (with pkgs.vscode-extensions; [
           jnoortheen.nix-ide
+          sumneko.lua
           rust-lang.rust-analyzer
 
           charliermarsh.ruff

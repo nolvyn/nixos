@@ -21,7 +21,6 @@
 
   hjem.users.${config.user.name} = {
     files = {
-      ".config/hypr/autostart-extra.conf".source = ../../config/hypr/modules/autostart-wm.conf;
     };
   };
 }

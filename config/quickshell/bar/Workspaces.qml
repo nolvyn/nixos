@@ -70,7 +70,14 @@ Rectangle {
                 MouseArea {
                     anchors.fill: parent
 
-                    onClicked: workspace.modelData.activate()
+                    onClicked: {
+                        var ws = workspace.modelData;
+                        if (ws.id < 0) {
+                            Hyprland.dispatch(`hl.dsp.focus({ workspace = "name:${ws.name}" })`);
+                        } else {
+                            Hyprland.dispatch(`hl.dsp.focus({ workspace = "${ws.id}" })`);
+                        }
+                    }
                 }
             }
         }

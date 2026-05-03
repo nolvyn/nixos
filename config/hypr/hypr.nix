@@ -28,16 +28,18 @@
 
   hjem.users.${config.user.name} = {
     files = {
-      ".config/hypr/hyprland.conf".source = ./hyprland.conf;
+      ".config/hypr/hyprland.lua".source = ./hyprland.lua;
       ".config/hypr/hyprpaper.conf".source = ./hyprpaper.conf;
       ".config/hypr/hyprlock.conf".source = ./hyprlock.conf;
 
-      ".config/hypr/autostart-base.conf".source = ./modules/autostart-base.conf;
-      ".config/hypr/keybinds.conf".source = ./modules/keybinds.conf;
-      ".config/hypr/monitors.conf".source = ./modules/monitors.conf;
-      ".config/hypr/input.conf".source = ./modules/input.conf;
-      ".config/hypr/workspaces.conf".source = ./modules/workspaces.conf;
-      ".config/hypr/constants.conf".source = ./modules/constants.conf;
+      ".config/hypr/modules/animations.lua".source = ./modules/animations.lua;
+      ".config/hypr/modules/autostart.lua".source = ./modules/autostart.lua;
+      ".config/hypr/modules/constants.lua".source = ./modules/constants.lua;
+      ".config/hypr/modules/decorations.lua".source = ./modules/decorations.lua;
+      ".config/hypr/modules/input.lua".source = ./modules/input.lua;
+      ".config/hypr/modules/keybinds.lua".source = ./modules/keybinds.lua;
+      ".config/hypr/modules/monitors.lua".source = ./modules/monitors.lua;
+      ".config/hypr/modules/workspaces.lua".source = ./modules/workspaces.lua;
     };
   };
 }
