@@ -1,8 +1,7 @@
-{pkgs, ...}:
+{ pkgs, ... }:
 
 {
-  services.qbittorrent = {
-    enable = true;
-    package = pkgs.qbittorrent;
-  };
+  environment.systemPackages = with pkgs; [
+    qbittorrent
+  ];
 }

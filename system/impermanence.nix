@@ -39,8 +39,6 @@
         # Dotfiles
         ".android"
         ".dart-tool"
-        # ".config"
-        # ".local"
         ".pki"
         ".ssh"
         ".vscode"

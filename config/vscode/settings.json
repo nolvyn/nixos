@@ -1,6 +1,16 @@
 {
   // C++
   "C_Cpp.default.cppStandard": "c++23",
+  "debug.internalConsoleOptions": "openOnSessionStart",
+  "[dart]": {
+    "editor.formatOnType": true,
+    "editor.rulers": [
+      80
+    ],
+    "editor.selectionHighlight": false,
+    "editor.tabCompletion": "onlySnippets",
+    "editor.wordBasedSuggestions": "off"
+  },
   // Nix
   "nix.enableLanguageServer": true,
   "nix.serverPath": "nixd",
@@ -65,10 +75,15 @@
   "security.workspace.trust.enabled": true,
   "security.workspace.trust.untrustedFiles": "prompt",
   "telemetry.telemetryLevel": "off",
+  "telemetry.feedback.enabled": false,
   "update.mode": "none",
   "workbench.enableExperiments": false,
   "workbench.settings.applyToAllProfiles": [],
   "workbench.startupEditor": "none",
   "workbench.tree.indent": 12,
-  "update.showReleaseNotes": false
+  "update.showReleaseNotes": false,
+  "chat.agent.enabled": false,
+  "chat.autopilot.enabled": false,
+  "chat.disableAIFeatures": true,
+  "git.addAICoAuthor": "off"
 }
