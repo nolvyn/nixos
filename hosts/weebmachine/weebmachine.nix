@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   imports = [
@@ -18,6 +23,8 @@
   machine.isDesktop = true;
 
   networking.hostName = "WeebMachine";
+
+  hardware.bluetooth.powerOnBoot = lib.mkForce true;
 
   hjem.users.${config.user.name} = {
     files = {
