@@ -39,6 +39,7 @@
         # Dotfiles
         ".android"
         ".dart-tool"
+        ".floorp"
         ".pki"
         ".ssh"
         ".vscode"

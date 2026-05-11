@@ -4,6 +4,7 @@
 {
   environment.systemPackages = with pkgs; [
     brave
+    floorp-bin
     vivaldi
   ];
 

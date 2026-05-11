@@ -67,7 +67,14 @@ in
     rustfmt
   ];
 
-  programs.nix-ld.enable = true;
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      wayland
+      libxkbcommon
+      vulkan-loader
+    ];
+  };
   programs.direnv.enable = true;
 
   users.users.${config.user.name}.extraGroups = [ "kvm" ]; # Needed for Android emulator hardware acceleration
