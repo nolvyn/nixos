@@ -28,8 +28,8 @@
       inputs.nixpkgs.follows = "unstable";
     };
 
-    hyprland = {
-      url = "github:hyprwm/Hyprland";
+    home-manager = {
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "unstable";
     };
 
@@ -62,6 +62,7 @@
       agenix,
       disko,
       hjem,
+      home-manager,
       impermanence,
       moe-gaming,
       nix-vscode-extensions,
@@ -85,6 +86,7 @@
         agenix.nixosModules.default
         disko.nixosModules.disko
         hjem.nixosModules.hjem
+        home-manager.nixosModules.home-manager
         impermanence.nixosModules.impermanence
         moe-gaming.nixosModules.default
         stevenblack-hosts.nixosModule
@@ -95,6 +97,11 @@
             nix-vscode-extensions.overlays.default
           ];
           nixpkgs.config.allowUnfree = true;
+
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.extraSpecialArgs = { inherit inputs; };
+          home-manager.backupFileExtension = "backup";
         }
       ];
 

@@ -26,8 +26,5 @@
 
   hardware.bluetooth.powerOnBoot = lib.mkForce true;
 
-  hjem.users.${config.user.name} = {
-    files = {
-    };
-  };
+  home-manager.users.${config.user.name} = import ../../home/hosts/weebmachine.nix;
 }

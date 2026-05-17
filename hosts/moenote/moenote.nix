@@ -22,4 +22,6 @@
   services.fprintd.enable = true;
 
   services.upower.enable = true;
+
+  home-manager.users.${config.user.name} = import ../../home/hosts/moenote.nix;
 }
