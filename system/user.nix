@@ -20,11 +20,4 @@
       "wheel"
     ];
   };
-
-  hjem.users.${config.user.name} = {
-    enable = true;
-    clobberFiles = lib.mkForce true;
-    files = {
-    };
-  };
 }

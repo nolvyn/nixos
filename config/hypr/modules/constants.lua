@@ -1,6 +1,6 @@
 local home = os.getenv("HOME")
 local hostname = io.open("/etc/hostname"):read("*l")
-local wallpaper = home .. "nixos/assets/wallpapers/fangyi.png"
+local wallpaper = home .. "/nixos/assets/wallpapers/fangyi.png"
 
 return {
     browser         = "brave",

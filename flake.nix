@@ -23,11 +23,6 @@
       inputs.nixpkgs.follows = "unstable";
     };
 
-    hjem = {
-      url = "github:feel-co/hjem";
-      inputs.nixpkgs.follows = "unstable";
-    };
-
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "unstable";
@@ -61,7 +56,6 @@
       aagl,
       agenix,
       disko,
-      hjem,
       home-manager,
       impermanence,
       moe-gaming,
@@ -85,7 +79,6 @@
         aagl.nixosModules.default
         agenix.nixosModules.default
         disko.nixosModules.disko
-        hjem.nixosModules.hjem
         home-manager.nixosModules.home-manager
         impermanence.nixosModules.impermanence
         moe-gaming.nixosModules.default

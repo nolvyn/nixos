@@ -30,13 +30,4 @@
     XCURSOR_SIZE = "24";
     HYPRCURSOR_SIZE = "24";
   };
-
-  hjem.users.${config.user.name} = {
-    files = {
-      ".config/gtk-3.0/gtk.css".text = "@import 'colors.css';";
-      ".config/gtk-4.0/gtk.css".text = "@import 'colors.css';";
-
-      ".config/matugen/config.toml".source = ../config/matugen/config.toml;
-    };
-  };
 }

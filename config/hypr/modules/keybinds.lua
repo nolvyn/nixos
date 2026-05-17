@@ -28,7 +28,7 @@ hl.bind("SUPER + up", hl.dsp.focus({ direction = "u" }))
 hl.bind("SUPER + down", hl.dsp.focus({ direction = "d" }))
 
 -- Switch workspaces
-hl.bind("SUPER + 1", hl.dsp.focus({ workspace = "name:browser" }))
+hl.bind("SUPER + 1", hl.dsp.focus({ workspace = "1" }))
 hl.bind("SUPER + 2", hl.dsp.focus({ workspace = "2" }))
 hl.bind("SUPER + 3", hl.dsp.focus({ workspace = "3" }))
 hl.bind("SUPER + 4", hl.dsp.focus({ workspace = "4" }))
@@ -50,7 +50,7 @@ hl.bind("SUPER + G", hl.dsp.focus({ workspace = "name:games" }))
 hl.bind("SUPER + C", hl.dsp.focus({ workspace = "name:vscode" }))
 
 -- Move active window to workspace
-hl.bind("SUPER + SHIFT + 1", hl.dsp.window.move({ workspace = "name:browser" }))
+hl.bind("SUPER + SHIFT + 1", hl.dsp.window.move({ workspace = "1" }))
 hl.bind("SUPER + SHIFT + 2", hl.dsp.window.move({ workspace = "2" }))
 hl.bind("SUPER + SHIFT + 3", hl.dsp.window.move({ workspace = "3" }))
 hl.bind("SUPER + SHIFT + 4", hl.dsp.window.move({ workspace = "4" }))

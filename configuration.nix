@@ -15,7 +15,7 @@
     ./system/fish.nix
     ./system/fonts.nix
     ./system/git.nix
-    ./config/hypr/hypr.nix
+    ./system/hyprland.nix
     ./system/impermanence.nix
     ./system/keyboard.nix
     ./system/locale.nix

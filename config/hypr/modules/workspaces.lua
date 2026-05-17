@@ -1,13 +1,5 @@
 local c = require("modules.constants")
 
--- Ignore maximize requests from apps
---[[ hl.window_rule({
-    match = {
-        class = ".*"
-    },
-    suppress_event = "maximize"
-}) ]]
-
 -- Fix some dragging issues with XWayland
 hl.window_rule({
     match = {
@@ -38,7 +30,7 @@ hl.window_rule({ match = { class = "steam_app_0" }, workspace = "name:games" }) 
 
 -- Monitor Specific Rules
 -- Main Monitor
-hl.workspace_rule({ workspace = "name:browser", monitor = c.mainMonitor })
+hl.workspace_rule({ workspace = "1", monitor = c.mainMonitor })
 hl.workspace_rule({ workspace = "name:steam", monitor = c.mainMonitor })
 hl.workspace_rule({ workspace = "name:discord", monitor = c.mainMonitor })
 hl.workspace_rule({ workspace = "name:slack", monitor = c.mainMonitor })
