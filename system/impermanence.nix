@@ -55,11 +55,9 @@
 
         # Selective Config
         ".config/BraveSoftware"
-        ".config/btop"
         ".config/celluloid"
         ".config/Code"
         ".config/dconf"
-        ".config/dunst"
         ".config/fcitx"
         ".config/fcitx5"
         ".config/@filen"
@@ -68,7 +66,6 @@
         ".config/gtk-3.0"
         ".config/gtk-4.0"
         ".config/hypr"
-        ".config/kitty"
         ".config/mozc"
         ".config/Proton"
         ".config/Slack"
@@ -77,8 +74,6 @@
         ".config/vesktop"
         ".config/vivaldi"
         ".config/walker"
-        ".config/yazi"
-        ".config/zed"
 
         # Selective Local
         ".local/lib/vivaldi"
@@ -93,9 +88,7 @@
         ".local/share/zed"
 
         ".local/state/nvim"
-        ".local/state/quickshell"
         ".local/state/wireplumber"
-        ".local/state/yazi"
       ]
       ++ lib.optionals config.machine.isDesktop [
         "Games"

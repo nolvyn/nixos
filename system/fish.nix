@@ -27,7 +27,7 @@
       sure = "sudo reboot";
       rup = "ripunzip unzip-file";
 
-      matu = "matugen image --source-color-index 0 --contrast 0.0";
+      matu = "matugen image --source-color-index 0";
     };
   };
 

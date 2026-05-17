@@ -1,7 +1,0 @@
-[
-  {
-    "command": "workbench.action.debug.start",
-    "key": "ctrl+enter",
-    "when": "editorTextFocus && resourceExtname == .cpp"
-  }
-]

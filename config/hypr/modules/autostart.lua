@@ -1,6 +1,7 @@
 local c = require("modules.constants")
 
 hl.on("hyprland.start", function()
+    hl.exec_cmd("matugen image --source-color-index 0 " .. c.wallpaper)
     hl.exec_cmd("quickshell -p " .. c.home .. "/nixos/config/quickshell/bar")
     hl.exec_cmd("protonvpn-app")
     hl.exec_cmd("nm-applet")

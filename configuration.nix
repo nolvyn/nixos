@@ -34,23 +34,19 @@
   environment.systemPackages = with pkgs; [
     anki
     brightnessctl
-    btop
     celluloid
     dunst
     exiftool
-    fastfetch
     file
     filen-desktop
     ghostty
     glib
     gzip
     jq
-    kitty
     lynis
     mediainfo
     nautilus
     networkmanagerapplet
-    # onlyoffice-desktopeditors
     playerctl
     stable.protonvpn-gui
     resources
@@ -61,10 +57,8 @@
     spotify
     tree
     unrar
-    vesktop
     stable.walker
     wget
-    yazi
   ];
 
   nix.settings.experimental-features = [
