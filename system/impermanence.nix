@@ -29,10 +29,9 @@
     users.${config.user.name} = {
       directories = [
         # Personal
-        "Documents"
         "Downloads"
-        "gw-analysis"
         "nixos"
+        "other"
         "projects"
         "school"
 
@@ -43,6 +42,7 @@
         ".pki"
         ".ssh"
         ".vscode"
+        ".vscode-shared"
 
         # Selective Cache
         ".cache/mesa_shader_cache"
@@ -83,6 +83,7 @@
         ".local/share/jupyter"
         ".local/share/keyrings"
         ".local/share/nvim"
+        ".local/state/quickshell"
         ".local/share/umu"
         ".local/share/uv"
         ".local/share/zed"

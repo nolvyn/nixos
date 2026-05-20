@@ -1,5 +1,5 @@
 # theme.nix
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   # Most matugen templates are stolen from https://github.com/InioX/matugen-themes

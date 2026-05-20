@@ -6,7 +6,7 @@
     createDirectories = false;
     setSessionVariables = true;
     desktop = "${config.home.homeDirectory}/Downloads";
-    documents = "${config.home.homeDirectory}/Documents";
+    documents = "${config.home.homeDirectory}/Downloads";
     download = "${config.home.homeDirectory}/Downloads";
     music = "${config.home.homeDirectory}/Downloads";
     pictures = "${config.home.homeDirectory}/Downloads";

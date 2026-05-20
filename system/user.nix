@@ -1,7 +1,6 @@
 # user.nix
 {
   config,
-  lib,
   ...
 }:
 

@@ -41,6 +41,17 @@ in
       };
 
       folders = {
+        "Downloads" = {
+          path = "/home/${config.user.name}/Downloads";
+          devices = [
+            "WeebMachine"
+            "MoeNote"
+          ];
+          versioning = {
+            type = "trashcan";
+            params.cleanoutDays = "30";
+          };
+        };
         "host-keys" = {
           path = "/home/${config.user.name}/nixos/secrets/host-keys";
           devices = [
@@ -52,8 +63,8 @@ in
             params.cleanoutDays = "30";
           };
         };
-        "Documents" = {
-          path = "/home/${config.user.name}/Documents";
+        "other" = {
+          path = "/home/${config.user.name}/other";
           devices = [
             "WeebMachine"
             "MoeNote"
