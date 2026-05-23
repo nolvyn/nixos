@@ -1,0 +1,2033 @@
+=== /home/weeb/den-source/modules/aspects/batteries/define-user.nix ===
+{ lib, ... }:
+let
+  description = ''
+    Defines a user at OS and Home levels.
+
+    Works in NixOS/Darwin and standalone Home-Manager
+
+    ## Usage
+
+       # for NixOS/Darwin
+       den.aspects.my-user.includes = [ den.batteries.define-user ]
+
+       # for standalone home-manager
+       den.aspects.my-home.includes = [ den.batteries.define-user ]
+
+    or globally (automatically applied depending on context):
+
+       den.default.includes = [ den.batteries.define-user ]
+  '';
+
+  homeDir =
+    host: user:
+    if lib.hasSuffix "darwin" host.system then "/Users/${user.userName}" else "/home/${user.userName}";
+
+  userContext =
+    { host, user }:
+    {
+      name = "define-user/${user.userName}@${host.name}";
+      nixos.users.users.${user.userName} = {
+        name = user.userName;
+        home = homeDir host user;
+        isNormalUser = true;
+      };
+      darwin.users.users.${user.userName} = {
+        name = user.userName;
+        home = homeDir host user;
+      };
+      homeManager = {
+        home.username = user.userName;
+        home.homeDirectory = homeDir host user;
+      };
+    };
+
+  hmContext =
+    { home }:
+    userContext {
+      host.system = home.system;
+      user.userName = home.userName;
+    }
+    // {
+      name = "define-user/home";
+    };
+in
+{
+  den.batteries.define-user = {
+    name = "define-user";
+    inherit description;
+    includes = [
+      userContext
+      hmContext
+    ];
+  };
+}
+=== /home/weeb/den-source/modules/aspects/batteries/flake-parts/inputs.nix ===
+{ lib, withSystem, ... }:
+let
+  description = ''
+    Provides the `flake-parts` `inputs'` (the flake's `inputs` with system pre-selected)
+    as a top-level module argument.
+
+    This allows modules to access per-system flake outputs without needing
+    `pkgs.stdenv.hostPlatform.system`.
+
+    ## Usage
+
+    **Global (Recommended):**
+    Apply to all hosts, users, and homes.
+
+        den.default.includes = [ den.batteries.inputs' ];
+
+    **Specific:**
+    Apply only to a specific host, user, or home aspect.
+
+        den.aspects.my-laptop.includes = [ den.batteries.inputs' ];
+        den.aspects.alice.includes = [ den.batteries.inputs' ];
+
+    **Note:** This aspect is contextual. When included in a `host` aspect, it
+    configures `inputs'` for the host's OS. When included in a `user` or `home`
+    aspect, it configures `inputs'` for the corresponding Home Manager configuration.
+  '';
+
+  mkAspect =
+    class: system:
+    withSystem system (
+      { inputs', ... }:
+      {
+        ${class}._module.args.inputs' = inputs';
+      }
+    );
+
+  osAspect =
+    { host }:
+    {
+      name = "inputs'/os";
+    }
+    // mkAspect host.class host.system;
+
+  userAspect =
+    {
+      user,
+      host,
+    }:
+    {
+      name = "inputs'/user";
+      includes = map (c: mkAspect c host.system) user.classes;
+    };
+
+  hmAspect =
+    { home }:
+    {
+      name = "inputs'/home";
+    }
+    // lib.optionalAttrs (home ? class) (mkAspect home.class home.system);
+
+in
+{
+  den.batteries.inputs' = {
+    name = "inputs'";
+    inherit description;
+    includes = [
+      osAspect
+      userAspect
+      hmAspect
+    ];
+  };
+}
+=== /home/weeb/den-source/modules/aspects/batteries/flake-parts/self.nix ===
+{ lib, withSystem, ... }:
+let
+  description = ''
+    Provides the `flake-parts` `self'` (the flake's `self` with system pre-selected)
+    as a top-level module argument.
+
+    This allows modules to access per-system flake outputs without needing
+    `pkgs.stdenv.hostPlatform.system`.
+
+    ## Usage
+
+    **Global (Recommended):**
+    Apply to all hosts, users, and homes.
+
+        den.default.includes = [ den.batteries.self' ];
+
+    **Specific:**
+    Apply only to a specific host, user, or home aspect.
+
+        den.aspects.my-laptop.includes = [ den.batteries.self' ];
+        den.aspects.alice.includes = [ den.batteries.self' ];
+
+    **Note:** This aspect is contextual. When included in a `host` aspect, it
+    configures `self'` for the host's OS. When included in a `user` or `home`
+    aspect, it configures `self'` for the corresponding Home Manager configuration.
+  '';
+
+  mkAspect =
+    class: system:
+    withSystem system (
+      { self', ... }:
+      {
+        ${class}._module.args.self' = self';
+      }
+    );
+
+  osAspect =
+    { host }:
+    {
+      name = "self'/os";
+    }
+    // mkAspect host.class host.system;
+
+  userAspect =
+    {
+      user,
+      host,
+    }:
+    {
+      name = "self'/user";
+      includes = map (c: mkAspect c host.system) user.classes;
+    };
+
+  homeAspect =
+    { home }:
+    {
+      name = "self'/home";
+    }
+    // lib.optionalAttrs (home ? class) (mkAspect home.class home.system);
+in
+{
+  den.batteries.self' = {
+    name = "self'";
+    inherit description;
+    includes = [
+      osAspect
+      userAspect
+      homeAspect
+    ];
+  };
+}
+=== /home/weeb/den-source/modules/aspects/batteries/flake-scope.nix ===
+# Battery: expose lib, inputs, and den to aspect pipeline functions.
+# Users opt in via: den.default.includes = [ den.batteries.flake-scope ];
+#
+# Values use pipelineOnly (collisionPolicy = "class-wins") so that
+# class-module-native values (e.g., NixOS _module.args.lib) win silently.
+{
+  den,
+  lib,
+  inputs,
+  ...
+}:
+let
+  inherit (den.lib.policy) resolve pipelineOnly;
+in
+{
+  den.batteries.flake-scope = {
+    name = "flake-scope";
+    description = "Expose lib, inputs, and den to aspect pipeline functions.";
+    policies.den-flake-scope = _: [
+      (resolve {
+        lib = pipelineOnly lib;
+        inputs = pipelineOnly inputs;
+        den = pipelineOnly den;
+      })
+    ];
+    includes = [
+      den.batteries.flake-scope.policies.den-flake-scope
+    ];
+  };
+}
+=== /home/weeb/den-source/modules/aspects/batteries/forward.nix ===
+{ den, ... }:
+let
+  description = ''
+    An aspect that imports all modules defined for `from` class
+    into a target `into` submodule.
+
+    This can be used to create custom Nix classes that help
+    people separating concerns on huge module hierarchies.
+
+    For example, using a new `user` class that forwards all its
+    settings into `users.users.<userName>` allows:
+
+      den.aspects.alice.nixos.users.users.alice.isNormalUser = true;
+
+    to become:
+
+      den.aspects.alice.user.isNormalUser = true;
+
+
+    This is exactly how `homeManager` class support is implemented in Den.
+    See home-manager/hm-integration.nix.
+
+    Den also provides the mentioned `user` class (`den.batteries.os-user`) for setting 
+    NixOS/Darwin options under `users.users.<userName>` at os-level.
+
+    Any other user-environments like `nix-maid` or `hjem` or user-custom classes
+    are easily implemented using `den.batteries.forward`.
+
+    Note: `den.batteries.forward` returns an aspect that needs to be included for
+    the new class to exist.
+
+    See templates/ci/modules/guarded-forward.nix, templates/ci/modules/forward-from-custom-class.nix
+    See also: https://github.com/denful/den/issues/160
+  '';
+
+in
+{
+  den.batteries.forward = {
+    inherit description;
+    __functor = _self: den.lib.forward.forwardEach;
+  };
+}
+=== /home/weeb/den-source/modules/aspects/batteries/hjem.nix ===
+{
+  den,
+  inputs,
+  ...
+}:
+let
+  inherit (den.lib.home-env) makeHomeEnv;
+
+  result = makeHomeEnv {
+    className = "hjem";
+    optionPath = "hjem";
+    getModule =
+      { host, ... }:
+      if inputs ? hjem then
+        inputs.hjem."${host.class}Modules".default
+      else
+        throw "den: hjem battery requires inputs.hjem — add hjem to your flake inputs or set den.hosts.<system>.<name>.hjem.module explicitly";
+    forwardPathFn =
+      { user, ... }:
+      [
+        "hjem"
+        "users"
+        user.userName
+      ];
+  };
+
+in
+{
+  den.schema.host.imports = [ result.hostConf ];
+  den.schema.host.includes = [ result.battery ];
+
+  den.schema.user.includes = [ result.userDetect ];
+
+  den.classes.hjem.description = "Hjem user environment";
+}
+=== /home/weeb/den-source/modules/aspects/batteries/home-manager.nix ===
+{
+  den,
+  config,
+  lib,
+  inputs,
+  ...
+}:
+let
+  result = den.lib.home-env.makeHomeEnv {
+    className = "homeManager";
+    ctxName = "hm";
+    optionPath = "home-manager";
+    getModule = { host, ... }: inputs.home-manager."${host.class}Modules".home-manager;
+    forwardPathFn =
+      { user, ... }:
+      [
+        "home-manager"
+        "users"
+        user.userName
+      ];
+    schemaIncludes = config.den.schema.hm-host.includes or [ ];
+  };
+
+in
+{
+  den.schema.host.imports = [ result.hostConf ];
+  den.schema.host.includes = [ result.battery ];
+
+  den.schema.user.includes = [ result.userDetect ];
+
+  den.classes.homeManager.description = "Home Manager user environment";
+}
+=== /home/weeb/den-source/modules/aspects/batteries/host-aspects.nix ===
+{ den, lib, ... }:
+let
+  description = ''
+    Projects all `user.classes` like `homeManager` from the host's aspect tree
+    onto users who opt in. Requires the fx pipeline.
+
+    ## Usage
+
+      den.aspects.tux.includes = [ den.batteries.host-aspects ];
+
+    Any host aspect that defines a `homeManager` key will have that
+    config forwarded to the user's homeManager evaluation. Other host-class
+    keys (nixos, darwin) are ignored — host.aspect is resolved
+    specifically for `user.classes`.
+  '';
+
+  from-host =
+    { host, user }:
+    let
+      # Tag host.aspect with user context so parametric includes like
+      # { user }: ... can resolve during host-aspects re-resolution.
+      ctx = { inherit host user; };
+      scopeHandlers = den.lib.aspects.fx.handlers.constantHandler ctx;
+      aspectWithCtx = host.aspect // {
+        __scopeHandlers = scopeHandlers;
+      };
+    in
+    {
+      name = "host-aspects/${user.userName}@${host.name}";
+    }
+    // lib.genAttrs (user.classes or [ "homeManager" ]) (
+      class: den.lib.aspects.resolveImports class aspectWithCtx
+    );
+in
+{
+  den.batteries.host-aspects = {
+    name = "host-aspects";
+    inherit description;
+    includes = [ from-host ];
+  };
+}
+=== /home/weeb/den-source/modules/aspects/batteries/hostname.nix ===
+{ ... }:
+let
+  description = ''
+    Sets the system hostname as defined in `den.hosts.<name>.hostName`:
+
+    Works on NixOS/Darwin/WSL.
+
+    ## Usage
+
+       den.defaults.includes = [ den.batteries.hostname ];
+  '';
+
+  setHostname =
+    { host, ... }:
+    {
+      name = "hostname/os";
+      ${host.class}.networking.hostName = host.hostName;
+    };
+in
+{
+  den.batteries.hostname = {
+    name = "hostname";
+    inherit description;
+    includes = [ setHostname ];
+  };
+}
+=== /home/weeb/den-source/modules/aspects/batteries/import-tree.nix ===
+{
+  inputs,
+  lib,
+  den,
+  ...
+}:
+{
+  den.batteries.import-tree.description = ''
+    Recursively imports non-dendritic .nix files depending on their Nix configuration `class`.
+
+    This can be used to help migrating from huge existing setups.
+
+
+    ```
+      # this is at <repo>/modules/non-dendritic.nix
+      den.aspects.my-laptop.includes = [
+        (den.batteries.import-tree.provides.host ../non-dendritic)
+      ]
+    ```
+
+    With following structure, it will automatically load modules depending on their class.
+
+    ```
+       <repo>/
+         modules/
+           non-dendritic.nix # configures this aspect
+         non-dendritic/ # name is just an example here
+           hosts/
+             my-laptop/
+               _nixos/          # a directory for `nixos` class
+                 auto-generated-hardware.nix # any nixos module
+               _darwin/ 
+                 foo.nix
+               _homeManager/
+                 me.nix
+    ```
+
+    ## Requirements
+
+      - inputs.import-tree
+
+    ## Usage
+
+      this aspect can be included explicitly on any aspect:
+
+          # example: will import ./disko/_nixos files automatically.
+          den.aspects.my-disko.includes = [ (den.batteries.import-tree ./disko/) ];
+
+      or it can be default imported per host/user/home:
+
+          # load from ./hosts/<host>/_nixos
+          den.schema.host.includes = [ (den.batteries.import-tree.provides.host ./hosts) ];
+
+          # load from ./users/<user>/{_homeManager, _nixos}
+          den.schema.user.includes = [ (den.batteries.import-tree.provides.user ./users) ];
+
+          # load from ./homes/<home>/_homeManager
+          den.schema.home.includes = [ (den.batteries.import-tree.provides.home ./homes) ];
+
+      you are also free to create your own auto-imports layout following the implementation of these.
+  '';
+
+  den.batteries.import-tree.__functor =
+    _: root:
+    let
+      # Scan for _<class> directories under root and emit per-class imports.
+      # This avoids depending on the scope's `class` argument, which the
+      # fx-pipeline only provides once per scope (not once per class).
+      rootStr = toString root;
+      entries = lib.optionalAttrs (builtins.pathExists rootStr) (builtins.readDir rootStr);
+      classEntries = lib.filterAttrs (name: type: type == "directory" && lib.hasPrefix "_" name) entries;
+      aspect = lib.mapAttrs' (dirName: _: {
+        name = lib.removePrefix "_" dirName;
+        value.imports = [ (inputs.import-tree "${rootStr}/${dirName}") ];
+      }) classEntries;
+    in
+    {
+      name = "import-tree(${baseNameOf rootStr})";
+      meta.provider = [
+        "den"
+        "batteries"
+      ];
+    }
+    // aspect;
+
+  den.batteries.import-tree.provides = {
+    host = root: { host, ... }: den.batteries.import-tree "${toString root}/${host.name}";
+    home = root: { home, ... }: den.batteries.import-tree "${toString root}/${home.name}";
+    user = root: { user, ... }: den.batteries.import-tree "${toString root}/${user.name}";
+  };
+}
+=== /home/weeb/den-source/modules/aspects/batteries/insecure/insecure.nix ===
+{ lib, ... }:
+let
+  description = ''
+    A class generic aspect that enables insecure packages by name and version.
+
+    Works for any class (nixos/darwin/homeManager,etc) on any host/user/home context.
+
+    ## Usage
+
+      den.aspects.my-laptop.includes = [ (den.batteries.insecure [ "example-insecure-package-1.0.0" ]) ];
+
+    It will dynamically provide a module for each class when accessed.
+  '';
+
+  __functor = _self: allowed-names: {
+    name = "insecure(${builtins.concatStringsSep "," allowed-names})";
+    meta.provider = [
+      "den"
+      "provides"
+    ];
+    __fn =
+      {
+        class,
+        host ? null,
+        ...
+      }:
+      let
+        validClasses = [
+          "nixos"
+          "darwin"
+          "homeManager"
+        ];
+        classModule = lib.optionalAttrs (builtins.elem class validClasses) {
+          ${class}.permittedInsecurePackages.packages = allowed-names;
+        };
+        # When resolving for homeManager or a non-module-system class (e.g.
+        # "user"), also emit to the host's OS class so
+        # nixpkgs.config.permittedInsecurePackages covers these packages.
+        hostModule = lib.optionalAttrs (
+          (class == "homeManager" || !builtins.elem class validClasses)
+          && host != null
+          && builtins.elem host.class validClasses
+        ) { ${host.class}.permittedInsecurePackages.packages = allowed-names; };
+      in
+      classModule // hostModule;
+    __args = {
+      class = true;
+      host = true;
+    };
+  };
+in
+{
+  den.batteries.insecure = {
+    inherit description __functor;
+  };
+}
+=== /home/weeb/den-source/modules/aspects/batteries/insecure/insecure-predicate-builder.nix ===
+{ lib, ... }:
+let
+  description = ''
+    This is a private aspect always included in den.default.
+
+    It adds a module option that gathers all packages defined
+    in den.batteries.insecure usages and declares a
+    nixpkgs.config.permittedInsecurePackages for each class.
+
+  '';
+
+  insecureModule =
+    { config, ... }@args:
+    let
+      globalPkgs = args.osConfig.home-manager.useGlobalPkgs or false;
+      hasInsecure = config.permittedInsecurePackages.packages != [ ];
+    in
+    {
+      key = "den/insecure-predicate";
+      options.permittedInsecurePackages.packages = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        defaultText = lib.literalExpression "[ ]";
+        default = [ ];
+      };
+      config.nixpkgs = lib.mkIf (hasInsecure && !globalPkgs) {
+        config.permittedInsecurePackages = config.permittedInsecurePackages.packages;
+      };
+    };
+
+  osAspect =
+    { host }:
+    {
+      name = "insecure-predicate/os";
+      ${host.class}.imports = [ insecureModule ];
+    };
+
+  userAspect =
+    { host, user }:
+    {
+      name = "insecure-predicate/user";
+    }
+    // lib.optionalAttrs (lib.elem "homeManager" user.classes) {
+      homeManager.imports = [ insecureModule ];
+    };
+
+  homeAspect =
+    { home }:
+    {
+      name = "insecure-predicate/home";
+    }
+    // lib.optionalAttrs (home ? class) {
+      ${home.class}.imports = [ insecureModule ];
+    };
+
+  aspect = {
+    name = "insecure-predicate";
+    inherit description;
+    includes = [
+      osAspect
+      userAspect
+      homeAspect
+    ];
+  };
+in
+{
+  den.default.includes = [ aspect ];
+}
+=== /home/weeb/den-source/modules/aspects/batteries/maid.nix ===
+{
+  den,
+  inputs,
+  ...
+}:
+let
+  inherit (den.lib.home-env) makeHomeEnv;
+
+  result = makeHomeEnv {
+    className = "maid";
+    supportedOses = [ "nixos" ];
+    optionPath = "nix-maid";
+    getModule =
+      { host, ... }:
+      if inputs ? nix-maid then
+        inputs.nix-maid."${host.class}Modules".default
+      else
+        throw "den: maid battery requires inputs.nix-maid — add nix-maid to your flake inputs or set den.hosts.<system>.<name>.nix-maid.module explicitly";
+    forwardPathFn =
+      { user, ... }:
+      [
+        "users"
+        "users"
+        user.userName
+        "maid"
+      ];
+  };
+
+in
+{
+  den.schema.host.imports = [ result.hostConf ];
+  den.schema.host.includes = [ result.battery ];
+
+  den.schema.user.includes = [ result.userDetect ];
+
+  den.classes.maid.description = "nix-maid user environment";
+}
+=== /home/weeb/den-source/modules/aspects/batteries.nix ===
+{ lib, config, ... }:
+{
+  options.den = lib.mkOption {
+    type = lib.types.submodule {
+      imports = [
+        (lib.mkAliasOptionModule [ "provides" ] [ "batteries" ])
+        (lib.mkAliasOptionModule [ "_" ] [ "batteries" ])
+      ];
+      options.batteries = lib.mkOption {
+        defaultText = lib.literalExpression "{ }";
+        default = { };
+        description = "Batteries Included - re-usable high-level aspects";
+        type = lib.types.submodule {
+          freeformType = lib.types.attrsOf (
+            (config.den.lib.aspects.mkAspectsType {
+              providerPrefix = [
+                "den"
+                "batteries"
+              ];
+            }).providerType
+          );
+        };
+      };
+    };
+  };
+}
+=== /home/weeb/den-source/modules/aspects/batteries/os-class.nix ===
+{ den, lib, ... }:
+let
+  description = ''
+    The `os` class is a convenience for settings that should be forwarded
+    into both `nixos` and `darwin` classes.
+
+    This class is enabled by default.
+
+    # Usage
+
+      den.aspects.my-host = {
+        os.networking.hostName = "foo";
+      };
+
+  '';
+in
+{
+  den.classes.os.description = "Convenience class forwarding to both nixos and darwin";
+
+  # Built-in policy: route os class content to the host's class.
+  # Replaces os-host-fwd and os-user-fwd forward aspects.
+  # Fires in every scope where host is bound (including user scopes),
+  # routing per-scope os content to the host's target class.
+  den.default.includes = [ den.policies.os-to-host ];
+
+  den.policies.os-to-host =
+    { host, ... }:
+    lib.optional
+      (builtins.elem host.class [
+        "nixos"
+        "darwin"
+      ])
+      (
+        den.lib.policy.route {
+          fromClass = "os";
+          intoClass = host.class;
+          path = [ ];
+        }
+      );
+}
+=== /home/weeb/den-source/modules/aspects/batteries/os-user.nix ===
+{ den, ... }:
+let
+
+  description = ''
+    The `user` class is a lightweight user environment
+    like `homeManager` without extra dependencies beyond nixpkgs.
+
+    Provides a new `user` class that can be used for setting OS-level
+    `users.users.<username>` on NixOS and nix-Darwin hosts.
+
+    For example, the NixOS alice configuration:
+
+      den.aspects.alice.nixos = { pkgs, ... }: {
+        users.users.alice = {
+          packages = [ pkgs.hello ];
+        };
+      };
+
+    Becomes, with the `user` class:
+
+      den.aspects.alice.user = { pkgs, ... }: {
+         packages = [ pkgs.hello ];
+         extraGroups = [ "wheel" ];
+      };
+
+    And Den will automatically forward all `user`-class
+    definitions to the corresponding OS `users.users.<userName>`
+    option level.
+
+  '';
+
+in
+{
+  den.classes.user.description = "Lightweight user environment forwarding to OS users.users";
+
+  # Built-in policy: route user class content to the host's OS at
+  # users.users.<userName>. Injects osConfig so user-class modules
+  # can reference the parent NixOS/Darwin config.
+  # The route's ensureEntry mechanism creates users.users.<name> even
+  # when no user-class content exists (home-manager references the entry).
+  den.default.includes = [ den.policies.user-to-host ];
+
+  den.policies.user-to-host =
+    { user, host, ... }:
+    [
+      (den.lib.policy.route {
+        fromClass = "user";
+        intoClass = host.class;
+        path = [
+          "users"
+          "users"
+          user.userName
+        ];
+        adaptArgs = args: args // { osConfig = args.config; };
+      })
+    ];
+}
+=== /home/weeb/den-source/modules/aspects/batteries/primary-user.nix ===
+{ ... }:
+let
+  description = ''
+    Sets user as *primary*.
+
+    On NixOS adds wheel and networkmanager groups.
+    On Darwin sets user as system.primaryUser
+    On WSL sets defaultUser if host has `wsl` support.
+
+    ## Usage
+
+       den.aspects.my-user.includes = [ den.batteries.primary-user ];
+
+  '';
+
+  userToHostContext =
+    { user, host, ... }:
+    {
+      name = "primary-user(${user.userName}@${host.name})";
+      inherit description;
+      darwin.system.primaryUser = user.userName;
+      wsl.defaultUser = user.userName;
+      nixos.users.users.${user.userName} = {
+        isNormalUser = true;
+        extraGroups = [
+          "wheel"
+          "networkmanager"
+        ];
+      };
+    };
+
+in
+{
+  den.batteries.primary-user = userToHostContext;
+}
+=== /home/weeb/den-source/modules/aspects/batteries/tty-autologin.nix ===
+let
+  description = ''
+    Enables automatic tty login given a username.
+
+    This battery must be included in a Host aspect.
+
+       den.aspects.my-laptop.includes = [ (den.batteries.tty-autologin "root") ];
+  '';
+
+  # From https://discourse.nixos.org/t/autologin-for-single-tty/49427/2
+  tty-autologin-module =
+    username:
+    { pkgs, config, ... }:
+    {
+      systemd.services."getty@tty1" = {
+        overrideStrategy = "asDropin";
+        serviceConfig.ExecStart = [
+          ""
+          "@${pkgs.util-linux}/sbin/agetty agetty --login-program ${config.services.getty.loginProgram} --autologin ${username} --noclear --keep-baud %I 115200,38400,9600 $TERM"
+        ];
+      };
+    };
+
+  __functor = _self: username: {
+    name = "tty-autologin(${username})";
+    meta.provider = [
+      "den"
+      "provides"
+    ];
+    nixos = tty-autologin-module username;
+  };
+in
+{
+  den.batteries.tty-autologin = {
+    inherit description __functor;
+  };
+}
+=== /home/weeb/den-source/modules/aspects/batteries/unfree/unfree.nix ===
+{ lib, ... }:
+let
+  description = ''
+    A class generic aspect that enables unfree packages by name.
+
+    Works for any class (nixos/darwin/homeManager,etc) on any host/user/home context.
+
+    ## Usage
+
+      den.aspects.my-laptop.includes = [ (den.batteries.unfree [ "example-unfree-package" ]) ];
+
+    It will dynamically provide a module for each class when accessed.
+  '';
+
+  __functor = _self: allowed-names: {
+    name = "unfree(${builtins.concatStringsSep "," allowed-names})";
+    meta.provider = [
+      "den"
+      "provides"
+    ];
+    __fn =
+      {
+        class,
+        host ? null,
+        ...
+      }:
+      let
+        validClasses = [
+          "nixos"
+          "darwin"
+          "homeManager"
+        ];
+        classModule = lib.optionalAttrs (builtins.elem class validClasses) {
+          ${class}.unfree.packages = allowed-names;
+        };
+        # When resolving for homeManager or a non-module-system class (e.g.
+        # "user"), also emit to the host's OS class.  This ensures
+        # nixpkgs.config.allowUnfreePredicate covers these packages:
+        #   - homeManager + useGlobalPkgs = true → OS-level predicate needed
+        #   - "user" class (no HM) → only the host's OS config exists
+        hostModule = lib.optionalAttrs (
+          (class == "homeManager" || !builtins.elem class validClasses)
+          && host != null
+          && builtins.elem host.class validClasses
+        ) { ${host.class}.unfree.packages = allowed-names; };
+      in
+      classModule // hostModule;
+    __args = {
+      class = true;
+      host = true;
+    };
+  };
+in
+{
+  den.batteries.unfree = {
+    inherit description __functor;
+  };
+}
+=== /home/weeb/den-source/modules/aspects/batteries/unfree/unfree-predicate-builder.nix ===
+{ lib, ... }:
+let
+  description = ''
+    This is a private aspect always included in den.default.
+
+    It adds a module option that gathers all packages defined
+    in den.batteries.unfree usages and declares a
+    nixpkgs.config.allowUnfreePredicate for each class.
+
+  '';
+
+  unfreeModule =
+    { config, ... }@args:
+    let
+      globalPkgs = args.osConfig.home-manager.useGlobalPkgs or false;
+      hasUnfree = config.unfree.packages != [ ];
+    in
+    {
+      key = "den/unfree-predicate";
+      options.unfree.packages = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        defaultText = lib.literalExpression "[ ]";
+        default = [ ];
+      };
+      config.nixpkgs = lib.mkIf (hasUnfree && !globalPkgs) {
+        config.allowUnfreePredicate = (pkg: builtins.elem (lib.getName pkg) config.unfree.packages);
+      };
+    };
+
+  osAspect =
+    { host }:
+    {
+      name = "unfree-predicate/os";
+      ${host.class}.imports = [ unfreeModule ];
+    };
+
+  userAspect =
+    { host, user }:
+    {
+      name = "unfree-predicate/user";
+    }
+    // lib.optionalAttrs (lib.elem "homeManager" user.classes) {
+      homeManager.imports = [ unfreeModule ];
+    };
+
+  homeAspect =
+    { home }:
+    {
+      name = "unfree-predicate/home";
+    }
+    // lib.optionalAttrs (home ? class) {
+      ${home.class}.imports = [ unfreeModule ];
+    };
+
+  aspect = {
+    name = "unfree-predicate";
+    inherit description;
+    includes = [
+      osAspect
+      userAspect
+      homeAspect
+    ];
+  };
+in
+{
+  den.default.includes = [ aspect ];
+}
+=== /home/weeb/den-source/modules/aspects/batteries/user-shell.nix ===
+{ ... }:
+let
+
+  description = ''
+    Sets a user default shell, enables the shell at OS and Home level.
+
+    Usage:
+
+      den.aspects.vic.includes = [
+        # will always love red snappers.
+        (den.batteries.user-shell "fish")
+      ];
+  '';
+
+  userShell =
+    shell: user:
+    let
+      nixos =
+        { pkgs, ... }:
+        {
+          programs.${shell}.enable = true;
+          users.users.${user.userName}.shell = pkgs.${shell};
+        };
+      darwin = nixos;
+      homeManager.programs.${shell}.enable = true;
+    in
+    {
+      inherit nixos darwin homeManager;
+    };
+
+in
+{
+  den.batteries.user-shell = shell: {
+    inherit description;
+    includes = [
+      ({ host, user }: { name = "user-shell/${user.userName}@${host.name}"; } // userShell shell user)
+      ({ home }: { name = "user-shell/${home.name}"; } // userShell shell home)
+    ];
+  };
+}
+=== /home/weeb/den-source/modules/aspects/batteries/vm-autologin.nix ===
+let
+  description = ''
+    Enables automatic tty login given a username when running `nixos-rebuild build-vm`.
+
+    This battery must be included in a Host aspect.
+
+       den.aspects.my-laptop.includes = [ (den.batteries.vm-autologin "root") ];
+  '';
+
+  # From https://discourse.nixos.org/t/autologin-for-single-tty/49427/2
+  vm-autologin-module =
+    username:
+    { pkgs, config, ... }:
+    {
+      systemd.services."getty@tty1" = {
+        overrideStrategy = "asDropin";
+        serviceConfig.ExecStart = [
+          ""
+          "@${pkgs.util-linux}/sbin/agetty agetty --login-program ${config.services.getty.loginProgram} --autologin ${username} --noclear --keep-baud %I 115200,38400,9600 $TERM"
+        ];
+      };
+    };
+
+  __functor = _self: username: {
+    name = "vm-autologin(${username})";
+    meta.provider = [
+      "den"
+      "provides"
+    ];
+    nixos.virtualisation.vmVariant = vm-autologin-module username;
+  };
+in
+{
+  den.batteries.vm-autologin = {
+    inherit description __functor;
+  };
+}
+=== /home/weeb/den-source/modules/aspects/batteries/wsl.nix ===
+{
+  den,
+  lib,
+  inputs,
+  ...
+}:
+let
+  description = ''
+    Enables WSL support on NixOS. Using NixOS-WSL project.
+
+    # Requirements
+
+    - have an inputs.nixos-wsl input or specify host.wsl.module.
+    - host.class is "nixos"
+
+    # Usage
+
+    On a single host:
+
+       den.hosts.x86_64-linux.igloo.wsl.enable = true;
+
+    On ALL hosts (works only on nixos class hosts):
+
+       den.schema.host.wsl.enable = true;
+  '';
+
+  hostConf.options.wsl = {
+    enable = lib.mkEnableOption "Enable WSL on this host";
+    module = lib.mkOption {
+      description = "The NixOS-WSL module";
+      type = lib.types.deferredModule;
+      defaultText = lib.literalExpression "inputs.nixos-wsl.nixosModules.default";
+      default = inputs.nixos-wsl.nixosModules.default;
+    };
+  };
+
+  wsl-host-aspect =
+    { host }:
+    {
+      name = "wsl/${host.name}";
+      inherit description;
+      ${host.class} = {
+        imports = [ host.wsl.module ];
+        wsl.enable = true;
+      };
+    };
+
+in
+{
+  den.classes.wsl.description = "WSL support class forwarding to host OS";
+
+  den.aspects.wsl-host-aspect = wsl-host-aspect;
+
+  den.schema.host.imports = [ hostConf ];
+
+  den.policies.host-to-wsl-host =
+    {
+      host,
+      ...
+    }:
+    lib.optionals (host.class == "nixos" && (host.wsl or { }).enable or false) [
+      (den.lib.policy.resolve.to "wsl-host" { inherit host; })
+      (den.lib.policy.include wsl-host-aspect)
+    ];
+
+  den.schema.host.includes = [ den.policies.host-to-wsl-host ];
+
+  den.default.includes = [ den.policies.wsl-to-host ];
+
+  # Route wsl class content to host class at ["wsl"]. Fires in ALL scopes
+  # (host + user) so user-scope wsl content (e.g., from primary-user) is
+  # captured. Guard ensures injection only when wsl module is loaded.
+  den.policies.wsl-to-host =
+    { host, ... }:
+    lib.optional ((host.wsl or { }).enable or false) (
+      den.lib.policy.route {
+        fromClass = "wsl";
+        intoClass = host.class;
+        path = [ "wsl" ];
+        guard = { options, ... }: options ? wsl;
+      }
+    );
+}
+=== /home/weeb/den-source/modules/aspect-schema.nix ===
+# Collect class declarations from aspects and merge into den.classes.
+#
+# Aspects can declare:
+#   den.aspects.foo.classes.hjem = { description = "..."; };
+#
+# These are folded into den.classes so the
+# schema registry sees them alongside manual declarations.
+{
+  lib,
+  config,
+  ...
+}:
+let
+  # Collect classes from an aspects attrset (freeform aspect submodules).
+  collectFromAspects =
+    aspects:
+    let
+      aspectNames = builtins.attrNames aspects;
+      # Only access classes if the aspect defines them — avoid forcing
+      # freeform keys that might be class modules.
+      perAspect = map (
+        aName:
+        let
+          a = aspects.${aName};
+        in
+        {
+          classes = a.classes or { };
+        }
+      ) aspectNames;
+    in
+    {
+      classes = lib.foldl' (acc: x: acc // x.classes) { } perAspect;
+    };
+
+  # Collect from top-level den.aspects
+  topLevel = collectFromAspects (config.den.aspects or { });
+
+  # Collect from all den.ful namespaces
+  structuralKeys = [
+    "stages"
+    "schema"
+    "classes"
+    "_module"
+  ];
+  nsNames = builtins.attrNames (config.den.ful or { });
+  nsCollected = map (
+    nsName:
+    let
+      ns = config.den.ful.${nsName};
+      # Namespace freeform keys are aspects; filter out structural keys.
+      aspectNames = builtins.filter (k: !builtins.elem k structuralKeys) (builtins.attrNames ns);
+      aspects = lib.genAttrs aspectNames (k: ns.${k});
+    in
+    collectFromAspects aspects
+  ) nsNames;
+
+  # Namespace-level class declarations (den.ful.<ns>.classes)
+  nsLevelClasses = lib.foldl' (
+    acc: nsName: acc // (config.den.ful.${nsName}.classes or { })
+  ) { } nsNames;
+
+  allClasses = lib.foldl' (acc: x: acc // x.classes) (topLevel.classes // nsLevelClasses) nsCollected;
+in
+{
+  config.den = {
+    classes = allClasses;
+  };
+}
+=== /home/weeb/den-source/modules/aspects/defaults.nix ===
+{ den, lib, ... }:
+{
+  options.den.default = lib.mkOption {
+    description = "Default aspect";
+    type = den.lib.aspects.types.aspectType;
+  };
+
+  # Inject den.default as a schema include for all entity kinds so
+  # default aspects are resolved automatically. This replaces the old
+  # *-to-default policies (host-to-default, user-to-default, home-to-default)
+  # which created transitions to the "default" entity kind. Schema
+  # includes are picked up by resolveEntity. Deduplication of
+  # den.default modules across entity scopes is handled by key-based
+  # dedup in wrapPerScope and extractSubtreeModules.
+  config.den.schema = lib.mkIf (den ? default) (
+    lib.genAttrs [ "host" "user" "home" ] (_: {
+      includes = [ den.default ];
+    })
+  );
+}
+=== /home/weeb/den-source/modules/aspects/definition.nix ===
+{
+  lib,
+  den,
+  ...
+}:
+let
+
+  allHosts = lib.concatMap builtins.attrValues (builtins.attrValues den.hosts);
+  allHomes = lib.concatMap builtins.attrValues (builtins.attrValues den.homes);
+  allUsers = lib.concatMap (h: builtins.attrValues h.users) allHosts;
+
+  deps = map (from: {
+    ${from.name} = lib.genAttrs (from.classes or [ from.class ]) (_: { });
+  }) (allHosts ++ allHomes ++ allUsers);
+in
+{
+  den.aspects = lib.mkMerge deps;
+}
+=== /home/weeb/den-source/modules/aspects.nix ===
+{ den, lib, ... }:
+{
+  options.den.ful = lib.mkOption {
+    defaultText = lib.literalExpression "{ }";
+    default = { };
+    description = "Den namespaces. Internal aspect trees.";
+    internal = true;
+    visible = false;
+    type = lib.types.attrsOf den.lib.nsTypes.namespaceType;
+  };
+  options.flake.denful = lib.mkOption {
+    defaultText = lib.literalExpression "{ }";
+    default = { };
+    type = lib.types.attrsOf lib.types.raw;
+    description = "Flake exposed denful namespaces. Import using den.namespace.";
+    internal = true;
+    visible = false;
+  };
+}
+=== /home/weeb/den-source/modules/compat/ctx-shim.nix ===
+# DEPRECATED: scheduled for removal after first stable release post-fx-pipeline merge.
+# Migration: use den.aspects.{name} instead of den.ctx.{name}.
+# Compatibility shim: forwards den.ctx.* to den.aspects
+# with deprecation warnings.
+# den.ctx was always flat (host, user, hm-host — never nested namespaces).
+# Remove after downstream users have migrated.
+{
+  den,
+  lib,
+  config,
+  ...
+}:
+let
+  ctxSubmodule = lib.types.submodule {
+    imports = den.lib.aspects.types.aspectType.getSubModules;
+    options.into = lib.mkOption {
+      description = "DEPRECATED: use den.policies instead.";
+      type = lib.types.nullOr lib.types.raw;
+      default = null;
+    };
+  };
+in
+{
+  options.den.ctx = lib.mkOption {
+    description = "DEPRECATED: use den.aspects instead.";
+    default = { };
+    type = lib.types.lazyAttrsOf ctxSubmodule;
+  };
+
+  # Forward den.ctx entries as schema includes so they participate in entity resolution.
+  config.den.schema = lib.mkMerge (
+    lib.mapAttrsToList (
+      name: value:
+      let
+        stageValue = builtins.removeAttrs value [
+          "into"
+          "_module"
+        ];
+      in
+      {
+        ${name}.includes = [
+          (lib.warn "den.ctx.${name} is deprecated — use den.schema.${name}.includes" stageValue)
+        ];
+      }
+    ) (builtins.removeAttrs config.den.ctx [ "_module" ])
+  );
+}
+=== /home/weeb/den-source/modules/compat/mutual-provider-shim.nix ===
+# Inert compatibility shim. Cross-entity routing (to-users, to-hosts, named
+# targets) is now built into emitAspectPolicies. Users who include
+# den.batteries.mutual-provider in their defaults don't break — this evaluates to an
+# inert aspect that produces no effects.
+{ ... }:
+{
+  den.batteries.mutual-provider = {
+    name = "mutual-provider";
+    description = "Inert compat shim — cross-entity routing is built-in.";
+    __functor = _: _: {
+      name = "mutual-provider";
+      description = "Inert compat shim.";
+    };
+  };
+}
+=== /home/weeb/den-source/modules/config.nix ===
+{ lib, ... }:
+{
+  options.den.config = {
+    classModuleCollisionPolicy = lib.mkOption {
+      description = ''
+        How to handle collisions between den context args and module-system args
+        in flat-form class modules.
+
+        - "error": throw on collision (default)
+        - "class-wins": module-system value wins, den value dropped
+        - "den-wins": den value wins, module-system value shadowed
+      '';
+      type = lib.types.enum [
+        "error"
+        "class-wins"
+        "den-wins"
+      ];
+      default = "error";
+    };
+  };
+}
+=== /home/weeb/den-source/modules/context/flake-schema.nix ===
+# Register flake-level and default routing kinds in den.schema.
+#
+# These are routing kinds — they participate in binding key derivation
+# but don't define entity instances. The empty module body means the
+# schemaEntryType merge sets isEntity = false automatically.
+{ lib, ... }:
+let
+  flakeKinds = [
+    "flake"
+    "flake-system"
+    "flake-parts"
+    "default"
+  ];
+in
+{
+  den.schema = lib.genAttrs flakeKinds (_: { });
+}
+=== /home/weeb/den-source/modules/context/has-aspect.nix ===
+# Defines `hasAspect` on every entity that imports den.schema.conf
+# (host, user, home, and user-defined kinds). Flake-level module:
+# the outer closure captures config.den so the inner entity submodule
+# can reach den.lib.aspects.mkEntityHasAspect at entity-eval time.
+{ lib, config, ... }:
+let
+  inherit (config) den;
+
+  entityModule =
+    { config, ... }:
+    {
+      options.hasAspect = lib.mkOption {
+        description = ''
+          Query whether an aspect is structurally present in this entity's
+          resolved aspect tree.
+
+          Usage:
+            host.hasAspect <facter>                         # primary class
+            host.hasAspect.forClass "nixos" <facter>        # explicit class
+            host.hasAspect.forAnyClass <facter>             # union across classes
+
+          Safe to call from inside class-config module bodies
+          (`nixos = ...`, `homeManager = ...`) and from lazy positions
+          inside aspect functor bodies. NOT safe to use for deciding an
+          aspect's `includes` list — that's cyclic; use meta.adapter +
+          excludeAspect / oneOfAspects for structural decisions instead.
+        '';
+        internal = true;
+        visible = false;
+        readOnly = true;
+        type = lib.types.raw;
+        defaultText = lib.literalMD "Computed from `config.resolved` and the entity's class/classes.";
+        default =
+          let
+            # Prefer `classes` (list), fall back to `[class]`, else error.
+            classes =
+              config.classes or (
+                if config ? class then
+                  [ config.class ]
+                else
+                  throw "den.schema.conf.hasAspect: entity has no `class` or `classes`"
+              );
+            primaryClass =
+              if classes == [ ] then
+                throw "den.schema.conf.hasAspect: entity has empty `classes` list"
+              else
+                lib.head classes;
+            # Lazy thunk throwing at call time (not attribute access), so
+            # entity.hasAspect / .forClass / .forAnyClass can be referenced
+            # safely by tooling and only fire when actually invoked.
+            err = throw (
+              "hasAspect: ${config.name or "<unnamed entity>"} has no config.resolved "
+              + "(no matching den.schema.<kind> defined)."
+            );
+          in
+          if config ? resolved then
+            den.lib.aspects.mkEntityHasAspect {
+              tree = config.resolved;
+              inherit primaryClass classes;
+            }
+          else
+            {
+              __functor = _: _: err;
+              forClass = _: _: err;
+              forAnyClass = _: err;
+            };
+      };
+    };
+in
+{
+  config.den.schema.conf.imports = [ entityModule ];
+}
+=== /home/weeb/den-source/modules/context/perHost-perUser.nix ===
+# DEPRECATED: scheduled for removal after first stable release post-fx-pipeline merge.
+# Migration: use den.schema.host / den.schema.user directly.
+# Deprecated context-level guards.
+# Under handler-based resolution, bind.fn resolves each arg independently.
+# Optional args with no handler are skipped (nix-effects c7931d7), so
+# the function body can detect context level by checking which keys
+# were resolved.
+{ lib, ... }:
+let
+  # Known context keys. Keys not in the required set are declared as
+  # optional — if their handlers exist (deeper level), the function
+  # detects the extras and returns {} (no-op).
+  allContextKeys = [
+    "host"
+    "user"
+    "home"
+  ];
+
+  perCtx =
+    requiredKeys: aspect:
+    let
+      reqKeysSorted = builtins.sort builtins.lessThan requiredKeys;
+      extraKeys = builtins.filter (k: !(builtins.elem k reqKeysSorted)) allContextKeys;
+      # Required keys as required (false), extra keys as optional (true)
+      funcArgs = lib.genAttrs reqKeysSorted (_: false) // lib.genAttrs extraKeys (_: true);
+    in
+    lib.warn
+      "den.lib.perCtx [${lib.concatStringsSep "," reqKeysSorted}] is deprecated — use a plain function ({ ${lib.concatStringsSep ", " reqKeysSorted}, ... }: ...) instead; handler-based resolution resolves context args automatically"
+      {
+        __fn =
+          resolvedArgs:
+          let
+            # If any extra key was resolved (handler exists), we're at a deeper level
+            hasExtras = builtins.any (k: resolvedArgs ? ${k}) extraKeys;
+          in
+          if hasExtras then
+            { }
+          else if lib.isFunction aspect && !builtins.isAttrs aspect then
+            aspect (lib.intersectAttrs (lib.genAttrs reqKeysSorted (_: null)) resolvedArgs)
+          else
+            aspect;
+        __args = funcArgs;
+      };
+
+  perHost = perCtx [ "host" ];
+  perUser = perCtx [
+    "host"
+    "user"
+  ];
+  perHome = perCtx [ "home" ];
+in
+{
+  den.lib = { inherit perHome perUser perHost; };
+}
+=== /home/weeb/den-source/modules/lib.nix ===
+{
+  lib,
+  inputs,
+  config,
+  ...
+}:
+{
+  imports = [ (inputs.den.lib { inherit inputs lib config; }).nixModule ];
+}
+=== /home/weeb/den-source/modules/options.nix ===
+{
+  inputs,
+  lib,
+  config,
+  ...
+}:
+let
+  inherit (config) den;
+  types = import ./../nix/lib/types.nix {
+    inherit
+      inputs
+      lib
+      den
+      config
+      ;
+  };
+
+  # Context args are derived from the entity's _module.args, filtered to
+  # known entity kinds so framework args don't leak through.
+  schemaKinds = builtins.filter (n: n != "conf" && !(lib.hasPrefix "_" n)) (
+    builtins.attrNames (den.schema or { })
+  );
+  knownKinds = schemaKinds;
+
+  # Option type names whose values are safe for identity hashing.
+  primitiveTypeNames = [
+    "str"
+    "int"
+    "bool"
+  ];
+
+  schemaEntryType =
+    let
+      base = lib.types.deferredModule;
+    in
+    base
+    // {
+      merge =
+        loc: defs:
+        let
+          kind = lib.last loc;
+          # Extract includes and excludes from defs, strip before deferred merge
+          allIncludes = lib.concatMap (
+            d:
+            if builtins.isAttrs d.value && d.value ? includes && builtins.isList d.value.includes then
+              d.value.includes
+            else
+              [ ]
+          ) defs;
+          allExcludes = lib.concatMap (
+            d:
+            if builtins.isAttrs d.value && d.value ? excludes && builtins.isList d.value.excludes then
+              d.value.excludes
+            else
+              [ ]
+          ) defs;
+          strippedDefs = map (
+            d:
+            if builtins.isAttrs d.value then
+              d
+              // {
+                value = builtins.removeAttrs d.value [
+                  "includes"
+                  "excludes"
+                ];
+              }
+            else
+              d
+          ) defs;
+          merged = base.merge loc strippedDefs;
+
+          resolvedCtx =
+            { config, options, ... }:
+            {
+              # Stable identity hash for entity comparison.
+              #
+              # Nix's `==` does deep structural comparison which diverges or
+              # infinitely recurses when the same entity is accessed via
+              # different module system thunks. This hash reflects on all
+              # non-internal primitive options (str, int, bool), prefixed by
+              # schema kind, to produce a cheap string identity.
+              #
+              # Automatically includes any primitive option declared on the
+              # entity — custom entity types get this for free.
+              #
+              # Usage: builtins.filter (h: h.id_hash != host.id_hash) allHosts
+              options.id_hash = lib.mkOption {
+                description = ''
+                  Auto-computed identity hash for entity comparison.
+
+                  Derived by reflecting on all non-internal, primitive-typed
+                  options (str, int, bool) declared on this entity. The schema
+                  kind is included to prevent cross-kind collisions.
+
+                  Use `a.id_hash != b.id_hash` instead of `a != b` for entity
+                  comparison — Nix's `==` does deep structural comparison which
+                  is fragile across module system boundaries.
+                '';
+                readOnly = true;
+                internal = true;
+                type = lib.types.str;
+                default =
+                  let
+                    isPrimitive =
+                      name: opt:
+                      !(lib.hasPrefix "_" name)
+                      && (opt ? type)
+                      && builtins.elem (opt.type.name or "") primitiveTypeNames
+                      && !(opt.internal or false);
+                    identityKeys = lib.sort (a: b: a < b) (builtins.attrNames (lib.filterAttrs isPrimitive options));
+                    encode =
+                      k:
+                      let
+                        v = config.${k};
+                      in
+                      "${k}=${toString v}";
+                    fingerprint = "${kind}|${lib.concatMapStringsSep "|" encode identityKeys}";
+                  in
+                  builtins.hashString "sha256" fingerprint;
+              };
+              options.resolved = lib.mkOption {
+                description = "The resolved aspect for this ${kind}.";
+                readOnly = true;
+                type = lib.types.raw;
+                default =
+                  let
+                    # knownKinds already includes schema-derived kinds.
+                    isContextArg = n: builtins.elem n knownKinds;
+                    ctx = lib.filterAttrs (n: v: isContextArg n && v != null) config._module.args // {
+                      ${kind} = config;
+                    };
+                  in
+                  den.lib.resolveEntity kind ctx;
+              };
+              options.collisionPolicy = lib.mkOption {
+                description = "How to handle collisions between den context args and module-system args in flat-form class modules.";
+                type = lib.types.nullOr (
+                  lib.types.enum [
+                    "error"
+                    "class-wins"
+                    "den-wins"
+                  ]
+                );
+                default = null;
+              };
+            };
+          # Entity gating: kind gets pipeline wiring if it has includes, excludes, or structural module content.
+          # `conf` is a shared base module, not an entity — always excluded.
+          hasEntityContent =
+            kind != "conf" && (allIncludes != [ ] || allExcludes != [ ] || hasStructuralContent);
+          # A schema entry is "structural" if it has module content beyond just includes/excludes.
+          # Only structural entries should get self-provide aspect lookup.
+          hasStructuralContent = builtins.any (
+            d:
+            let
+              v = d.value;
+              stripped =
+                if builtins.isAttrs v then
+                  builtins.removeAttrs v [
+                    "includes"
+                    "excludes"
+                  ]
+                else
+                  v;
+            in
+            !builtins.isAttrs stripped || stripped != { }
+          ) defs;
+        in
+        if hasEntityContent then
+          {
+            __functor =
+              _:
+              { ... }:
+              {
+                imports = [
+                  merged
+                  resolvedCtx
+                ];
+              };
+            includes = allIncludes;
+            excludes = allExcludes;
+            isEntity = hasStructuralContent;
+          }
+        else
+          {
+            __functor = _: { ... }: merged;
+            includes = [ ];
+            excludes = [ ];
+            isEntity = false;
+          };
+    };
+
+  classSchemaType = lib.types.submodule (
+    { ... }:
+    {
+      options.description = lib.mkOption {
+        description = "Human-readable description of this class domain.";
+        type = lib.types.str;
+      };
+      options.forwardTo = lib.mkOption {
+        description = "Optional forward target for class evaluation.";
+        type = lib.types.nullOr lib.types.raw;
+        default = null;
+      };
+    }
+  );
+
+  pipeSchemaType = lib.types.submodule (
+    { ... }:
+    {
+      options.description = lib.mkOption {
+        description = "Human-readable description of this pipe.";
+        type = lib.types.str;
+      };
+    }
+  );
+
+  schemaOption = lib.mkOption {
+    description = "freeform deferred modules per entity kind";
+    defaultText = lib.literalExpression "{ }";
+    default = { };
+    type = lib.types.submodule {
+      freeformType = lib.types.lazyAttrsOf schemaEntryType;
+    };
+  };
+in
+{
+  options.den.hosts = types.hostsOption;
+  options.den.homes = types.homesOption;
+  options.den.schema = schemaOption;
+  options.den.classes = lib.mkOption {
+    description = "Class evaluation domains";
+    type = lib.types.lazyAttrsOf classSchemaType;
+    default = { };
+  };
+  options.den.quirks = lib.mkOption {
+    description = "Quirk declarations — named data routes for structured quirk flow";
+    type = lib.types.lazyAttrsOf pipeSchemaType;
+    default = { };
+    apply =
+      quirks:
+      let
+        classKeys = builtins.attrNames (den.classes or { });
+        overlap = builtins.filter (k: builtins.elem k classKeys) (builtins.attrNames quirks);
+      in
+      assert
+        overlap == [ ]
+        || throw "den.classes and den.quirks must not share keys, but found: ${builtins.concatStringsSep ", " overlap}";
+      lib.mapAttrs (name: v: v // { inherit name; }) quirks;
+  };
+  config.den.schema = {
+    conf = { };
+    fleet = { };
+    host.imports = [ den.schema.conf ];
+    user.imports = [ den.schema.conf ];
+    home.imports = [ den.schema.conf ];
+  };
+  config.den.classes = {
+    nixos.description = "NixOS system configuration";
+    darwin.description = "nix-darwin system configuration";
+  };
+}
+=== /home/weeb/den-source/modules/outputs.nix ===
+{
+  lib,
+  den,
+  inputs,
+  ...
+}@args:
+let
+  no-flake-parts = !inputs ? flake-parts;
+  has-flake-parts = !no-flake-parts && !(args ? __denTest);
+  flakeModule = den.lib.aspects.resolve "flake" (den.lib.resolveEntity "flake" { });
+  flake =
+    (lib.evalModules {
+      modules = [
+        flakeModule
+        inputs.den.flakeOutputs.flake
+      ];
+      specialArgs.inputs = inputs;
+    }).config.flake;
+in
+{
+  imports = lib.optional no-flake-parts inputs.den.flakeOutputs.flake;
+  inherit flake;
+}
+// lib.optionalAttrs has-flake-parts {
+  systems = den.systems;
+
+  perSystem = {
+    imports = [
+      (den.lib.aspects.resolve "flake-parts" (den.lib.resolveEntity "flake-parts" { }))
+    ];
+  };
+}
+=== /home/weeb/den-source/modules/outputs/systems.nix ===
+{
+  lib,
+  config,
+  den,
+  ...
+}:
+let
+
+  systemsOpt = lib.mkOption {
+    default =
+      let
+        sys = lib.unique (lib.attrNames den.hosts ++ lib.attrNames den.homes);
+      in
+      if sys == [ ] then lib.systems.flakeExposed else sys;
+    type = lib.types.listOf lib.types.str;
+  };
+
+in
+{
+  options.den.systems = systemsOpt;
+}
+=== /home/weeb/den-source/modules/policies/core.nix ===
+# Core entity policies — fundamental traversal between entity kinds.
+#
+# host-to-users uses resolve.shared for shared fan-out.
+# Entity-named nested keys on aspects (e.g., den.aspects.igloo.tux where
+# tux is a user) are included in the target entity scope automatically.
+# *-to-default policies eliminated — den.default is now injected as a
+# schema include for host/user/home entity kinds (defaults.nix).
+{ lib, den, ... }:
+let
+  inherit (den.lib.policy) resolve include;
+in
+{
+  # Host → users: fan-out to each declared user.
+  # If the host aspect has a freeform key matching the user name
+  # (not from provides — those are handled by mkCrossPolicy),
+  # include it in the user scope as an entity-named sub-aspect.
+  den.policies.host-to-users =
+    {
+      host,
+      ...
+    }:
+    let
+      aspect = host.aspect;
+      forwarded = lib.genAttrs (aspect.__providesForwarded or [ ]) (_: true);
+      hasChild = name: builtins.isAttrs aspect && aspect ? ${name} && !(forwarded ? ${name});
+    in
+    lib.concatMap (
+      user:
+      [ (resolve.shared { inherit user; }) ]
+      ++ lib.optional (hasChild user.name) (include aspect.${user.name})
+    ) (lib.attrValues host.users);
+
+  den.schema.host.includes = [ den.policies.host-to-users ];
+}
+=== /home/weeb/den-source/modules/policies/flake.nix ===
+# Flake output policies — activated via schema includes.
+{
+  den,
+  lib,
+  inputs,
+  options,
+  ...
+}:
+let
+  inherit (den.lib.policy) resolve;
+
+  systemOutputs = [
+    "packages"
+    "apps"
+    "checks"
+    "devShells"
+    "legacyPackages"
+  ];
+
+  has-flake-output =
+    output: ((options.flake.type.getSubOptions or (_: options.flake)) { }) ? ${output};
+
+  mkOutputPolicy =
+    output:
+    { system, ... }:
+    lib.optional (has-flake-output output) (
+      den.lib.policy.route {
+        fromClass = output;
+        intoClass = "flake";
+        path = [
+          "flake"
+          output
+          system
+        ];
+        adaptArgs = _: { pkgs = inputs.nixpkgs.legacyPackages.${system}; };
+      }
+    );
+in
+{
+  # Register system output names as classes so aspect keys dispatch correctly.
+  den.classes = lib.listToAttrs (
+    map (output: {
+      name = output;
+      value.description = "Flake ${output} output class";
+    }) systemOutputs
+  );
+
+  # flake → flake-system: fan out per system
+  den.policies.flake-to-systems =
+    _: map (system: resolve.to "flake-system" { inherit system; }) den.systems;
+
+  # flake-system → host: resolve OS outputs
+  den.policies.system-to-os-outputs =
+    { system, ... }:
+    let
+      hosts = den.hosts.${system} or { };
+    in
+    lib.concatMap (
+      host:
+      lib.optionals (host.intoAttr != [ ]) [
+        (resolve.to "host" { inherit host; })
+        (den.lib.policy.instantiate host)
+      ]
+    ) (builtins.attrValues hosts);
+
+  # flake-system → home: resolve HM outputs
+  den.policies.system-to-hm-outputs =
+    { system, ... }:
+    let
+      homes = den.homes.${system} or { };
+    in
+    lib.concatMap (
+      home:
+      lib.optionals (home.intoAttr != [ ]) [
+        (resolve.to "home" { inherit home; })
+        (den.lib.policy.instantiate home)
+      ]
+    ) (builtins.attrValues homes);
+
+  # Per-output route policies: class → flake
+  den.policies.packages-to-flake = mkOutputPolicy "packages";
+  den.policies.apps-to-flake = mkOutputPolicy "apps";
+  den.policies.checks-to-flake = mkOutputPolicy "checks";
+  den.policies.devShells-to-flake = mkOutputPolicy "devShells";
+  den.policies.legacyPackages-to-flake = mkOutputPolicy "legacyPackages";
+
+  den.schema.flake.includes = [ den.policies.flake-to-systems ];
+  den.schema.flake-system.includes = [
+    den.policies.system-to-os-outputs
+    den.policies.system-to-hm-outputs
+  ]
+  ++ map (output: den.policies."${output}-to-flake") systemOutputs;
+}
+=== /home/weeb/den-source/modules/policies/flake-parts.nix ===
+# Flake-parts entity policies — users include these explicitly via den.schema.
+{
+  den,
+  lib,
+  inputs,
+  ...
+}:
+lib.mkIf (inputs ? flake-parts) {
+  den.policies.system-to-flake-parts =
+    { system, ... }:
+    [
+      (den.lib.policy.resolve.to "flake-parts" {
+        flake-parts = {
+          name = "flake-parts-${system}";
+          aspect = { };
+        };
+      })
+    ];
+
+  den.policies.packages-to-flake-parts = _: [
+    (den.lib.policy.route {
+      fromClass = "packages";
+      intoClass = "flake-parts";
+      collectSubtree = true;
+      path = [ "packages" ];
+      adaptArgs = { config, ... }: config.allModuleArgs;
+    })
+  ];
+
+  den.schema.flake-parts.isEntity = true;
+}
+=== /home/weeb/den-source/modules/removed-stages.nix ===
+{ lib, ... }:
+{
+  options.den.stages = lib.mkOption {
+    visible = false;
+    internal = true;
+    type = lib.types.raw;
+    apply =
+      _:
+      throw ''
+        den.stages has been removed. Migrate to:
+          den.schema.<kind>.includes = [ ... ];  (replaces den.stages.<kind>.includes)
+        For providers, use policy.aspects with direct aspect references.
+      '';
+    default = { };
+  };
+}

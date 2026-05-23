@@ -37,6 +37,7 @@
 
         # Dotfiles
         ".android"
+        ".claude"
         ".dart-tool"
         ".floorp"
         ".pki"
@@ -106,6 +107,7 @@
       ];
 
       files = [
+        ".claude.json"
         ".flutter"
         ".gitconfig"
       ];

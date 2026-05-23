@@ -35,6 +35,7 @@
     anki
     brightnessctl
     celluloid
+    claude-code
     dunst
     exiftool
     file
