@@ -1,7 +1,11 @@
 { inputs, ... }:
 {
   den.aspects.hyprland = {
-    nixos = { pkgs, ... }: {
+    nixos = { host, pkgs, ... }: {
+      environment.persistence."/persistent".users.${host.userName}.directories = [
+        ".config/hypr"
+      ];
+
       programs.hyprland = {
         enable = true;
         withUWSM = false;

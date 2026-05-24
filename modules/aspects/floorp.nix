@@ -1,6 +1,12 @@
 { ... }:
 {
   den.aspects.floorp = {
+    nixos = { host, ... }: {
+      environment.persistence."/persistent".users.${host.userName}.directories = [
+        ".floorp"
+      ];
+    };
+
     homeManager =
       let
         lock = val: {

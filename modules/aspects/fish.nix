@@ -7,6 +7,10 @@
 {
   den.aspects.fish = {
     nixos = { host, pkgs, ... }: {
+      environment.persistence."/persistent".users.${host.userName}.directories = [
+        ".local/share/fish"
+      ];
+
       programs.fish = {
         enable = true;
         shellInit = ''

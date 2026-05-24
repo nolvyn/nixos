@@ -4,6 +4,22 @@
 {
   den.aspects.dev = {
     nixos = { host, pkgs, ... }: {
+      environment.persistence."/persistent".users.${host.userName} = {
+        directories = [
+          ".android"
+          ".dart-tool"
+          ".config/flutter"
+          ".local/share/jupyter"
+          ".local/share/nvim"
+          ".local/share/uv"
+          ".local/state/nvim"
+          ".local/state/quickshell"
+        ];
+        files = [
+          ".flutter"
+        ];
+      };
+
       environment.systemPackages = with pkgs; [
         # Text Editors / IDEs
         neovim

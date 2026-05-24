@@ -3,7 +3,13 @@
 { ... }:
 {
   den.aspects.browser = {
-    nixos = { pkgs, ... }: {
+    nixos = { host, pkgs, ... }: {
+      environment.persistence."/persistent".users.${host.userName}.directories = [
+        ".config/BraveSoftware"
+        ".config/vivaldi"
+        ".local/lib/vivaldi"
+      ];
+
       environment.systemPackages = with pkgs; [
         brave
         vivaldi

@@ -5,6 +5,10 @@
 {
   den.aspects.git = {
     nixos = { host, ... }: {
+      environment.persistence."/persistent".users.${host.userName}.files = [
+        ".gitconfig"
+      ];
+
       programs.git = {
         enable = true;
         lfs.enable = true;

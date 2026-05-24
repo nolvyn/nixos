@@ -1,7 +1,22 @@
 { ... }:
 {
   den.aspects.gaming = {
-    nixos = { pkgs, ... }: {
+    nixos = { host, pkgs, ... }: {
+      environment.persistence."/persistent".users.${host.userName}.directories = [
+        "Games"
+        ".cache/Proton"
+        ".cache/sleepy-launcher"
+        ".cache/umu"
+        ".cache/umu-protonfixes"
+        ".config/heroic"
+        ".config/Proton"
+        ".local/share/honkers-railway-launcher"
+        ".local/share/PrismLauncher"
+        ".local/share/sleepy-launcher"
+        ".local/share/Steam"
+        ".local/share/umu"
+        ".local/state/Heroic"
+      ];
       environment.systemPackages = with pkgs; [
         heroic
         prismlauncher

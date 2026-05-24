@@ -1,6 +1,12 @@
 { ... }:
 {
   den.aspects.zed = {
+    nixos = { host, ... }: {
+      environment.persistence."/persistent".users.${host.userName}.directories = [
+        ".local/share/zed"
+      ];
+    };
+
     homeManager = {
       programs.zed-editor = {
         enable = true;

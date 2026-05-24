@@ -1,6 +1,14 @@
 { ... }:
 {
   den.aspects.vscode = {
+    nixos = { host, ... }: {
+      environment.persistence."/persistent".users.${host.userName}.directories = [
+        ".vscode"
+        ".vscode-shared"
+        ".config/Code"
+      ];
+    };
+
     homeManager = { pkgs, ... }: {
       programs.vscode = {
         enable = true;

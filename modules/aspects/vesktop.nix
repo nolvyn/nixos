@@ -1,6 +1,12 @@
 { ... }:
 {
   den.aspects.vesktop = {
+    nixos = { host, ... }: {
+      environment.persistence."/persistent".users.${host.userName}.directories = [
+        ".config/vesktop"
+      ];
+    };
+
     homeManager = {
       programs.vesktop = {
         enable = true;

@@ -37,80 +37,34 @@
             "school"
 
             # Dotfiles
-            ".android"
-            ".claude"
-            ".dart-tool"
-            ".floorp"
             ".pki"
             ".ssh"
-            ".vscode"
-            ".vscode-shared"
 
             # Selective Cache
             ".cache/mesa_shader_cache"
             ".cache/radv_builtin_shaders"
             ".cache/spotify"
             ".cache/qtshadercache-x86_64-little_endian-lp64"
-            ".cache/Proton"
-            ".cache/umu"
-            ".cache/umu-protonfixes"
 
             # Selective Config
-            ".config/BraveSoftware"
             ".config/celluloid"
-            ".config/Code"
             ".config/dconf"
             ".config/fcitx"
             ".config/fcitx5"
             ".config/@filen"
-            ".config/flutter"
             ".config/ghostty"
             ".config/gtk-3.0"
             ".config/gtk-4.0"
-            ".config/hypr"
             ".config/mozc"
-            ".config/Proton"
             ".config/Slack"
             ".config/spotify"
             ".config/Thunar"
-            ".config/vesktop"
-            ".config/vivaldi"
             ".config/walker"
 
             # Selective Local
-            ".local/lib/vivaldi"
-
             ".local/share/Anki2"
-            ".local/share/fish"
-            ".local/share/jupyter"
             ".local/share/keyrings"
-            ".local/share/nvim"
-            ".local/state/quickshell"
-            ".local/share/umu"
-            ".local/share/uv"
-            ".local/share/zed"
-
-            ".local/state/nvim"
             ".local/state/wireplumber"
-          ]
-          ++ lib.optionals host.isDesktop [
-            "Games"
-            "torrents"
-            ".cache/sleepy-launcher"
-            ".config/heroic"
-            ".config/qBittorrent"
-            ".local/share/honkers-railway-launcher"
-            ".local/share/PrismLauncher"
-            ".local/share/qBittorrent"
-            ".local/share/sleepy-launcher"
-            ".local/share/Steam"
-            ".local/state/Heroic"
-          ];
-
-          files = [
-            ".claude.json"
-            ".flutter"
-            ".gitconfig"
           ];
         };
       };

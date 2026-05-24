@@ -18,6 +18,8 @@ let
       config.allowUnfree = true;
     };
   };
+
+  version = "25.11";
 in
 {
   imports = [ inputs.den.flakeModule ];
@@ -29,36 +31,37 @@ in
     den.batteries.hostname
   ];
 
-  den.default.nixos = {
-    imports = [
-      inputs.aagl.nixosModules.default
-      inputs.agenix.nixosModules.default
+  den.default = {
+    nixos = {
+      imports = with inputs; [
+        aagl.nixosModules.default
+        agenix.nixosModules.default
+        impermanence.nixosModules.impermanence
+        moe-gaming.nixosModules.default
+        stevenblack-hosts.nixosModule
+      ];
+      nixpkgs.config.allowUnfree = true;
+      nixpkgs.overlays = [
+        stableOverlay
+        unstableOverlay
+        inputs.moe-gaming.overlays.default
+        inputs.nix-vscode-extensions.overlays.default
+      ];
+      nix.settings.experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      system.stateVersion = version;
+    };
 
-      inputs.impermanence.nixosModules.impermanence
-      inputs.moe-gaming.nixosModules.default
-      inputs.stevenblack-hosts.nixosModule
-    ];
-    nixpkgs.config.allowUnfree = true;
-    nixpkgs.overlays = [
-      stableOverlay
-      unstableOverlay
-      inputs.moe-gaming.overlays.default
-      inputs.nix-vscode-extensions.overlays.default
-    ];
-    nix.settings.experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
-    system.stateVersion = "25.11";
-  };
-
-  den.default.homeManager = {
-    home.stateVersion = "25.11";
-    nixpkgs.config.allowUnfree = true;
-    nixpkgs.overlays = [
-      stableOverlay
-      unstableOverlay
-      inputs.nix-vscode-extensions.overlays.default
-    ];
+    homeManager = {
+      home.stateVersion = version;
+      nixpkgs.config.allowUnfree = true;
+      nixpkgs.overlays = [
+        stableOverlay
+        unstableOverlay
+        inputs.nix-vscode-extensions.overlays.default
+      ];
+    };
   };
 }

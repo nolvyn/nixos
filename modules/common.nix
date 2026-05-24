@@ -9,6 +9,7 @@
       btrfs
       btop
       cache
+      claude
       dev
       disko
       fastfetch
@@ -45,7 +46,6 @@
           anki
           brightnessctl
           celluloid
-          claude-code
           dunst
           exiftool
           file
