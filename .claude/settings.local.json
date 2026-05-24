@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(*)"
+    ],
+    "deny": [
+      "Bash(nixos-rebuild *)",
+      "Bash(sudo nixos-rebuild *)",
+      "Bash(nix-env -i*)",
+      "Bash(nix-env --install*)",
+      "Bash(nix-collect-garbage *)",
+      "Bash(rm *)",
+      "Bash(sudo rm *)",
+      "Bash(mv *)",
+      "Bash(cp *)",
+      "Bash(chmod *)",
+      "Bash(chown *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git reset *)",
+      "Bash(git rebase *)",
+      "Bash(systemctl start *)",
+      "Bash(systemctl stop *)",
+      "Bash(systemctl restart *)",
+      "Bash(systemctl enable *)",
+      "Bash(systemctl disable *)",
+      "Bash(sudo systemctl start *)",
+      "Bash(sudo systemctl stop *)",
+      "Bash(sudo systemctl restart *)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "nixos"
+  ]
+}

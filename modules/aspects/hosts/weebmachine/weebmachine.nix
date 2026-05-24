@@ -8,11 +8,11 @@
         environment.systemPackages = with pkgs; [ microfetch ];
       };
 
-    includes = [
-      den.aspects.common
-      den.aspects.gaming
-      den.aspects.printing
-      den.aspects.qbittorrent
+    includes = with den.aspects; [
+      common
+      gaming
+      printing
+      qbittorrent
     ];
   };
 }

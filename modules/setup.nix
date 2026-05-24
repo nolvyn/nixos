@@ -11,6 +11,13 @@ let
       config.allowUnfree = true;
     };
   };
+
+  unstableOverlay = final: prev: {
+    unstable = import inputs.unstable {
+      system = prev.stdenv.hostPlatform.system;
+      config.allowUnfree = true;
+    };
+  };
 in
 {
   imports = [ inputs.den.flakeModule ];
@@ -34,6 +41,7 @@ in
     nixpkgs.config.allowUnfree = true;
     nixpkgs.overlays = [
       stableOverlay
+      unstableOverlay
       inputs.moe-gaming.overlays.default
       inputs.nix-vscode-extensions.overlays.default
     ];
@@ -49,6 +57,7 @@ in
     nixpkgs.config.allowUnfree = true;
     nixpkgs.overlays = [
       stableOverlay
+      unstableOverlay
       inputs.nix-vscode-extensions.overlays.default
     ];
   };

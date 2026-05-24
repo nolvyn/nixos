@@ -1,6 +1,6 @@
 { inputs, ... }:
 {
-  den.aspects."disko-btrfs" = {
+  den.aspects.disko = {
     nixos =
       { lib, ... }:
       {
