@@ -1,0 +1,29 @@
+{ ... }:
+{
+  den.aspects.yazi = {
+    homeManager = {
+      programs.yazi = {
+        enable = true;
+        shellWrapperName = "yy";
+
+        settings = {
+          mgr = {
+            sort_by = "natural";
+            sort_sensitive = false;
+            sort_reverse = false;
+            sort_dir_first = true;
+            show_symlink = true;
+            linemod = "size";
+          };
+
+          preview = {
+            image_filter = "lanczos3";
+            image_quality = 90;
+            wrap = "yes";
+            tab_size = 4;
+          };
+        };
+      };
+    };
+  };
+}

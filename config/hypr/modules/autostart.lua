@@ -19,9 +19,9 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("[workspace name:discord silent] vesktop")
 
     if c.hostname == "WeebMachine" then
-        hl.exec_cmd("[workspace name:steam silent] steam")
-        hl.exec_cmd("[workspace name:games silent] heroic")
-        hl.exec_cmd("[workspace name:games silent] sleepy-launcher")
+        hl.exec_cmd("steam")
+        hl.exec_cmd("heroic")
+        hl.exec_cmd("sleepy-launcher")
         hl.exec_cmd("[workspace name:anime silent] vivaldi")
     elseif c.hostname == "MoeNote" then
         hl.exec_cmd("[workspace name:slack silent] slack")
