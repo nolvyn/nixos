@@ -1,7 +1,23 @@
-{ ... }:
+{ inputs, ... }:
 {
+  flake-file.inputs = {
+    aagl = {
+      url = "github:ezKEa/aagl-gtk-on-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    moe-gaming = {
+      url = "github:nolvyn/moe-gaming-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
   den.aspects.gaming = {
     nixos = { host, pkgs, ... }: {
+      imports = [
+        inputs.aagl.nixosModules.default
+        inputs.moe-gaming.nixosModules.default
+      ];
+      nixpkgs.overlays = [ inputs.moe-gaming.overlays.default ];
       environment.persistence."/persistent".users.${host.userName}.directories = [
         "Games"
         ".cache/mesa_shader_cache"

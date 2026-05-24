@@ -1,5 +1,7 @@
 { inputs, ... }:
 {
+  flake-file.inputs.hyprland.url = "github:hyprwm/Hyprland/v0.55.2";
+
   den.aspects.hyprland = {
     nixos = { host, pkgs, ... }: {
       environment.persistence."/persistent".users.${host.userName}.directories = [

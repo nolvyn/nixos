@@ -19,6 +19,7 @@
           disableMinSize = true;
           discordBranch = "stable";
           hardwareAcceleration = true;
+          minimizeToTray = false;
           splashBackground = "#000000";
           splashColor = "#ffffff";
           splashTheming = true;

@@ -22,7 +22,10 @@ let
   version = "25.11";
 in
 {
-  imports = [ inputs.den.flakeModule ];
+  imports = [
+    inputs.den.flakeModule
+    inputs.flake-file.flakeModules.default
+  ];
 
   den.schema.user.classes = lib.mkDefault [ "homeManager" ];
 
@@ -33,19 +36,10 @@ in
 
   den.default = {
     nixos = {
-      imports = with inputs; [
-        aagl.nixosModules.default
-        agenix.nixosModules.default
-        impermanence.nixosModules.impermanence
-        moe-gaming.nixosModules.default
-        stevenblack-hosts.nixosModule
-      ];
       nixpkgs.config.allowUnfree = true;
       nixpkgs.overlays = [
         stableOverlay
         unstableOverlay
-        inputs.moe-gaming.overlays.default
-        inputs.nix-vscode-extensions.overlays.default
       ];
       nix.settings.experimental-features = [
         "nix-command"
@@ -60,7 +54,6 @@ in
       nixpkgs.overlays = [
         stableOverlay
         unstableOverlay
-        inputs.nix-vscode-extensions.overlays.default
       ];
     };
   };

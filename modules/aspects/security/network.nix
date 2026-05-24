@@ -1,9 +1,10 @@
-# network.nix
-# For more information see https://nixos.wiki/wiki/Firewall
-{ ... }:
+{ inputs, ... }:
 {
+  flake-file.inputs.stevenblack-hosts.url = "github:StevenBlack/hosts";
+
   den.aspects.security.provides.network = {
     nixos = {
+      imports = [ inputs.stevenblack-hosts.nixosModule ];
       environment.persistence."/persistent".directories = [
         "/etc/NetworkManager/system-connections"
       ];

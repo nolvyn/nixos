@@ -8,7 +8,15 @@ hl.bind("SUPER + X", hl.dsp.exec_cmd(c.terminal))
 hl.bind("SUPER + L", hl.dsp.exec_cmd("hyprlock"))
 
 hl.bind("SUPER + F", hl.dsp.window.fullscreen())
-hl.bind("SUPER + Q", hl.dsp.window.close())
+local force_quit = { Slack = true, steam = true }
+hl.bind("SUPER + Q", function()
+    local win = hl.get_active_window()
+    if force_quit[win.class] then
+        os.execute("pkill -9 " .. win.class:lower())
+    else
+        hl.dispatch(hl.dsp.window.close())
+    end
+end)
 hl.bind("SUPER + SHIFT + E", hl.dsp.exit())
 hl.bind("SUPER + V", hl.dsp.window.float({ action = "toggle" }))
 
