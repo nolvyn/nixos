@@ -7,7 +7,7 @@
       ];
     };
 
-    homeManager =
+    homeManager = {pkgs, ...}:
       let
         lock = val: {
           Value = val;
@@ -178,6 +178,23 @@
               # Floorp Hub new tab
               # "floorp.newtab.url" = "about:blank";
             };
+          };
+        };
+
+        systemd.user.paths.remove-floorp-dir = {
+          Unit.Description = "Watch for ~/Floorp directory creation";
+          Path = {
+            PathExists = "%h/Floorp";
+            Unit = "remove-floorp-dir.service";
+          };
+          Install.WantedBy = [ "default.target" ];
+        };
+
+        systemd.user.services.remove-floorp-dir = {
+          Unit.Description = "Remove empty ~/Floorp directory";
+          Service = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.coreutils}/bin/rmdir --ignore-fail-on-non-empty %h/Floorp";
           };
         };
       };

@@ -23,10 +23,19 @@ hl.window_rule({ match = { class = "qbittorrent" }, workspace = "name:qbitorrent
 hl.window_rule({ match = { class = "celluloid" }, workspace = "name:anime" })
 
 -- Gaming Specific Rules
+-- Force fullscreen for all games
+hl.window_rule({ match = { class = "^steam_app_" }, fullscreen = true })
+
 -- Keep Curtain Games on Steam/Games Workspaces
 hl.window_rule({ match = { class = "steam_app_2767030" }, workspace = "name:steam" }) -- Marvel Rivals
 hl.window_rule({ match = { class = "steam_app_3513350" }, workspace = "name:steam" }) -- Wuthering Waves
 hl.window_rule({ match = { class = "steam_app_0" }, workspace = "name:games" })       -- General
+
+-- Auto-launch apps on empty workspace switch
+hl.workspace_rule({ workspace = "name:slack", on_created_empty = "slack" })
+hl.workspace_rule({ workspace = "name:spotify", on_created_empty = "spotify" })
+hl.workspace_rule({ workspace = "name:steam", on_created_empty = "steam" })
+hl.workspace_rule({ workspace = "name:discord", on_created_empty = "vesktop" })
 
 -- Monitor Specific Rules
 -- Main Monitor
