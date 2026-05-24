@@ -1,7 +1,15 @@
 { ... }:
 {
   den.aspects.security.provides.ssh = {
-    nixos = {
+    nixos = { host, ... }: {
+      environment.persistence."/persistent" = {
+        files = [
+          "/etc/ssh/ssh_host_ed25519_key"
+          "/etc/ssh/ssh_host_ed25519_key.pub"
+        ];
+        users.${host.userName}.directories = [ ".ssh" ];
+      };
+
       services.openssh = {
         enable = true;
         openFirewall = false;

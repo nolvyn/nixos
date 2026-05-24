@@ -8,6 +8,7 @@
         directories = [
           ".android"
           ".dart-tool"
+          ".cache/qtshadercache-x86_64-little_endian-lp64"
           ".config/flutter"
           ".local/share/jupyter"
           ".local/share/nvim"

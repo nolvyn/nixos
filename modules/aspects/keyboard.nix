@@ -3,7 +3,13 @@
 { ... }:
 {
   den.aspects.keyboard = {
-    nixos = { pkgs, ... }: {
+    nixos = { host, pkgs, ... }: {
+      environment.persistence."/persistent".users.${host.userName}.directories = [
+        ".config/fcitx"
+        ".config/fcitx5"
+        ".config/mozc"
+      ];
+
       # Configure keymap in X11
       services.xserver.xkb = {
         layout = "us";

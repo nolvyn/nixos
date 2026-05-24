@@ -3,6 +3,11 @@
 {
   den.aspects.bluetooth = {
     nixos = { lib, ... }: {
+      environment.persistence."/persistent".directories = [
+        "/var/lib/bluetooth"
+        "/var/lib/blueman"
+      ];
+
       hardware.bluetooth = {
         enable = true;
         powerOnBoot = lib.mkDefault false;

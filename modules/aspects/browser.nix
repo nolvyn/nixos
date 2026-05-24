@@ -5,6 +5,7 @@
   den.aspects.browser = {
     nixos = { host, pkgs, ... }: {
       environment.persistence."/persistent".users.${host.userName}.directories = [
+        ".pki"
         ".config/BraveSoftware"
         ".config/vivaldi"
         ".local/lib/vivaldi"

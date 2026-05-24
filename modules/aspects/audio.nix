@@ -4,7 +4,11 @@
 { ... }:
 {
   den.aspects.audio = {
-    nixos = {
+    nixos = { host, ... }: {
+      environment.persistence."/persistent".users.${host.userName}.directories = [
+        ".local/state/wireplumber"
+      ];
+
       services.pulseaudio.enable = false; # Use Pipewire, the modern sound subsystem
       security.rtkit.enable = true; # Enable RealtimeKit for audio purposes
       services.pipewire = {

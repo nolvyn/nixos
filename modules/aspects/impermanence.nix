@@ -11,21 +11,12 @@
         directories = [
           "/var/log"
           "/var/lib/nixos"
-          "/var/lib/bluetooth"
-          "/var/lib/blueman"
-          "/var/lib/systemd/coredump"
-          "/var/lib/systemd/timers"
-          "/etc/NetworkManager/system-connections"
         ]
         ++ lib.optionals config.services.fprintd.enable [
           "/var/lib/fprint"
         ];
 
-        files = [
-          "/etc/machine-id"
-          "/etc/ssh/ssh_host_ed25519_key"
-          "/etc/ssh/ssh_host_ed25519_key.pub"
-        ];
+        files = [ "/etc/machine-id" ];
 
         users.${host.userName} = {
           directories = [
@@ -36,35 +27,19 @@
             "projects"
             "school"
 
-            # Dotfiles
-            ".pki"
-            ".ssh"
-
             # Selective Cache
-            ".cache/mesa_shader_cache"
-            ".cache/radv_builtin_shaders"
             ".cache/spotify"
-            ".cache/qtshadercache-x86_64-little_endian-lp64"
 
             # Selective Config
             ".config/celluloid"
-            ".config/dconf"
-            ".config/fcitx"
-            ".config/fcitx5"
             ".config/@filen"
             ".config/ghostty"
-            ".config/gtk-3.0"
-            ".config/gtk-4.0"
-            ".config/mozc"
             ".config/Slack"
             ".config/spotify"
-            ".config/Thunar"
             ".config/walker"
 
             # Selective Local
             ".local/share/Anki2"
-            ".local/share/keyrings"
-            ".local/state/wireplumber"
           ];
         };
       };

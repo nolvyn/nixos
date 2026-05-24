@@ -4,6 +4,8 @@
     nixos = { host, pkgs, ... }: {
       environment.persistence."/persistent".users.${host.userName}.directories = [
         "Games"
+        ".cache/mesa_shader_cache"
+        ".cache/radv_builtin_shaders"
         ".cache/Proton"
         ".cache/sleepy-launcher"
         ".cache/umu"

@@ -4,6 +4,11 @@
 {
   den.aspects.security.provides.systemd = {
     nixos = { lib, ... }: {
+      environment.persistence."/persistent".directories = [
+        "/var/lib/systemd/coredump"
+        "/var/lib/systemd/timers"
+      ];
+
       # Bootloader.
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi.canTouchEfiVariables = true;

@@ -4,6 +4,10 @@
 {
   den.aspects.security.provides.network = {
     nixos = {
+      environment.persistence."/persistent".directories = [
+        "/etc/NetworkManager/system-connections"
+      ];
+
       networking = {
         networkmanager.enable = true;
 

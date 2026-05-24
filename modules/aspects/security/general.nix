@@ -3,7 +3,11 @@
 { ... }:
 {
   den.aspects.security.provides.general = {
-    nixos = { pkgs, ... }: {
+    nixos = { host, pkgs, ... }: {
+      environment.persistence."/persistent".users.${host.userName}.directories = [
+        ".local/share/keyrings"
+      ];
+
       # Keyring/Wallet Stuff
       services.gnome.gnome-keyring.enable = true;
       programs.seahorse.enable = true; # GUI Keyring Manager
