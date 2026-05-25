@@ -38,5 +38,15 @@
         HYPRCURSOR_SIZE = "24";
       };
     };
+
+    homeManager = { host, config, ... }: {
+      home.file = {
+        ".config/gtk-3.0/gtk.css".text = "@import 'colors.css';";
+        ".config/gtk-4.0/gtk.css".text = "@import 'colors.css';";
+
+        ".config/matugen/config.toml".source =
+          config.lib.file.mkOutOfStoreSymlink "${host.flakeDir}/config/matugen/config.toml";
+      };
+    };
   };
 }

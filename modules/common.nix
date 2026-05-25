@@ -23,6 +23,7 @@
       keyboard
       kitty
       locale
+      neovim
       optimizations
       sddm
       security.general

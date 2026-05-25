@@ -24,6 +24,14 @@
           };
         };
       };
+
+      xdg.desktopEntries.yazi = {
+        name = "Yazi";
+        comment = "Terminal file manager";
+        exec = "kitty -e yazi %u";
+        icon = "folder";
+        categories = [ "System" "FileManager" ];
+      };
     };
   };
 }

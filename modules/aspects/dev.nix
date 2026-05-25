@@ -22,9 +22,6 @@
       };
 
       environment.systemPackages = with pkgs; [
-        # Text Editors / IDEs
-        neovim
-
         # C++
         gcc
 

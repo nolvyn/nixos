@@ -1,5 +1,10 @@
 { den, ... }:
 {
+  den.hosts.x86_64-linux.WeebMachine = {
+    isDesktop = true;
+    users.weeb = { };
+  };
+
   den.aspects.WeebMachine = {
     includes = with den.aspects; [
       common
