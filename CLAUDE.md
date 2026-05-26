@@ -1,40 +1,31 @@
-# NixOS → Den v0.17.0 Migration
+# NixOS Config
 
-## READ FIRST -- Do This Before Writing Any Code
-Read these files in full before doing anything else:
-  .docs/den/den-docs.txt
-  .docs/den/den-modules.txt
-  .docs/den/den-nix-source.txt
-  .docs/den/den-templates.txt
-
-Then read every .nix file in system/, home/, and hosts/ to understand
-what exists before rewriting it. Do not write a single file until you
-have done both of these things and confirmed it.
+> **Keep this file current.** If you make structural changes (new aspects, new hosts, new Den patterns, flake layout changes), update the relevant section of this file before finishing the task.
 
 ## Safety
-- NEVER run nixos-rebuild switch or nixos-rebuild boot
-- Only run: nix flake check OR nix eval .#nixosConfigurations.WeebMachine
-- Never touch: config/ secrets/ assets/ applications/ scripts/
-- Never delete an existing file without asking first
-- git add -A && git commit before making large changes
 
-## What Is Happening
-system/ and home/ are being deleted. Their content moves into modules/aspects/.
-Every feature gets one .nix file that contains both its NixOS config (nixos block)
-and its home-manager config (homeManager block) together in one place.
-configuration.nix is deleted. hosts/ is deleted. flake.nix is rewritten.
+- NEVER run `nixos-rebuild switch` or `nixos-rebuild boot`
+- Safe eval commands: `nix flake check` or `nix eval .#nixosConfigurations.WeebMachine`
+- Never touch: `secrets/` `assets/`
+- Never delete a file without asking first
+- Run `git add -A && git commit` before making large changes
 
-## Target Structure
+## Project Layout
+
+```
+flake.nix                  # Auto-generated — DO NOT edit manually
 modules/
-├── setup.nix
-├── schema.nix
+├── inputs.nix             # Source of truth for all flake inputs
+├── setup.nix              # den.default + overlays + batteries
+├── schema.nix             # den.schema.host custom options
+├── common.nix             # den.aspects.common — shared aspect bundle
 └── aspects/
     ├── hosts/
     │   ├── weebmachine/
-    │   │   ├── weebmachine.nix
+    │   │   ├── weebmachine.nix   # den.hosts + WeebMachine aspect
     │   │   └── hardware.nix
     │   └── moenote/
-    │       ├── moenote.nix
+    │       ├── moenote.nix       # den.hosts + MoeNote aspect
     │       └── hardware.nix
     ├── security/
     │   ├── general.nix
@@ -42,125 +33,113 @@ modules/
     │   ├── network.nix
     │   ├── ssh.nix
     │   └── systemd.nix
-    ├── agenix.nix
-    ├── audio.nix
-    ├── bluetooth.nix
-    ├── browser.nix
-    ├── btrfs.nix
-    ├── btop.nix
-    ├── cache.nix
-    ├── dev.nix
-    ├── disko-btrfs.nix
-    ├── fastfetch.nix
-    ├── file.nix
-    ├── fish.nix
-    ├── floorp.nix
-    ├── fonts.nix
-    ├── gaming.nix
-    ├── git.nix
-    ├── hyprland.nix
-    ├── impermanence.nix
-    ├── keyboard.nix
-    ├── kitty.nix
-    ├── locale.nix
-    ├── location.nix
-    ├── optimizations.nix
-    ├── printing.nix
-    ├── qbittorrent.nix
-    ├── sddm.nix
-    ├── syncthing.nix
-    ├── theme.nix
-    ├── tlp.nix
-    ├── user.nix
-    ├── vesktop.nix
-    ├── virtualization.nix
-    ├── vscode.nix
-    ├── xdg-dirs.nix
-    ├── yazi.nix
-    └── zed.nix
+    └── <feature>.nix      # one file per feature (nixos + homeManager blocks)
+```
 
-## Den API -- Non-Negotiable Rules
-- den.ctx is DEPRECATED. Never use it under any circumstances.
-- Use den.aspects, den.schema, den.default, den.policies instead.
-- Home-manager wiring is AUTOMATIC. Den handles it when users have
-  classes=["homeManager"] and inputs.home-manager exists in flake.nix.
-- Do NOT set home-manager.useGlobalPkgs or useUserPackages manually.
-- Do NOT manually import inputs.home-manager.nixosModules.home-manager.
-- inputs is a module argument everywhere. No specialArgs needed.
-- Flat-form class modules MUST include ... in their args or eval will error:
-    nixos = { host, config, pkgs, ... }: { ... }   <- correct
-    nixos = { host, config, pkgs }: { ... }         <- WRONG, will crash
+## Flake Management
 
-## Batteries -- All Are Opt-In, Must Be Explicitly Included
-- den.batteries.define-user: sets users.users.weeb, home.username, home.homeDirectory
-  Include it in setup.nix: den.default.includes = [ den.batteries.define-user ... ]
-- den.batteries.hostname: sets networking.hostName from host.hostName
-  Include it in setup.nix: den.default.includes = [ ... den.batteries.hostname ]
-- den.batteries.primary-user: adds wheel + networkmanager groups, sets isNormalUser
-  Include it in aspects/user.nix: den.aspects.weeb.includes = [ den.batteries.primary-user ... ]
-- den.batteries.user-shell: sets fish shell at OS and HM level
-  Include it in aspects/user.nix: den.aspects.weeb.includes = [ ... (den.batteries.user-shell "fish") ]
-- Do NOT declare users.users.weeb, home.username, home.homeDirectory, or
-  users.users.weeb.shell manually. The batteries handle all of this.
+`flake.nix` is auto-generated by [flake-file](https://github.com/vic/flake-file). Never edit it directly.
 
-## setup.nix Requirements
-- imports = [ inputs.den.flakeModule ]
-- den.schema.user.classes = lib.mkDefault [ "homeManager" ]
-- den.default.includes = [ den.batteries.define-user den.batteries.hostname ]
-- den.default.nixos must contain:
-    nixpkgs.config.allowUnfree = true
-    nixpkgs.overlays (stable overlay, moe-gaming overlay, nix-vscode-extensions overlay)
-    imports for: aagl, agenix, disko, impermanence, stevenblack-hosts nixos modules
-    nix.settings.experimental-features = [ "nix-command" "flakes" ]
-    system.stateVersion = "25.11"
-- den.default.homeManager.home.stateVersion = "25.11"
+- **Add/change a flake input:** edit `modules/inputs.nix` (or the relevant aspect file using `flake-file.inputs`)
+- **Regenerate flake.nix:** `nix run .#write-flake`
 
-## schema.nix Requirements
-All options live here under den.schema.host = { host, lib, ... }: { options = { ... }; }:
-- userName: str, default "weeb"
-- flakeDir: str, default "/home/${host.userName}/nixos"
-- git.userName: str, default "nolvyn"
-- git.userEmail: str, default "245221879+nolvyn@users.noreply.github.com"
-- isDesktop: mkEnableOption
-- isLaptop: mkEnableOption
+
+Aspects that need their own inputs declare them inline:
+```nix
+{ inputs, ... }: {
+  flake-file.inputs.some-thing.url = "github:owner/repo";
+  den.aspects.foo = { ... };
+}
+```
+
+## Den API — Non-Negotiable Rules
+
+- `den.ctx` is DEPRECATED. Never use it.
+- Use `den.aspects`, `den.schema`, `den.default`, `den.policies` instead.
+- Home-manager wiring is **automatic** when users have `classes = ["homeManager"]` and `home-manager` is in the flake inputs.
+- Do NOT set `home-manager.useGlobalPkgs` or `useUserPackages` manually.
+- Do NOT manually import `inputs.home-manager.nixosModules.home-manager`.
+- `inputs` is a module argument everywhere — no `specialArgs` needed.
+- Flat-form class modules **must** include `...` in args or eval will crash:
+  ```nix
+  nixos = { host, config, pkgs, ... }: { ... }   # correct
+  nixos = { host, config, pkgs }: { ... }         # WRONG — crashes
+  ```
+
+## Aspect File Structure
+
+Every aspect uses the attrset form (not dot-chained assignments):
+
+```nix
+{ den, inputs, ... }:
+{
+  den.aspects.foo = {
+    nixos = { host, config, pkgs, lib, ... }: { ... };
+    homeManager = { host, config, pkgs, ... }: { ... };
+    includes = [ den.aspects.bar ];
+  };
+}
+```
+
+- Omit `nixos`, `homeManager`, or `includes` if not needed.
+- If an aspect only needs one block, include only that block.
+
+## Batteries — All Opt-In
+
+| Battery | What it does | Where to include |
+|---|---|---|
+| `den.batteries.define-user` | sets `users.users.weeb`, `home.username`, `home.homeDirectory` | `setup.nix` → `den.default.includes` |
+| `den.batteries.hostname` | sets `networking.hostName` from `host.hostName` | `setup.nix` → `den.default.includes` |
+| `den.batteries.primary-user` | wheel + networkmanager groups, `isNormalUser = true` | `aspects/user.nix` → `den.aspects.weeb.includes` |
+| `den.batteries.user-shell "fish"` | fish shell at OS + HM level | `aspects/user.nix` → `den.aspects.weeb.includes` |
+| `den.batteries.host-aspects` | wires host-named aspect to its host | `aspects/user.nix` → `den.aspects.weeb.includes` |
+
+Do NOT manually declare `users.users.weeb`, `home.username`, `home.homeDirectory`, or `users.users.weeb.shell` — batteries own these.
 
 ## Hosts
-WeebMachine: x86_64-linux, isDesktop = true, user weeb (homeManager class)
-  Includes all aspects except tlp
-  Weebmachine-only: gaming, printing, qbittorrent
 
-MoeNote: x86_64-linux, isLaptop = true, user weeb (homeManager class)
-  Includes all aspects except gaming, printing, qbittorrent
-  MoeNote-only: tlp
+**WeebMachine** (`modules/aspects/hosts/weebmachine/weebmachine.nix`)
+- `x86_64-linux`, `isDesktop = true`, user `weeb`
+- Includes: `common` + `gaming` + `printing` + `qbittorrent`
 
-## Conditional Aspects
-- gaming.nix: wrap entire nixos body in lib.optionalAttrs host.isDesktop { ... }
-- impermanence.nix: desktop-only persist dirs use lib.optionals host.isDesktop [ ... ]
-- tlp.nix: only included by moenote.nix
-- printing.nix: only included by weebmachine.nix
-- qbittorrent.nix: only included by weebmachine.nix
-- hypridle.conf symlink: only in MoeNote's homeManager block (laptops need it)
+**MoeNote** (`modules/aspects/hosts/moenote/moenote.nix`)
+- `x86_64-linux`, `isLaptop = true`, user `weeb`
+- Includes: `common` + `tlp`
+- MoeNote-only extras: `fprintd`, `upower`, `hypridle.conf` symlink in homeManager
 
-## File Merger Map
-system/hyprland.nix + home/modules/hyprland.nix → aspects/hyprland.nix
-system/browser.nix → aspects/browser.nix nixos block
-home/modules/floorp.nix → aspects/floorp.nix homeManager block
-system/dev.nix → aspects/dev.nix nixos block
-home/modules/vscode.nix → aspects/vscode.nix homeManager block
-system/user.nix → aspects/user.nix nixos block
-home/base.nix + home/modules/xdg-dirs.nix → aspects/user.nix homeManager block
-  (desktop file symlinks and matugen config link also go in user.nix homeManager block)
-system/security/general.nix → aspects/security/general.nix
-system/security/kernel.nix → aspects/security/kernel.nix
-system/security/network.nix → aspects/security/network.nix
-system/security/ssh.nix → aspects/security/ssh.nix
-system/security/systemd.nix → aspects/security/systemd.nix
-system/options.nix → modules/schema.nix + parts absorbed into setup.nix
-configuration.nix → content distributed into setup.nix and individual aspects
-home/modules/btop.nix → aspects/btop.nix homeManager block
-home/modules/fastfetch.nix → aspects/fastfetch.nix homeManager block
-home/modules/kitty.nix → aspects/kitty.nix homeManager block
-home/modules/vesktop.nix → aspects/vesktop.nix homeManager block
-home/modules/yazi.nix → aspects/yazi.nix homeManager block
-home/modules/zed.nix → aspects/zed.nix homeManager block
-home/modules/xdg-dirs.nix → aspects/xdg-dirs.nix homeManager block
+**common** (`modules/common.nix`) bundles all shared aspects — see that file for the full list.
+
+## Schema Options (`modules/schema.nix`)
+
+All under `den.schema.host`:
+
+| Option | Type | Default |
+|---|---|---|
+| `userName` | str | `"weeb"` |
+| `flakeDir` | str | `"/home/${host.userName}/nixos"` |
+| `git.userName` | str | `"nolvyn"` |
+| `git.userEmail` | str | `"245221879+nolvyn@users.noreply.github.com"` |
+| `isDesktop` | enableOption | false |
+| `isLaptop` | enableOption | false |
+
+## Overlays
+
+Defined in `setup.nix`, available as `pkgs.stable.*` and `pkgs.unstable.*` everywhere:
+
+- `stableOverlay` → `pkgs.stable` (nixos-25.11)
+- `unstableOverlay` → `pkgs.unstable` (nixos-unstable)
+- `nixpkgs` itself pins to a specific commit (`specific` input)
+
+## Adding a New Aspect
+
+1. Create `modules/aspects/<name>.nix` with the attrset form above.
+2. Add `den.aspects.<name>` to the `includes` list in `modules/common.nix` (or a specific host file if it's host-only).
+3. If it needs a new flake input, declare it via `flake-file.inputs` inside the aspect file, then run `nix run .#write-flake`.
+4. Update this CLAUDE.md if the aspect introduces a new pattern or has host-conditional behavior.
+
+## Adding a New Host
+
+1. Create `modules/aspects/hosts/<hostname>/` with `<hostname>.nix` and `hardware.nix`.
+2. Declare `den.hosts.x86_64-linux.<Hostname>` with `isDesktop`/`isLaptop` and `users.weeb = {}`.
+3. Declare `den.aspects.<Hostname>` with its includes (at minimum `den.aspects.common`).
+4. Update this CLAUDE.md with the new host's summary.
