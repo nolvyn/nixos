@@ -128,8 +128,7 @@
             "extensions.ignoreRecommendations" = true;
 
             # Files
-            "files.autoSave" = "afterDelay";
-            "files.autoSaveDelay" = 1000;
+            "files.autoSave" = "onWindowChange";
             "files.insertFinalNewline" = true;
             "files.trimTrailingWhitespace" = true;
             "files.trimFinalNewlines" = true;

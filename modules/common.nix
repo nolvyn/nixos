@@ -23,6 +23,7 @@
       keyboard
       kitty
       locale
+      localsend
       neovim
       optimizations
       sddm
@@ -72,6 +73,7 @@
           stable.walker
           wget
         ];
+
       };
   };
 }
