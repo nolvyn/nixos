@@ -7,7 +7,7 @@ return {
     fileManager     = "kitty -e yazi",
     home            = home,
     hostname        = hostname,
-    menu            = "walker",
+    menu            = "rofi -show drun",
     terminal        = "kitty",
     wallpaper       = wallpaper,
 

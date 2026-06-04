@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, lib, ... }:
 {
   flake-file.inputs.hyprland.url = "github:hyprwm/Hyprland/v0.55.2";
 
@@ -7,6 +7,8 @@
       environment.persistence."/persistent".users.${host.userName}.directories = [
         ".config/hypr"
       ];
+
+      security.wrappers.Hyprland.capabilities = lib.mkForce "";
 
       programs.hyprland = {
         enable = true;

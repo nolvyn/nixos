@@ -36,6 +36,7 @@
       theme
       user
       vesktop
+      rofi
       vscode
       yazi
       zed
@@ -61,7 +62,7 @@
           nautilus
           networkmanagerapplet
           playerctl
-          stable.protonvpn-gui
+          proton-vpn
           resources
           ripgrep
           ripunzip
@@ -70,7 +71,6 @@
           spotify
           tree
           unrar
-          stable.walker
           wget
         ];
 

@@ -6,7 +6,7 @@
   inputs = {
     aagl = {
       url = "github:ezKEa/aagl-gtk-on-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "unstable";
     };
     agenix = {
       url = "github:ryantm/agenix";
@@ -23,7 +23,7 @@
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "git+https://github.com/nix-community/home-manager?ref=release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     hyprland.url = "github:hyprwm/Hyprland/v0.55.2";
@@ -37,9 +37,9 @@
       url = "github:nix-community/nix-vscode-extensions";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixpkgs.follows = "specific";
+    nixpkgs.follows = "stable";
     specific.url = "github:nixos/nixpkgs/e0892a72016721b30e65ac2ac3303cbf694dc738";
-    stable.url = "github:nixos/nixpkgs/nixos-25.11";
+    stable.url = "github:nixos/nixpkgs/nixos-26.05";
     stevenblack-hosts.url = "github:StevenBlack/hosts";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
   };
