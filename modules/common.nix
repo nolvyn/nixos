@@ -10,6 +10,7 @@
       btop
       cache
       claude
+      cursor
       dev
       disko
       fastfetch

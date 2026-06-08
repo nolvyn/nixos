@@ -46,6 +46,7 @@ in
         "flakes"
       ];
       system.stateVersion = version;
+      home-manager.backupFileExtension = "backup";
     };
 
     homeManager = {
