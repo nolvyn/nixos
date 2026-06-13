@@ -38,7 +38,7 @@
           ".local/state/Heroic"
         ];
         environment.systemPackages = with pkgs; [
-          unstable.heroic
+          heroic
           prismlauncher
         ];
 

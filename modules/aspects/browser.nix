@@ -7,20 +7,19 @@
       environment.persistence."/persistent".users.${host.userName}.directories = [
         ".pki"
         ".config/BraveSoftware"
-        ".config/vivaldi"
-        ".local/lib/vivaldi"
+        # ".config/vivaldi"
+        # ".local/lib/vivaldi"
       ];
 
       environment.systemPackages = with pkgs; [
         brave
-        vivaldi
+        # vivaldi
       ];
 
       programs.chromium = {
         enable = true;
 
         extensions = [
-          # "cjpalhdlnbpafiamejdnhcphjbkeiagm" # uBlock Origin
           "ghmbeldphafepmbegfdlkpapadhbakde" # Proton Pass
           "gbefmodhlophhakmoecijeppjblibmie" # Linguist
           "ponfpcnoihfmfllpaingbgckeeldkhle" # Enhancer for YouTube

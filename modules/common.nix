@@ -3,20 +3,20 @@
   den.aspects.common = {
     includes = with den.aspects; [
       agenix
+      ai.claude
+      ai.cursor
+      ai.general
       audio
       bluetooth
       browser
       btrfs
       btop
       cache
-      claude
-      cursor
       dev
       disko
       fastfetch
       file
       fish
-      floorp
       fonts
       git
       hyprland
@@ -25,7 +25,6 @@
       kitty
       locale
       localsend
-      neovim
       optimizations
       sddm
       security.general

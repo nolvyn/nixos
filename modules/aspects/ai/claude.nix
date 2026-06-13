@@ -1,6 +1,6 @@
 { ... }:
 {
-  den.aspects.claude = {
+  den.aspects.ai.provides.claude = {
     nixos =
       { host, ... }:
       {
@@ -15,7 +15,7 @@
       {
         programs.claude-code = {
           enable = true;
-          package = pkgs.unstable.claude-code;
+          package = pkgs.llm-agents.claude-code;
 
           mcpServers = {
             context7 = {
@@ -58,6 +58,7 @@
               "oh-my-claudecode@omc" = true;
               "playwright@claude-plugins-official" = true;
               "pyright-lsp@claude-plugins-official" = true;
+              "revenuecat@claude-plugins-official" = true;
               "rust-analyzer-lsp@claude-plugins-official" = true;
               "security-guidance@claude-plugins-official" = true;
               "stripe@claude-plugins-official" = true;

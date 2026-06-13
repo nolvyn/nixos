@@ -29,6 +29,7 @@
     hyprland.url = "github:hyprwm/Hyprland/v0.55.2";
     impermanence.url = "github:nix-community/impermanence";
     import-tree.url = "github:denful/import-tree";
+    llm-agents.url = "github:numtide/llm-agents.nix";
     moe-gaming = {
       url = "github:nolvyn/moe-gaming-nix";
       inputs.nixpkgs.follows = "nixpkgs";
