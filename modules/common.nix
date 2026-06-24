@@ -4,6 +4,7 @@
     includes = with den.aspects; [
       agenix
       ai.claude
+      ai.codex
       ai.cursor
       ai.general
       audio
@@ -46,7 +47,7 @@
       { pkgs, ... }:
       {
         environment.systemPackages = with pkgs; [
-          anki
+          # anki
           brightnessctl
           celluloid
           dunst

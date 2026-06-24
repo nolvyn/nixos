@@ -1,5 +1,3 @@
-# dev.nix
-
 { ... }:
 {
   den.aspects.dev = {
@@ -13,9 +11,7 @@
             ".cache/qtshadercache-x86_64-little_endian-lp64"
             ".config/flutter"
             ".local/share/jupyter"
-            ".local/share/nvim"
             ".local/share/uv"
-            ".local/state/nvim"
             ".local/state/quickshell"
           ];
           files = [

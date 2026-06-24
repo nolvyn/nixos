@@ -55,10 +55,11 @@
           ];
         };
 
-        moe-gaming.dw-proton-bin.enable = true;
+        moe-gaming.proton.enable = true;
 
-        programs.honkers-railway-launcher.enable = true;
-        programs.sleepy-launcher.enable = true;
+        # programs.honkers-railway-launcher.enable = true;
+        # programs.sleepy-launcher.enable = true;
+        aagl.enableNixpkgsReleaseBranchCheck = false;
 
         boot.kernelModules = [ "ntsync" ];
       };

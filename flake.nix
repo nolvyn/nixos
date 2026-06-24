@@ -23,10 +23,9 @@
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
     home-manager = {
-      url = "git+https://github.com/nix-community/home-manager?ref=release-26.05";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "unstable";
     };
-    hyprland.url = "github:hyprwm/Hyprland/v0.55.2";
     impermanence.url = "github:nix-community/impermanence";
     import-tree.url = "github:denful/import-tree";
     llm-agents.url = "github:numtide/llm-agents.nix";
@@ -39,6 +38,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixpkgs.follows = "stable";
+    openai-plugins = {
+      url = "github:openai/plugins";
+      flake = false;
+    };
     specific.url = "github:nixos/nixpkgs/e0892a72016721b30e65ac2ac3303cbf694dc738";
     stable.url = "github:nixos/nixpkgs/nixos-26.05";
     stevenblack-hosts.url = "github:StevenBlack/hosts";

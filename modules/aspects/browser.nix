@@ -13,7 +13,7 @@
 
       environment.systemPackages = with pkgs; [
         brave
-        # vivaldi
+        google-chrome
       ];
 
       programs.chromium = {

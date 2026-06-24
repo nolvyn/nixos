@@ -16,20 +16,7 @@
         programs.claude-code = {
           enable = true;
           package = pkgs.llm-agents.claude-code;
-
-          mcpServers = {
-            context7 = {
-              command = "npx";
-              args = [
-                "-y"
-                "@upstash/context7-mcp"
-              ];
-            };
-            mcp-nixos = {
-              command = "uvx";
-              args = [ "mcp-nixos" ];
-            };
-          };
+          enableMcpIntegration = true;
 
           settings = {
             theme = "dark";

@@ -51,6 +51,7 @@ in
 
     homeManager = {
       home.stateVersion = version;
+      home.enableNixpkgsReleaseCheck = false;
       nixpkgs.config.allowUnfree = true;
       nixpkgs.overlays = [
         stableOverlay

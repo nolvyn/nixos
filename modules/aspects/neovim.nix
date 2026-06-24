@@ -1,8 +1,15 @@
 { ... }:
 {
   den.aspects.neovim = {
-    nixos = { pkgs, ... }: {
+    nixos = { host, pkgs, ... }: {
       environment.systemPackages = [ pkgs.neovim ];
+
+      environment.persistence."/persistent".users.${host.userName} = {
+        directories = [
+          ".local/share/nvim"
+          ".local/state/nvim"
+        ];
+      };
     };
 
     homeManager = { ... }: {
@@ -12,7 +19,10 @@
           comment = "Edit text files";
           exec = "kitty -e nvim %F";
           icon = "nvim";
-          categories = [ "Utility" "TextEditor" ];
+          categories = [
+            "Utility"
+            "TextEditor"
+          ];
         };
 
         nvim = {
@@ -24,7 +34,10 @@
           terminal = true;
           noDisplay = true;
           startupNotify = false;
-          categories = [ "Utility" "TextEditor" ];
+          categories = [
+            "Utility"
+            "TextEditor"
+          ];
           mimeType = [
             "text/english"
             "text/plain"

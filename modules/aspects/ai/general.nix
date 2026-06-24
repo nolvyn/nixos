@@ -22,6 +22,20 @@
       { pkgs, ... }:
       {
         nixpkgs.overlays = [ inputs.llm-agents.overlays.default ];
+
+        programs.mcp.servers = {
+          context7 = {
+            command = "npx";
+            args = [
+              "-y"
+              "@upstash/context7-mcp"
+            ];
+          };
+          mcp-nixos = {
+            command = "uvx";
+            args = [ "mcp-nixos" ];
+          };
+        };
       };
   };
 }

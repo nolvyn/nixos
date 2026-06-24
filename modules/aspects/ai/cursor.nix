@@ -22,20 +22,6 @@
             enableExtensionUpdateCheck = true;
             enableMcpIntegration = true;
 
-            userMcp = {
-              context7 = {
-                command = "npx";
-                args = [
-                  "-y"
-                  "@upstash/context7-mcp"
-                ];
-              };
-              mcp-nixos = {
-                command = "uvx";
-                args = [ "mcp-nixos" ];
-              };
-            };
-
             extensions =
               with pkgs.vscode-extensions;
               [

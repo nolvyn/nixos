@@ -24,8 +24,8 @@ in
     den.url = "github:denful/den/latest";
 
     home-manager = {
-      url = "git+https://github.com/nix-community/home-manager?ref=release-${version}";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "unstable";
     };
   };
 }

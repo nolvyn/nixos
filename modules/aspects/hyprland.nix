@@ -1,6 +1,6 @@
 { inputs, lib, ... }:
 {
-  flake-file.inputs.hyprland.url = "github:hyprwm/Hyprland/v0.55.2";
+  # flake-file.inputs.hyprland.url = "github:hyprwm/Hyprland/v0.55.2";
 
   den.aspects.hyprland = {
     nixos = { host, pkgs, ... }: {
@@ -8,14 +8,16 @@
         ".config/hypr"
       ];
 
+      # This might be for the display manager (sddm) choosing uwsm for some reason
+      # but i cant say that for certain cause i forgot
       security.wrappers.Hyprland.capabilities = lib.mkForce "";
 
       programs.hyprland = {
         enable = true;
         withUWSM = false;
         xwayland.enable = true;
-        package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-        portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+        # package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+        # portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
       };
 
       environment.sessionVariables.NIXOS_OZONE_WL = "1";
