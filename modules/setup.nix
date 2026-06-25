@@ -5,8 +5,8 @@
   ...
 }:
 let
-  stableOverlay = final: prev: {
-    stable = import inputs.stable {
+  masterOverlay = final: prev: {
+    master = import inputs.master {
       system = prev.stdenv.hostPlatform.system;
       config.allowUnfree = true;
     };
@@ -14,6 +14,20 @@ let
 
   unstableOverlay = final: prev: {
     unstable = import inputs.unstable {
+      system = prev.stdenv.hostPlatform.system;
+      config.allowUnfree = true;
+    };
+  };
+
+  warmOverlay = final: prev: {
+    warm = import inputs.warm {
+      system = prev.stdenv.hostPlatform.system;
+      config.allowUnfree = true;
+    };
+  };
+
+  stableOverlay = final: prev: {
+    stable = import inputs.stable {
       system = prev.stdenv.hostPlatform.system;
       config.allowUnfree = true;
     };
@@ -38,8 +52,10 @@ in
     nixos = {
       nixpkgs.config.allowUnfree = true;
       nixpkgs.overlays = [
-        stableOverlay
+        masterOverlay
         unstableOverlay
+        warmOverlay
+        stableOverlay
       ];
       nix.settings.experimental-features = [
         "nix-command"
@@ -54,8 +70,10 @@ in
       home.enableNixpkgsReleaseCheck = false;
       nixpkgs.config.allowUnfree = true;
       nixpkgs.overlays = [
-        stableOverlay
+        masterOverlay
         unstableOverlay
+        warmOverlay
+        stableOverlay
       ];
     };
   };

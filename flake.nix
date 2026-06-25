@@ -42,9 +42,9 @@
       url = "github:openai/plugins";
       flake = false;
     };
-    specific.url = "github:nixos/nixpkgs/e0892a72016721b30e65ac2ac3303cbf694dc738";
-    stable.url = "github:nixos/nixpkgs/nixos-26.05";
+    stable.url = "https://flakehub.com/f/DeterminateSystems/nixpkgs-26.05-chilled/0.1";
     stevenblack-hosts.url = "github:StevenBlack/hosts";
-    unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    unstable.url = "https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly/0.1";
+    warm.url = "github:nixos/nixpkgs/nixos-26.05";
   };
 }

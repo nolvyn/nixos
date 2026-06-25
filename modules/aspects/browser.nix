@@ -12,8 +12,8 @@
       ];
 
       environment.systemPackages = with pkgs; [
-        brave
-        google-chrome
+        warm.brave
+        warm.google-chrome
       ];
 
       programs.chromium = {
