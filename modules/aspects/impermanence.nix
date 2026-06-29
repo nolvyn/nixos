@@ -37,19 +37,13 @@
               "projects"
               "school"
 
-              # Selective Cache
               ".cache/spotify"
 
-              # Selective Config
               ".config/celluloid"
               ".config/@filen"
               ".config/ghostty"
               ".config/Slack"
               ".config/spotify"
-              ".config/walker"
-
-              # Selective Local
-              ".local/share/Anki2"
             ];
           };
         };

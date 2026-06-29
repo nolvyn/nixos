@@ -9,6 +9,7 @@
             ".android"
             ".dart-tool"
             ".cache/qtshadercache-x86_64-little_endian-lp64"
+            ".config/.wrangler"
             ".config/flutter"
             ".local/share/jupyter"
             ".local/share/uv"

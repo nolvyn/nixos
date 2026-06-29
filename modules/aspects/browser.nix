@@ -7,8 +7,7 @@
       environment.persistence."/persistent".users.${host.userName}.directories = [
         ".pki"
         ".config/BraveSoftware"
-        # ".config/vivaldi"
-        # ".local/lib/vivaldi"
+        ".config/google-chrome"
       ];
 
       environment.systemPackages = with pkgs; [
