@@ -56,6 +56,18 @@
 
             projects."/home/weeb/nixos".trust_level = "trusted";
             projects."/home/weeb/projects/folirei".trust_level = "trusted";
+
+            mcp_servers.playwright = {
+              command = "npx";
+              args = [ "@playwright/mcp@latest" ];
+            };
+            mcp_servers.revenuecat = {
+              command = "npx";
+              args = [
+                "mcp-remote"
+                "https://mcp.revenuecat.ai/mcp"
+              ];
+            };
           };
         };
       };

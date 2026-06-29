@@ -4,11 +4,17 @@
 
   den.aspects.ai.provides.general = {
     nixos =
-      { pkgs, ... }:
+      { host, pkgs, ... }:
       {
         nixpkgs.overlays = [ inputs.llm-agents.overlays.default ];
 
-        environment.systemPackages = [ pkgs.llm-agents.grok ];
+        environment.systemPackages = [
+          # pkgs.llm-agents.grok
+        ];
+
+        environment.persistence."/persistent".users.${host.userName}.directories = [
+          ".mcp-auth"
+        ];
 
         nix.settings = {
           extra-substituters = [ "https://cache.numtide.com" ];
@@ -23,17 +29,20 @@
       {
         nixpkgs.overlays = [ inputs.llm-agents.overlays.default ];
 
-        programs.mcp.servers = {
-          context7 = {
-            command = "npx";
-            args = [
-              "-y"
-              "@upstash/context7-mcp"
-            ];
-          };
-          mcp-nixos = {
-            command = "uvx";
-            args = [ "mcp-nixos" ];
+        programs.mcp = {
+          enable = true;
+          servers = {
+            context7 = {
+              command = "npx";
+              args = [
+                "-y"
+                "@upstash/context7-mcp"
+              ];
+            };
+            mcp-nixos = {
+              command = "uvx";
+              args = [ "mcp-nixos" ];
+            };
           };
         };
       };

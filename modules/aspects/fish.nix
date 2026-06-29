@@ -1,6 +1,3 @@
-# fish.nix
-
-# For more information see https://nixos.wiki/wiki/Fish
 # Enable fish and set it as interactive shell only
 # NH_FLAKE needed for fish specifically
 { ... }:
@@ -37,6 +34,7 @@
             rup = "ripunzip unzip-file";
 
             matu = "matugen image --source-color-index 0";
+            oc = "opencode";
           };
         };
 

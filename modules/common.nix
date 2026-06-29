@@ -3,10 +3,12 @@
   den.aspects.common = {
     includes = with den.aspects; [
       agenix
+      ai.antigravity
       ai.claude
       ai.codex
       ai.cursor
       ai.general
+      ai.opencode
       audio
       bluetooth
       browser
@@ -47,7 +49,6 @@
       { pkgs, ... }:
       {
         environment.systemPackages = with pkgs; [
-          # anki
           brightnessctl
           celluloid
           dunst
