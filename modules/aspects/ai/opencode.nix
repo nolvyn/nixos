@@ -40,6 +40,14 @@
             ];
 
             mcp = {
+              lsp-daemon = {
+                type = "local";
+                command = [
+                  "node"
+                  "${pkgs.llm-agents.oh-my-opencode}/lib/oh-my-opencode/packages/lsp-daemon/dist/cli.js"
+                ];
+                enabled = true;
+              };
               playwright = {
                 type = "local";
                 command = [

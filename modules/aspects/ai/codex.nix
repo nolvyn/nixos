@@ -61,13 +61,15 @@
               command = "npx";
               args = [ "@playwright/mcp@latest" ];
             };
-            mcp_servers.revenuecat = {
-              command = "npx";
-              args = [
-                "mcp-remote"
-                "https://mcp.revenuecat.ai/mcp"
-              ];
-            };
+            /*
+              mcp_servers.revenuecat = {
+                command = "npx";
+                args = [
+                  "mcp-remote"
+                  "https://mcp.revenuecat.ai/mcp"
+                ];
+              };
+            */
           };
         };
       };
