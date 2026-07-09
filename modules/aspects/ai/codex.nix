@@ -5,6 +5,9 @@
     flake = false;
   };
 
+  # Unofficial wrapper that runs OpenAI's Codex Desktop (Electron GUI) on Linux.
+  flake-file.inputs.codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
+
   den.aspects.ai.provides.codex = {
     nixos =
       { host, ... }:
@@ -25,7 +28,25 @@
           };
       in
       {
+        imports = [ inputs.codex-desktop-linux.homeManagerModules.default ];
+
         home.packages = [ pkgs.llm-agents.oh-my-codex ];
+
+        # Codex Desktop GUI. cliPackage wraps the launcher/.desktop entry so it
+        # starts with CODEX_CLI_PATH pointing at our Codex CLI package. All
+        # optional features enabled: leaving `package` unset lets the module
+        # auto-select the combined computer-use-ui + remote-mobile-control
+        # variant from the two enable flags below.
+        programs.codexDesktopLinux = {
+          enable = true;
+          cliPackage = pkgs.llm-agents.codex;
+          computerUseUi.enable = true;
+          remoteMobileControl.enable = true;
+          remoteControl = {
+            enable = true;
+            package = pkgs.llm-agents.codex;
+          };
+        };
 
         programs.codex = {
           enable = true;
