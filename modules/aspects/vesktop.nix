@@ -7,9 +7,13 @@
       ];
     };
 
-    homeManager = {
+    homeManager = { pkgs, ... }: {
       programs.vesktop = {
         enable = true;
+
+        # Pin to the warm channel's vesktop: the default channel's build pulls in
+        # pnpm-10.29.2, which nixpkgs marks insecure (CVE-2026-48995/50014/50015).
+        package = pkgs.warm.vesktop;
 
         settings = {
           appBadge = false;

@@ -17,7 +17,10 @@
       { pkgs, lib, ... }:
       {
         hardware.bluetooth.powerOnBoot = lib.mkForce true;
-        environment.systemPackages = with pkgs; [ microfetch ];
+        environment.systemPackages = with pkgs; [
+          unstable.pkgsRocm.blender
+          # microfetch
+        ];
       };
   };
 }

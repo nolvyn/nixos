@@ -12,6 +12,7 @@
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
     den.url = "github:denful/den/latest";
     disko = {
       url = "github:nix-community/disko/latest";

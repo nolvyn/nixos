@@ -38,8 +38,11 @@
           ".local/state/Heroic"
         ];
         environment.systemPackages = with pkgs; [
-          heroic
+          # warm channel: default heroic pulls insecure pnpm-10.29.2
+          # (CVE-2026-48995/50014/50015).
+          warm.heroic
           prismlauncher
+          protonplus
         ];
 
         # For more information see https://nixos.wiki/wiki/Steam
