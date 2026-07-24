@@ -45,6 +45,17 @@
           remoteControl = {
             enable = true;
             package = pkgs.llm-agents.codex;
+            extraPackages = with pkgs; [
+              bash
+              coreutils
+              findutils
+              git
+              gnugrep
+              gnused
+              openssh
+              nodejs
+              uv
+            ];
           };
         };
 
@@ -77,6 +88,7 @@
 
             projects."/home/weeb/nixos".trust_level = "trusted";
             projects."/home/weeb/projects/folirei".trust_level = "trusted";
+            projects."/home/weeb/projects/shiori".trust_level = "trusted";
 
             mcp_servers.playwright = {
               command = "npx";
