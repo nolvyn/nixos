@@ -63,6 +63,7 @@
           mediainfo
           nautilus
           networkmanagerapplet
+          onlyoffice-desktopeditors
           playerctl
           proton-vpn
           resources

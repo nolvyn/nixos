@@ -6,7 +6,7 @@
     nixos =
       { host, pkgs, ... }:
       {
-        nixpkgs.overlays = [ inputs.llm-agents.overlays.default ];
+        nixpkgs.overlays = [ inputs.llm-agents.overlays.shared-nixpkgs ];
 
         environment.systemPackages = [
           # pkgs.llm-agents.grok
@@ -27,7 +27,7 @@
     homeManager =
       { pkgs, ... }:
       {
-        nixpkgs.overlays = [ inputs.llm-agents.overlays.default ];
+        nixpkgs.overlays = [ inputs.llm-agents.overlays.shared-nixpkgs ];
 
         programs.mcp = {
           enable = true;
