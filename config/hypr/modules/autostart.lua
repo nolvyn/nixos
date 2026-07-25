@@ -8,9 +8,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("blueman-applet")
     hl.exec_cmd("fcitx5")
     hl.exec_cmd("hyprpaper")
-    hl.exec_cmd("hypridle")
     hl.exec_cmd("hyprsunset")
-    hl.exec_cmd("hyprshot")
 
     hl.exec_cmd("[workspace 1 silent] " .. c.browser)
     hl.exec_cmd("[workspace name:vscode silent] code " .. c.home .. "/nixos")
@@ -22,6 +20,7 @@ hl.on("hyprland.start", function()
         hl.exec_cmd("steam")
         hl.exec_cmd("heroic")
     elseif c.hostname == "MoeNote" then
+        hl.exec_cmd("hypridle")
         hl.exec_cmd("[workspace name:slack silent] slack")
     end
 end)
