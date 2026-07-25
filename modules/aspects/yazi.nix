@@ -30,7 +30,10 @@
         comment = "Terminal file manager";
         exec = "kitty -e yazi %u";
         icon = "folder";
-        categories = [ "System" "FileManager" ];
+        categories = [
+          "System"
+          "FileManager"
+        ];
       };
     };
   };

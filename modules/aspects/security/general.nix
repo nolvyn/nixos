@@ -66,14 +66,20 @@
       fileSystems."/proc" = {
         device = "proc";
         fsType = "proc";
-        options = [ "defaults" "hidepid=invisible" ];
+        options = [
+          "defaults"
+          "hidepid=invisible"
+        ];
         neededForBoot = true;
       };
 
       services.dbus.implementation = "broker";
 
       boot.initrd.compressor = "zstd";
-      boot.initrd.compressorArgs = [ "-3" "-T0" ];
+      boot.initrd.compressorArgs = [
+        "-3"
+        "-T0"
+      ];
     };
   };
 }

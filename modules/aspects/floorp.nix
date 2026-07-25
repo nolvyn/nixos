@@ -7,7 +7,8 @@
       ];
     };
 
-    homeManager = {pkgs, ...}:
+    homeManager =
+      { pkgs, ... }:
       let
         lock = val: {
           Value = val;
@@ -62,10 +63,22 @@
             };
 
             Permissions = {
-              Camera = { BlockNewRequests = true; Locked = true; };
-              Microphone = { BlockNewRequests = true; Locked = true; };
-              Notifications = { BlockNewRequests = true; Locked = true; };
-              Location = { BlockNewRequests = true; Locked = true; };
+              Camera = {
+                BlockNewRequests = true;
+                Locked = true;
+              };
+              Microphone = {
+                BlockNewRequests = true;
+                Locked = true;
+              };
+              Notifications = {
+                BlockNewRequests = true;
+                Locked = true;
+              };
+              Location = {
+                BlockNewRequests = true;
+                Locked = true;
+              };
             };
 
             UserMessaging = {
@@ -129,7 +142,10 @@
               force = true;
               default = "kagi";
               privateDefault = "startpage";
-              order = [ "kagi" "startpage" ];
+              order = [
+                "kagi"
+                "startpage"
+              ];
               engines = {
                 kagi = {
                   name = "Kagi";

@@ -21,30 +21,81 @@
           modules = [
             "break"
             "break"
-            { keyWidth = 10; type = "title"; }
+            {
+              keyWidth = 10;
+              type = "title";
+            }
             "break"
-            { key = " "; keyColor = "34"; type = "os"; }
-            { key = " "; keyColor = "34"; type = "kernel"; }
-            { key = " "; keyColor = "34"; type = "packages"; }
-            { key = " "; keyColor = "34"; type = "shell"; }
+            {
+              key = " ";
+              keyColor = "34";
+              type = "os";
+            }
+            {
+              key = " ";
+              keyColor = "34";
+              type = "kernel";
+            }
+            {
+              key = " ";
+              keyColor = "34";
+              type = "packages";
+            }
+            {
+              key = " ";
+              keyColor = "34";
+              type = "shell";
+            }
             "break"
             "break"
-            { key = " "; keyColor = "34"; type = "terminal"; }
-            { key = "  "; keyColor = "34"; type = "wm"; }
-            { key = " "; keyColor = "34"; type = "uptime"; }
+            {
+              key = " ";
+              keyColor = "34";
+              type = "terminal";
+            }
+            {
+              key = "  ";
+              keyColor = "34";
+              type = "wm";
+            }
+            {
+              key = " ";
+              keyColor = "34";
+              type = "uptime";
+            }
             {
               key = "󱦟 ";
               keyColor = "34";
               text = "birth_install=$(stat -c %W /); current=$(date +%s); time_progression=$((current - birth_install)); days_difference=$((time_progression / 86400)); echo $days_difference days";
               type = "command";
             }
-            { key = "󰝚 "; keyColor = "34"; type = "media"; }
+            {
+              key = "󰝚 ";
+              keyColor = "34";
+              type = "media";
+            }
             "break"
             "break"
-            { key = "  "; keyColor = "blue"; type = "cpu"; }
-            { key = "  "; keyColor = "blue"; type = "gpu"; }
-            { key = " "; keyColor = "blue"; type = "memory"; }
-            { key = "󰋊 "; keyColor = "blue"; type = "disk"; }
+            {
+              key = "  ";
+              keyColor = "blue";
+              type = "cpu";
+            }
+            {
+              key = "  ";
+              keyColor = "blue";
+              type = "gpu";
+            }
+            {
+              key = " ";
+              keyColor = "blue";
+              type = "memory";
+            }
+            {
+              key = "󰋊 ";
+              keyColor = "blue";
+              type = "disk";
+            }
             "break"
             "break"
           ];

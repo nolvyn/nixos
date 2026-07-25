@@ -30,30 +30,58 @@ in
 
         settings = {
           devices = {
-            WeebMachine = { id = weebmachineID; };
-            MoeNote = { id = moenoteID; };
+            WeebMachine = {
+              id = weebmachineID;
+            };
+            MoeNote = {
+              id = moenoteID;
+            };
           };
 
           folders = {
             "Downloads" = {
               path = "/home/${host.userName}/Downloads";
-              devices = [ "WeebMachine" "MoeNote" ];
-              versioning = { type = "trashcan"; params.cleanoutDays = "30"; };
+              devices = [
+                "WeebMachine"
+                "MoeNote"
+              ];
+              versioning = {
+                type = "trashcan";
+                params.cleanoutDays = "30";
+              };
             };
             "host-keys" = {
               path = "/home/${host.userName}/nixos/secrets/host-keys";
-              devices = [ "WeebMachine" "MoeNote" ];
-              versioning = { type = "trashcan"; params.cleanoutDays = "30"; };
+              devices = [
+                "WeebMachine"
+                "MoeNote"
+              ];
+              versioning = {
+                type = "trashcan";
+                params.cleanoutDays = "30";
+              };
             };
             "other" = {
               path = "/home/${host.userName}/other";
-              devices = [ "WeebMachine" "MoeNote" ];
-              versioning = { type = "trashcan"; params.cleanoutDays = "30"; };
+              devices = [
+                "WeebMachine"
+                "MoeNote"
+              ];
+              versioning = {
+                type = "trashcan";
+                params.cleanoutDays = "30";
+              };
             };
             "school" = {
               path = "/home/${host.userName}/school";
-              devices = [ "WeebMachine" "MoeNote" ];
-              versioning = { type = "trashcan"; params.cleanoutDays = "30"; };
+              devices = [
+                "WeebMachine"
+                "MoeNote"
+              ];
+              versioning = {
+                type = "trashcan";
+                params.cleanoutDays = "30";
+              };
             };
           };
         };
