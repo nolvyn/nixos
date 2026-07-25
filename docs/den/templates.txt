@@ -1,3 +1,5 @@
+=== ARCHIVAL DEN SNAPSHOT — NOT AUTHORITATIVE; USE THE REVISION IN flake.lock ===
+=== The source paths below are labels from the machine that created this snapshot. ===
 === /home/weeb/den-source/templates/bogus/flake.nix ===
 {
   outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./modules);
