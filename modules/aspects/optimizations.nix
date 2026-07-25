@@ -4,7 +4,7 @@
 { ... }:
 {
   den.aspects.optimizations = {
-    nixos = { pkgs, ... }: {
+    nixos = { host, pkgs, ... }: {
       nix.settings = {
         max-jobs = "auto";
         cores = 0;
@@ -22,8 +22,12 @@
           dates = "weekly";
           extraArgs = "--keep 25 --keep-since 30d";
         };
-        flake = "$HOME/nixos"; # Doesn't do anything with fish
+        flake = host.flakeDir;
       };
+
+      services.journald.extraConfig = ''
+        MaxRetentionSec=30day
+      '';
 
       services.fwupd.enable = true; # Updates for certain hardware
 

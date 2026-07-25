@@ -1,5 +1,4 @@
 # Enable fish and set it as interactive shell only
-# NH_FLAKE needed for fish specifically
 { ... }:
 {
   den.aspects.fish = {
@@ -16,8 +15,6 @@
             set fish_greeting
 
             set -gx EDITOR "nano -L"
-            set -gx NH_FLAKE "${host.flakeDir}"
-
             set -gx GOPATH "$HOME/.local/share/go"
             set -gx PATH "$PATH:$GOPATH/bin"
           '';
