@@ -5,13 +5,6 @@
   ...
 }:
 let
-  masterOverlay = final: prev: {
-    master = import inputs.master {
-      system = prev.stdenv.hostPlatform.system;
-      config.allowUnfree = true;
-    };
-  };
-
   unstableOverlay = final: prev: {
     unstable = import inputs.unstable {
       system = prev.stdenv.hostPlatform.system;
@@ -52,7 +45,6 @@ in
     nixos = {
       nixpkgs.config.allowUnfree = true;
       nixpkgs.overlays = [
-        masterOverlay
         unstableOverlay
         warmOverlay
         stableOverlay
@@ -70,7 +62,6 @@ in
       home.enableNixpkgsReleaseCheck = false;
       nixpkgs.config.allowUnfree = true;
       nixpkgs.overlays = [
-        masterOverlay
         unstableOverlay
         warmOverlay
         stableOverlay
