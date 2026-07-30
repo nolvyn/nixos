@@ -32,6 +32,7 @@
             directories = [
               # Personal
               "Downloads"
+              "mext"
               "nixos"
               "other"
               "projects"
