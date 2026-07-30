@@ -29,6 +29,7 @@
         "kernel.sysrq" = 0;
 
         "kernel.unprivileged_bpf_disabled" = 1;
+        # Exposed only when the running kernel provides the BPF JIT hardening sysctl.
         "net.core.bpf_jit_harden" = 2;
 
         "net.ipv4.conf.all.accept_redirects" = 0;

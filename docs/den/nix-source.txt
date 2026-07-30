@@ -1,5 +1,6 @@
 === ARCHIVAL DEN SNAPSHOT — NOT AUTHORITATIVE; USE THE REVISION IN flake.lock ===
 === The source paths below are labels from the machine that created this snapshot. ===
+=== ORIGINAL SOURCE REVISION UNKNOWN; VERIFY ALL API EXAMPLES AGAINST THE LOCKED SOURCE. ===
 === /home/weeb/den-source/nix/default.nix ===
 let
   den-lib = import ./lib;
