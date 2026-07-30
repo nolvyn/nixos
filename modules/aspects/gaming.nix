@@ -1,10 +1,12 @@
 { inputs, ... }:
 {
   flake-file.inputs = {
-    aagl = {
-      url = "github:ezKEa/aagl-gtk-on-nix";
-      inputs.nixpkgs.follows = "unstable";
-    };
+    /*
+      aagl = {
+        url = "github:ezKEa/aagl-gtk-on-nix";
+        inputs.nixpkgs.follows = "unstable";
+      };
+    */
     moe-gaming = {
       url = "github:nolvyn/moe-gaming-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -30,7 +32,7 @@
           ".cache/umu-protonfixes"
           ".config/heroic"
           ".config/Proton"
-          ".local/share/honkers-railway-launcher"
+          # ".local/share/honkers-railway-launcher"
           ".local/share/PrismLauncher"
           # ".local/share/sleepy-launcher"
           ".local/share/Steam"
