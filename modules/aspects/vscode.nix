@@ -87,6 +87,7 @@
                 "default";
               "*.qrc" = "qt-core.qrcEditor";
             };
+            "qt-core.showWelcomePageOnActivation" = false;
 
             # Rust
             "rust-analyzer.check.command" = "clippy";
