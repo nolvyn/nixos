@@ -56,14 +56,67 @@ implementation.
     - If they are regenerated, record the Den revision, source-tree dirty state, generation command,
       and timestamp. Continue using `flake.lock` as the API source of truth.
 
+11. **Build-artifact growth under `projects/`**
+    - Rust and Flutter build output reached roughly 389 GB across two repositories before a manual
+      cleanup on 2026-07-30. Nothing bounds it today, so it will accumulate again.
+    - Research a durable approach before committing: a shared `CARGO_TARGET_DIR`, `sccache`, and
+      `cargo-sweep` on a timer address different parts of the problem and are not interchangeable.
+    - The two repositories have different causes. One accumulated duplicate dependency trees across
+      many target directories; the other accumulated incremental artifacts in a single one. Dev-profile
+      debuginfo settings are likely relevant to the second.
+    - A shared target directory introduces cargo lock contention between concurrent builds and makes
+      `cargo clean` all-or-nothing across projects. Evaluate that cost before adopting it.
+
+12. **Persistent-store visibility and orphan handling**
+    - Nothing in this configuration ever deletes from `/persistent`. The rollback service touches only
+      `@`, `@home`, `@old_roots`, and `@old_home_roots`; `@persistent` is never referenced. The store
+      grows monotonically for the life of the machine.
+    - Two distinct failure modes were observed on 2026-07-30, and they need different treatment:
+      - *Orphans*: entries removed from the persistence list leave their data behind indefinitely.
+        Commenting out an entry removes the bind mount, not the bytes. `sleepy-launcher` (77 GB) and
+        `honkers-railway-launcher` (94 GB) survived months and several reboots this way, invisible from
+        the live home because the mount was gone while the data was not.
+      - *Unbounded declared growth*: `projects/` is correctly declared and reached 595 GB. An
+        orphan detector is blind to this by definition, so orphan tooling alone addresses the smaller
+        half of the problem.
+    - Upstream offers nothing here. The nix-community impermanence module has no cleanup mechanism,
+      the NixOS wiki does not discuss store growth, and the existing community tooling
+      (impermanence issue #240) solves the inverse problem of finding files that *should* be persisted.
+      Letting the persist store grow unbounded appears to be the de facto norm rather than a
+      deliberate practice.
+    - Automated deletion is the obvious idea and carries real risk here. The most reliable orphan
+      signal is "not currently bind-mounted", which inverts dangerously on any boot where the
+      configuration only partially applied: every entry looks orphaned at once. This repository has
+      already undergone two impermanence refactors where entries were in motion between files. Any
+      implementation needs a sanity guard that refuses to act when an implausible share of entries
+      appear orphaned simultaneously, and treats that as an alert instead.
+    - The failure being corrected is absence of visibility, not absence of automation. Once the numbers
+      were surfaced, the disposition decisions took seconds. Prefer reporting first: orphaned paths plus
+      top directories by size with week-over-week deltas, which covers both failure modes at zero
+      deletion risk. A report nobody reads is worthless, so delivery matters more than detection
+      logic; a shell-greeting line or a push notification are both viable.
+    - Defer any deletion policy until roughly a month of reports exists. Choosing a policy now means
+      choosing one for data never actually observed. If orphans prove recurrent, a quarantine scheme
+      (move aside, delete after a delay, restore by moving back) is the next step and the reports will
+      have supplied real thresholds.
+    - Splitting the persistence root into precious and bulk halves was considered and deliberately not
+      pursued yet. It would make aggressive automatic deletion safe on the bulk half, but it is a
+      ~590 GB migration, it does not help `projects/` because that is precious and stays unbounded, and
+      several real entries are genuinely mixed (`.config/heroic` holds both settings and a large cache).
+      Revisit as its own decision, not as an extension of a cleanup pass.
+
 ## Intentional decisions
 
 - Install targets are expected to use NVMe storage, so Disko intentionally retains
   `/dev/nvme0n1`; the installer requires an explicit inspection and erase confirmation instead.
 - `nixos-anywhere` intentionally remains unpinned to avoid a manual update workflow. The installer
   therefore trusts its upstream GitHub default branch at execution time.
-- The 512 MiB ESP and current generation-retention settings remain unchanged because observed use
-  has been acceptable. Revisit only if `/boot` usage begins growing materially or an installation fails.
+- The 512 MiB ESP and `boot.loader.systemd-boot.configurationLimit = 50` remain unchanged because
+  observed use has been acceptable; the limit bounds boot entries only, not store contents. Revisit
+  only if `/boot` usage begins growing materially or an installation fails.
+- Generation retention was tightened on 2026-07-30 from `--keep 25 --keep-since 30d` to
+  `--keep 10 --keep-since 20d` after the store reached 161 GB across 42 generations. Roughly three
+  weeks of rollback history is intended; widen it again if a rollback older than that is ever needed.
 - Broad AI-agent shell and repository permissions are intentional. Mutable AI/MCP dependencies remain
   deferred above, but the permissions themselves should not be narrowed without a separate decision.
 - The packages in `common` are intentionally shared by both machines; closure size alone is not a reason

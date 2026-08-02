@@ -8,11 +8,13 @@
       nix.settings = {
         max-jobs = "auto";
         cores = 0;
+        min-free = 100 * 1024 * 1024 * 1024; # 100 GiB
+        max-free = 200 * 1024 * 1024 * 1024; # 200 GiB
       };
 
       nix.optimise = {
         automatic = true;
-        dates = [ "weekly" ];
+        dates = [ "daily" ];
       };
 
       programs.nh = {
@@ -20,7 +22,7 @@
         clean = {
           enable = true;
           dates = "weekly";
-          extraArgs = "--keep 25 --keep-since 30d";
+          extraArgs = "--keep 10 --keep-since 20d";
         };
         flake = host.flakeDir;
       };
