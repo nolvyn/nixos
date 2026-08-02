@@ -104,7 +104,8 @@ Do NOT manually declare `users.users.weeb`, `home.username`, `home.homeDirectory
 
 **WeebMachine** (`modules/aspects/hosts/weebmachine/weebmachine.nix`)
 - `x86_64-linux`, `isDesktop = true`, user `weeb`
-- Includes: `common` + `gaming` + `printing` + `qbittorrent`
+- Includes: `common` + `anki` + `gaming` + `printing` + `qbittorrent`
+- WeebMachine-only extras: Anki with `.local/share/Anki2` persistence
 - Hypridle is intentionally not started; the desktop is expected to remain awake
 
 **MoeNote** (`modules/aspects/hosts/moenote/moenote.nix`)
