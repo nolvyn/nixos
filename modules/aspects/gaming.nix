@@ -18,7 +18,7 @@
       { host, pkgs, ... }:
       {
         imports = [
-          inputs.aagl.nixosModules.default
+          # inputs.aagl.nixosModules.default
           inputs.moe-gaming.nixosModules.default
         ];
         nixpkgs.overlays = [ inputs.moe-gaming.overlays.default ];
@@ -64,7 +64,7 @@
 
         # programs.honkers-railway-launcher.enable = true;
         # programs.sleepy-launcher.enable = true;
-        aagl.enableNixpkgsReleaseBranchCheck = false;
+        # aagl.enableNixpkgsReleaseBranchCheck = false;
 
         boot.kernelModules = [ "ntsync" ];
       };
