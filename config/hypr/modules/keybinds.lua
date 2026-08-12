@@ -8,11 +8,15 @@ hl.bind("SUPER + X", hl.dsp.exec_cmd(c.terminal))
 hl.bind("SUPER + L", hl.dsp.exec_cmd("hyprlock"))
 
 hl.bind("SUPER + F", hl.dsp.window.fullscreen())
-local force_quit = { Slack = true, steam = true }
+local force_quit = { slack = true, steam = true }
 hl.bind("SUPER + Q", function()
     local win = hl.get_active_window()
-    if force_quit[win.class] then
-        os.execute("pkill -9 " .. win.class:lower())
+    local class = win and win.class:lower()
+    local steam_dialog = class == "steam" and win.initial_title ~= "Steam"
+    if steam_dialog then
+        hl.dispatch(hl.dsp.window.close({ window = win }))
+    elseif class and force_quit[class] then
+        os.execute("pkill -9 -x " .. class)
     else
         hl.dispatch(hl.dsp.window.close())
     end
