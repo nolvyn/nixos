@@ -32,11 +32,6 @@
 
         home.packages = [ pkgs.llm-agents.oh-my-codex ];
 
-        # Codex Desktop GUI. cliPackage wraps the launcher/.desktop entry so it
-        # starts with CODEX_CLI_PATH pointing at our Codex CLI package. All
-        # optional features enabled: leaving `package` unset lets the module
-        # auto-select the combined computer-use-ui + remote-mobile-control
-        # variant from the two enable flags below.
         programs.codexDesktopLinux = {
           enable = true;
           cliPackage = pkgs.llm-agents.codex;
@@ -83,6 +78,8 @@
 
           settings = {
             theme = "dark";
+            model = "gpt-5.6-luna";
+            model_reasoning_effort = "max";
             approval_policy = "on-request";
             sandbox_mode = "danger-full-access";
 
