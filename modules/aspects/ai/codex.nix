@@ -5,7 +5,6 @@
     flake = false;
   };
 
-  # Unofficial wrapper that runs OpenAI's Codex Desktop (Electron GUI) on Linux.
   flake-file.inputs.codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
 
   den.aspects.ai.provides.codex = {
@@ -34,7 +33,7 @@
 
         programs.codexDesktopLinux = {
           enable = true;
-          cliPackage = pkgs.llm-agents.codex;
+          # cliPackage = pkgs.llm-agents.codex;
           computerUseUi.enable = true;
           remoteMobileControl.enable = true;
           remoteControl = {
