@@ -31,7 +31,7 @@ hl.window_rule({ match = { class = "^steam_app_[0-9]+$" }, fullscreen = true })
 -- fullscreening them, and suppress_event prevents the launcher from requesting
 -- fullscreen again during startup.
 hl.window_rule({
-    match = {
+    match            = {
         class         = "steam_app_4162040", -- Zenless Zone Zero
         initial_title = "^$",
     },
@@ -41,7 +41,7 @@ hl.window_rule({
     center           = true,
 })
 hl.window_rule({
-    match = {
+    match            = {
         class         = "steam_app_0", -- Heroic/non-Steam games, including Endfield
         initial_title = "^$",
     },
@@ -51,7 +51,7 @@ hl.window_rule({
     center           = true,
 })
 hl.window_rule({
-    match = {
+    match            = {
         class         = "steam_app_4162040", -- Zenless Zone Zero launcher
         initial_title = "^Zenless Zone Zero$",
     },
@@ -61,7 +61,7 @@ hl.window_rule({
     center           = true,
 })
 hl.window_rule({
-    match = {
+    match            = {
         class         = "steam_app_0", -- Arknights: Endfield launcher
         initial_title = "^Arknights: Endfield$",
     },
@@ -122,10 +122,10 @@ hl.on("window.open", start_fullscreen_game_guard)
 hl.on("window.class", start_fullscreen_game_guard)
 hl.on("window.fullscreen", force_fullscreen_game)
 
--- Keep Curtain Games on Steam/Games Workspaces
-hl.window_rule({ match = { class = "steam_app_2767030" }, workspace = "name:steam" }) -- Marvel Rivals
-hl.window_rule({ match = { class = "steam_app_3513350" }, workspace = "name:steam" }) -- Wuthering Waves
-hl.window_rule({ match = { class = "steam_app_0" }, workspace = "name:games" })       -- General
+-- Keep Steam games on the Steam workspace, even if the mouse/pointer is on another
+-- monitor when the game window appears. Numeric AppIDs cover every regular game
+hl.window_rule({ match = { class = "^steam_app_[1-9][0-9]*$" }, workspace = "name:steam" })
+hl.window_rule({ match = { class = "steam_app_0" }, workspace = "name:games" }) -- Heroic/non-Steam games
 
 -- Auto-launch apps on empty workspace switch
 hl.workspace_rule({ workspace = "name:slack", on_created_empty = "slack" })
