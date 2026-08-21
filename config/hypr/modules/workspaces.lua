@@ -136,7 +136,7 @@ hl.workspace_rule({ workspace = "name:discord", on_created_empty = "vesktop" })
 
 -- Monitor Specific Rules
 -- Main Monitor
-hl.workspace_rule({ workspace = "1", monitor = c.mainMonitor })
+hl.workspace_rule({ workspace = "1", monitor = c.mainMonitor, default = true })
 hl.workspace_rule({ workspace = "name:steam", monitor = c.mainMonitor })
 hl.workspace_rule({ workspace = "name:discord", monitor = c.mainMonitor })
 hl.workspace_rule({ workspace = "name:slack", monitor = c.mainMonitor })
