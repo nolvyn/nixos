@@ -16,4 +16,11 @@
       den.batteries.host-aspects
     ];
   };
+
+  den.aspects.nolan = {
+    includes = [
+      den.batteries.primary-user
+      den.batteries.host-aspects
+    ];
+  };
 }

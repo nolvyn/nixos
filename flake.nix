@@ -9,7 +9,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
+    darwin = {
+      url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     den.url = "github:denful/den/latest";
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
     disko = {
       url = "github:nix-community/disko/latest";
       inputs.nixpkgs.follows = "nixpkgs";

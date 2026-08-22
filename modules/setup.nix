@@ -57,6 +57,17 @@ in
       home-manager.backupFileExtension = "backup";
     };
 
+    darwin = {
+      nixpkgs.config.allowUnfree = true;
+      nixpkgs.overlays = [
+        unstableOverlay
+        warmOverlay
+        stableOverlay
+      ];
+      system.stateVersion = 7;
+      home-manager.backupFileExtension = "backup";
+    };
+
     homeManager = {
       home.stateVersion = version;
       home.enableNixpkgsReleaseCheck = false;

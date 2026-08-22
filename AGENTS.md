@@ -28,16 +28,18 @@ modules/
     │   ├── weebmachine/
     │   │   ├── weebmachine.nix   # den.hosts + WeebMachine aspect
     │   │   └── hardware.nix
-    │   └── moenote/
-    │       ├── moenote.nix       # den.hosts + MoeNote aspect
-    │       └── hardware.nix
+    │   ├── moenote/
+    │   │   ├── moenote.nix       # den.hosts + MoeNote aspect
+    │   │   └── hardware.nix
+    │   └── astraeus/
+    │       └── astraeus.nix # den.hosts + Astraeus aspect
     ├── security/
     │   ├── general.nix
     │   ├── kernel.nix
     │   ├── network.nix
     │   ├── ssh.nix
     │   └── systemd.nix
-    └── <feature>.nix      # one file per feature (nixos + homeManager blocks)
+    └── <feature>.nix      # one file per feature (nixos/homeManager/darwin blocks)
 ```
 
 ## Flake Management
@@ -80,25 +82,27 @@ Every aspect uses the attrset form (not dot-chained assignments):
   den.aspects.foo = {
     nixos = { host, config, pkgs, lib, ... }: { ... };
     homeManager = { host, config, pkgs, ... }: { ... };
+    darwin = { host, config, pkgs, ... }: { ... };
     includes = [ den.aspects.bar ];
   };
 }
 ```
 
-- Omit `nixos`, `homeManager`, or `includes` if not needed.
+- Omit `nixos`, `homeManager`, `darwin`, or `includes` if not needed.
 - If an aspect only needs one block, include only that block.
 
 ## Batteries — All Opt-In
 
 | Battery | What it does | Where to include |
 |---|---|---|
-| `den.batteries.define-user` | sets `users.users.weeb`, `home.username`, `home.homeDirectory` | `setup.nix` → `den.default.includes` |
+| `den.batteries.define-user` | sets the host user's OS account and Home Manager home path | `setup.nix` → `den.default.includes` |
 | `den.batteries.hostname` | sets `networking.hostName` from `host.hostName` | `setup.nix` → `den.default.includes` |
-| `den.batteries.primary-user` | wheel + networkmanager groups, `isNormalUser = true` | `aspects/user.nix` → `den.aspects.weeb.includes` |
+| `den.batteries.primary-user` | NixOS wheel + networkmanager groups; Darwin `system.primaryUser` | `aspects/user.nix` → user aspect `includes` |
 | `den.batteries.user-shell "fish"` | fish shell at OS + HM level | `aspects/user.nix` → `den.aspects.weeb.includes` |
 | `den.batteries.host-aspects` | wires host-named aspect to its host | `aspects/user.nix` → `den.aspects.weeb.includes` |
 
-Do NOT manually declare `users.users.weeb`, `home.username`, `home.homeDirectory`, or `users.users.weeb.shell` — batteries own these.
+Do NOT manually declare a host user's `users.users.<name>` account, `home.username`, `home.homeDirectory`, or a battery-owned shell — batteries own these.
+The minimal `nolan` aspect intentionally includes only `primary-user` and `host-aspects`; it does not include the Fish battery.
 
 ## Hosts
 
@@ -113,7 +117,16 @@ Do NOT manually declare `users.users.weeb`, `home.username`, `home.homeDirectory
 - Includes: `common` + `tlp`
 - MoeNote-only extras: `fprintd`, `upower`, `hypridle.conf` symlink and hostname-gated Hypridle autostart
 
+**Astraeus** (`modules/aspects/hosts/astraeus/astraeus.nix`)
+- `aarch64-darwin`, `isLaptop = true`, local user `nolan`, home `/Users/nolan`
+- Hostname is `Astraeus`
+- Initial host is deliberately minimal and includes only the Determinate foundation
+- Determinate Nix is externally installed and configured through its nix-darwin module
+
+Linux hosts continue to use the `weeb` account and `/home/weeb`; the Mac user is independently `nolan`.
+
 **common** (`modules/common.nix`) bundles all shared aspects — see that file for the full list.
+It remains a Linux-oriented bundle and is not included by the Mac host.
 
 ## Schema Options (`modules/schema.nix`)
 
@@ -122,7 +135,7 @@ All under `den.schema.host`:
 | Option | Type | Default |
 |---|---|---|
 | `userName` | str | `"weeb"` |
-| `flakeDir` | str | `"/home/${host.userName}/nixos"` |
+| `flakeDir` | str | Linux: `"/home/${host.userName}/nixos"`; Darwin: `"/Users/${host.userName}/nixos"` |
 | `git.userName` | str | `"nolvyn"` |
 | `git.userEmail` | str | `"245221879+nolvyn@users.noreply.github.com"` |
 | `isDesktop` | enableOption | false |
@@ -137,6 +150,9 @@ Defined in `setup.nix` and available everywhere:
 - `warmOverlay` → `pkgs.warm` (`nixos-26.05` release branch)
 - `unstableOverlay` → `pkgs.unstable` (DeterminateSystems weekly unstable)
 - NixOS and Home Manager `stateVersion` remain `25.11`; this is independent of the package-set version
+- nix-darwin `system.stateVersion` is `7`
+
+The `determinate` aspect imports `inputs.determinate.darwinModules.default` and enables `determinateNix` for the Darwin foundation. Determinate Nix itself remains externally installed on the Mac.
 
 ## Dormant Aspects
 
@@ -159,7 +175,7 @@ truth for the Den API. The authoritative version is the `den` revision in
 
 ## Adding a New Host
 
-1. Create `modules/aspects/hosts/<hostname>/` with `<hostname>.nix` and `hardware.nix`.
-2. Declare `den.hosts.x86_64-linux.<Hostname>` with `isDesktop`/`isLaptop` and `users.weeb = {}`.
-3. Declare `den.aspects.<Hostname>` with its includes (at minimum `den.aspects.common`).
+1. Create `modules/aspects/hosts/<hostname>/` with `<hostname>.nix`; add `hardware.nix` for NixOS hosts when needed.
+2. Declare `den.hosts.<system>.<Hostname>` with `isDesktop`/`isLaptop` and the host's `users.<name> = {}`.
+3. Declare `den.aspects.<Hostname>` with the includes required by that host. Linux hosts normally include `den.aspects.common`; minimal Darwin hosts need not.
 4. Update this AGENTS.md with the new host's summary.

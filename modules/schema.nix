@@ -9,7 +9,11 @@
 
       flakeDir = lib.mkOption {
         type = lib.types.str;
-        default = "/home/${host.userName}/nixos";
+        default =
+          if lib.hasSuffix "darwin" host.system then
+            "/Users/${host.userName}/nixos"
+          else
+            "/home/${host.userName}/nixos";
       };
 
       git = {
