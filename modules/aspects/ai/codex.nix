@@ -17,7 +17,7 @@
       };
 
     homeManager =
-      { pkgs, ... }:
+      { config, pkgs, ... }:
       let
         mkPlugin =
           name:
@@ -82,9 +82,9 @@
             approval_policy = "on-request";
             sandbox_mode = "danger-full-access";
 
-            projects."/home/weeb/nixos".trust_level = "trusted";
-            projects."/home/weeb/projects/folirei".trust_level = "trusted";
-            projects."/home/weeb/projects/shiori".trust_level = "trusted";
+            projects."${config.home.homeDirectory}/nixos".trust_level = "trusted";
+            projects."${config.home.homeDirectory}/projects/folirei".trust_level = "trusted";
+            projects."${config.home.homeDirectory}/projects/shiori".trust_level = "trusted";
 
             mcp_servers.playwright = {
               command = "npx";

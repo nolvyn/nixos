@@ -1,5 +1,12 @@
 { den, ... }:
 {
+  den.aspects.primaryUser = {
+    includes = [
+      den.batteries.primary-user
+      den.batteries.host-aspects
+    ];
+  };
+
   den.aspects.user = {
     nixos = { host, config, ... }: {
       users.mutableUsers = false;
@@ -11,16 +18,15 @@
 
   den.aspects.weeb = {
     includes = [
-      den.batteries.primary-user
+      den.aspects.primaryUser
       (den.batteries.user-shell "fish")
-      den.batteries.host-aspects
     ];
   };
 
   den.aspects.nolan = {
     includes = [
-      den.batteries.primary-user
-      den.batteries.host-aspects
+      den.aspects.primaryUser
+      (den.batteries.user-shell "fish")
     ];
   };
 }

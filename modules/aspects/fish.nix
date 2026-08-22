@@ -1,52 +1,60 @@
-# Enable fish and set it as interactive shell only
-{ ... }:
+# Enable fish and configure it for interactive use.
+{ lib, ... }:
 {
   den.aspects.fish = {
     nixos =
-      { host, pkgs, ... }:
+      { host, ... }:
       {
         environment.persistence."/persistent".users.${host.userName}.directories = [
           ".local/share/fish"
         ];
+      };
+
+    homeManager =
+      {
+        config,
+        host,
+        pkgs,
+        ...
+      }:
+      let
+        linuxAliases = lib.optionalAttrs (lib.hasSuffix "linux" host.system) {
+          nhs = "nh os switch";
+          sure = "sudo reboot";
+          rup = "ripunzip unzip-file";
+          matu = "matugen image --source-color-index 0";
+          oc = "opencode";
+        };
+      in
+      {
+        home.sessionVariables = {
+          EDITOR = "nano -L";
+          GOPATH = "${config.home.homeDirectory}/.local/share/go";
+        };
+
+        home.sessionPath = [ "${config.home.homeDirectory}/.local/share/go/bin" ];
+
+        home.packages = [ pkgs.grc ];
 
         programs.fish = {
-          enable = true;
-          shellInit = ''
-            set fish_greeting
-
-            set -gx EDITOR "nano -L"
-            set -gx GOPATH "$HOME/.local/share/go"
-            set -gx PATH "$PATH:$GOPATH/bin"
-          '';
+          interactiveShellInit = "set fish_greeting";
           shellAliases = {
-            nhs = "nh os switch";
             nfu = "cd $HOME/nixos && nix run .#write-flake && nix flake update";
             nfw = "cd $HOME/nixos && nix run .#write-flake && nix flake check";
 
             ga = "cd $HOME/nixos && git add .";
             gc = "git commit -m";
             gp = "git push origin main";
+          }
+          // linuxAliases;
 
-            sure = "sudo reboot";
-            rup = "ripunzip unzip-file";
-
-            matu = "matugen image --source-color-index 0";
-            oc = "opencode";
-          };
+          plugins = [
+            {
+              name = "grc";
+              src = pkgs.fishPlugins.grc.src;
+            }
+          ];
         };
-
-        environment.systemPackages = with pkgs; [
-          fishPlugins.grc
-          grc
-        ];
-
-        programs.bash.interactiveShellInit = ''
-          if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
-          then
-            shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
-            exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
-          fi
-        '';
       };
   };
 }

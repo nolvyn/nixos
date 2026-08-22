@@ -1,6 +1,39 @@
 { ... }:
 {
   den.aspects.dev = {
+    homeManager =
+      { pkgs, ... }:
+      {
+        home.packages = with pkgs; [
+          # JS/TS
+          nodejs
+          typescript
+          typescript-language-server
+
+          # Lua
+          lua-language-server
+
+          # Nix
+          nixd
+          nixfmt
+
+          # Python
+          pyright
+          python3
+          ruff
+          uv
+
+          # Rust
+          cargo
+          clippy
+          rust-analyzer
+          rustc
+          rustfmt
+        ];
+
+        programs.direnv.enable = true;
+      };
+
     nixos =
       { host, pkgs, ... }:
       {
@@ -24,37 +57,12 @@
           # C++
           gcc
 
-          # JS/TS
-          nodejs
-          typescript
-          typescript-language-server
-
-          # Lua
-          lua-language-server
-
-          # Nix
-          nixd
-          nixfmt
-
-          # Python
-          pyright
-          python3
-          ruff
-          uv
-
           # Qt/QML
           kdePackages.qtdeclarative
           kdePackages.qtimageformats
           kdePackages.qtmultimedia
           kdePackages.qtsvg
           quickshell
-
-          # Rust
-          cargo
-          clippy
-          rust-analyzer
-          rustc
-          rustfmt
         ];
 
         programs.nix-ld = {
@@ -65,8 +73,6 @@
             vulkan-loader
           ];
         };
-
-        programs.direnv.enable = true;
 
         users.users.${host.userName}.extraGroups = [ "kvm" ]; # Needed for Android emulator hardware acceleration
       };

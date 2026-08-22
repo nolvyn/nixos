@@ -98,11 +98,11 @@ Every aspect uses the attrset form (not dot-chained assignments):
 | `den.batteries.define-user` | sets the host user's OS account and Home Manager home path | `setup.nix` → `den.default.includes` |
 | `den.batteries.hostname` | sets `networking.hostName` from `host.hostName` | `setup.nix` → `den.default.includes` |
 | `den.batteries.primary-user` | NixOS wheel + networkmanager groups; Darwin `system.primaryUser` | `aspects/user.nix` → user aspect `includes` |
-| `den.batteries.user-shell "fish"` | fish shell at OS + HM level | `aspects/user.nix` → `den.aspects.weeb.includes` |
-| `den.batteries.host-aspects` | wires host-named aspect to its host | `aspects/user.nix` → `den.aspects.weeb.includes` |
+| `den.batteries.user-shell "fish"` | fish shell at OS + HM level | `aspects/user.nix` → `den.aspects.weeb` and `den.aspects.nolan` |
+| `den.batteries.host-aspects` | wires host-named aspect to its host | `aspects/user.nix` → `primaryUser` |
 
 Do NOT manually declare a host user's `users.users.<name>` account, `home.username`, `home.homeDirectory`, or a battery-owned shell — batteries own these.
-The minimal `nolan` aspect intentionally includes only `primary-user` and `host-aspects`; it does not include the Fish battery.
+`den.aspects.primaryUser` is the shared aspect for `primary-user` and `host-aspects`; both `weeb` and `nolan` consume it and the Fish user-shell battery.
 
 ## Hosts
 
@@ -120,7 +120,7 @@ The minimal `nolan` aspect intentionally includes only `primary-user` and `host-
 **Astraeus** (`modules/aspects/hosts/astraeus/astraeus.nix`)
 - `aarch64-darwin`, `isLaptop = true`, local user `nolan`, home `/Users/nolan`
 - Hostname is `Astraeus`
-- Initial host is deliberately minimal and includes only the Determinate foundation
+- Includes the portable `fish`, `git`, and `dev` core aspects plus the Determinate foundation
 - Determinate Nix is externally installed and configured through its nix-darwin module
 
 Linux hosts continue to use the `weeb` account and `/home/weeb`; the Mac user is independently `nolan`.
@@ -141,6 +141,8 @@ All under `den.schema.host`:
 | `isDesktop` | enableOption | false |
 | `isLaptop` | enableOption | false |
 
+`host.flakeDir` is derived from `host.system`: Linux hosts use `/home/<user>/nixos`, while Darwin hosts use `/Users/<user>/nixos`.
+
 ## Overlays
 
 Defined in `setup.nix` and available everywhere:
@@ -151,6 +153,9 @@ Defined in `setup.nix` and available everywhere:
 - `unstableOverlay` → `pkgs.unstable` (DeterminateSystems weekly unstable)
 - NixOS and Home Manager `stateVersion` remain `25.11`; this is independent of the package-set version
 - nix-darwin `system.stateVersion` is `7`
+- Fish user configuration is primarily in Home Manager; Linux-only Fish persistence remains in NixOS
+- Git configuration is in Home Manager, including the platform-derived `safe.directory`
+- The `dev` aspect provides portable tools through Home Manager and Linux system integration through NixOS
 
 The `determinate` aspect imports `inputs.determinate.darwinModules.default` and enables `determinateNix` for the Darwin foundation. Determinate Nix itself remains externally installed on the Mac.
 
@@ -168,7 +173,7 @@ truth for the Den API. The authoritative version is the `den` revision in
 
 ## Adding a New Aspect
 
-1. Create `modules/aspects/<name>.nix` with the attrset form above.
+1. Create `modules/aspects/<name>.nix` with the attrset form above. Use `homeManager` for portable user configuration, `nixos` for Linux system integration, and `darwin` for macOS system integration.
 2. Add `den.aspects.<name>` to the `includes` list in `modules/common.nix` (or a specific host file if it's host-only).
 3. If it needs a new flake input, declare it via `flake-file.inputs` inside the aspect file, then run `nix run .#write-flake`.
 4. Update this AGENTS.md if the aspect introduces a new pattern or has host-conditional behavior.
