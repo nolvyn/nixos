@@ -120,8 +120,10 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 **Astraeus** (`modules/aspects/hosts/astraeus/astraeus.nix`)
 - `aarch64-darwin`, `isLaptop = true`, local user `nolan`, home `/Users/nolan`
 - Hostname is `Astraeus`
-- Includes the portable `fish`, `git`, and `dev` core aspects plus the Determinate foundation
+- Includes the Determinate foundation and the portable `fish`, `git`, `dev`, `macAppUtil`, `fonts`, `btop`, `fastfetch`, `yazi`, `kitty`, `zed`, `vscode`, and AI CLI aspects
 - Determinate Nix is externally installed and configured through its nix-darwin module
+- Fish is registered in `/etc/shells` and an idempotent nix-darwin activation hook reconciles the existing macOS admin user's Directory Services login shell
+- mac-app-util manages launchable trampolines for Nix/Home-Manager-installed macOS applications
 
 Linux hosts continue to use the `weeb` account and `/home/weeb`; the Mac user is independently `nolan`.
 
@@ -154,8 +156,11 @@ Defined in `setup.nix` and available everywhere:
 - NixOS and Home Manager `stateVersion` remain `25.11`; this is independent of the package-set version
 - nix-darwin `system.stateVersion` is `7`
 - Fish user configuration is primarily in Home Manager; Linux-only Fish persistence remains in NixOS
+- Both `weeb` and `nolan` use the Fish user-shell battery. Existing macOS admin-user shell state is reconciled declaratively during Darwin activation.
 - Git configuration is in Home Manager, including the platform-derived `safe.directory`
 - The `dev` aspect provides portable tools through Home Manager and Linux system integration through NixOS
+- Linux-only Matugen themes, Qt/QML paths, and desktop-entry/persistence pieces remain scoped to NixOS; the corresponding portable user applications are evaluated separately on Darwin
+- Homebrew, nix-homebrew, and Apple Command Line Tools remain deferred; `macAppUtil` is the Nix-native app-launcher integration used here
 
 The `determinate` aspect imports `inputs.determinate.darwinModules.default` and enables `determinateNix` for the Darwin foundation. Determinate Nix itself remains externally installed on the Mac.
 

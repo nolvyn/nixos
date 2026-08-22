@@ -1,14 +1,21 @@
-{ ... }:
+{ lib, ... }:
 {
   den.aspects.btop = {
-    homeManager = {
-      programs.btop = {
-        enable = true;
-        settings = {
-          color_theme = "matugen";
-          theme_background = false;
+    homeManager =
+      { host, ... }:
+      let
+        isLinux = lib.hasSuffix "linux" host.system;
+      in
+      {
+        programs.btop = {
+          enable = true;
+          settings = {
+            theme_background = false;
+          }
+          // lib.optionalAttrs isLinux {
+            color_theme = "matugen";
+          };
         };
       };
-    };
   };
 }

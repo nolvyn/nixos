@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, lib, ... }:
 {
   flake-file.inputs.nix-vscode-extensions = {
     url = "github:nix-community/nix-vscode-extensions";
@@ -18,7 +18,10 @@
       };
 
     homeManager =
-      { pkgs, ... }:
+      { host, pkgs, ... }:
+      let
+        isLinux = lib.hasSuffix "linux" host.system;
+      in
       {
         nixpkgs.overlays = [ inputs.nix-vscode-extensions.overlays.default ];
         programs.vscode = {
@@ -45,9 +48,14 @@
             ])
             ++ (with pkgs.vscode-marketplace; [
               adguard.adblock
-              theqtcompany.qt-qml
-              theqtcompany.qt-core
-            ]);
+            ])
+            ++ lib.optionals isLinux (
+              with pkgs.vscode-marketplace;
+              [
+                theqtcompany.qt-qml
+                theqtcompany.qt-core
+              ]
+            );
 
           profiles.default.userSettings = {
             # C++
@@ -77,17 +85,6 @@
               "editor.defaultFormatter" = "charliermarsh.ruff";
             };
             "jupyter.askForKernelRestart" = false;
-
-            # Qt / QML
-            "qt-qml.qmlls.customExePath" = "/run/current-system/sw/bin/qmlls";
-            "qt-qml.doNotAskForQmllsDownload" = true;
-            "qt-qml.qmlls.useQmlImportPathEnvVar" = true;
-            "workbench.editorAssociations" = {
-              "{git,gitlens,chat-editing-snapshot-text-model,copilot,git-graph,git-graph-3}:/**/*.qrc" =
-                "default";
-              "*.qrc" = "qt-core.qrcEditor";
-            };
-            "qt-core.showWelcomePageOnActivation" = false;
 
             # Rust
             "rust-analyzer.check.command" = "clippy";
@@ -160,6 +157,18 @@
             "chat.autopilot.enabled" = false;
             "chat.disableAIFeatures" = true;
             "git.addAICoAuthor" = "off";
+          }
+          // lib.optionalAttrs isLinux {
+            # Qt / QML is part of the Linux QuickShell toolchain only.
+            "qt-qml.qmlls.customExePath" = "/run/current-system/sw/bin/qmlls";
+            "qt-qml.doNotAskForQmllsDownload" = true;
+            "qt-qml.qmlls.useQmlImportPathEnvVar" = true;
+            "workbench.editorAssociations" = {
+              "{git,gitlens,chat-editing-snapshot-text-model,copilot,git-graph,git-graph-3}:/**/*.qrc" =
+                "default";
+              "*.qrc" = "qt-core.qrcEditor";
+            };
+            "qt-core.showWelcomePageOnActivation" = false;
           };
         };
       };

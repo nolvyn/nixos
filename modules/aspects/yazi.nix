@@ -1,40 +1,45 @@
-{ ... }:
+{ lib, ... }:
 {
   den.aspects.yazi = {
-    homeManager = {
-      programs.yazi = {
-        enable = true;
-        shellWrapperName = "yy";
+    homeManager =
+      { host, ... }:
+      let
+        isLinux = lib.hasSuffix "linux" host.system;
+      in
+      {
+        programs.yazi = {
+          enable = true;
+          shellWrapperName = "yy";
 
-        settings = {
-          mgr = {
-            sort_by = "natural";
-            sort_sensitive = false;
-            sort_reverse = false;
-            sort_dir_first = true;
-            show_symlink = true;
-            linemod = "size";
-          };
+          settings = {
+            mgr = {
+              sort_by = "natural";
+              sort_sensitive = false;
+              sort_reverse = false;
+              sort_dir_first = true;
+              show_symlink = true;
+              linemod = "size";
+            };
 
-          preview = {
-            image_filter = "lanczos3";
-            image_quality = 90;
-            wrap = "yes";
-            tab_size = 4;
+            preview = {
+              image_filter = "lanczos3";
+              image_quality = 90;
+              wrap = "yes";
+              tab_size = 4;
+            };
           };
         };
-      };
 
-      xdg.desktopEntries.yazi = {
-        name = "Yazi";
-        comment = "Terminal file manager";
-        exec = "kitty -e yazi %u";
-        icon = "folder";
-        categories = [
-          "System"
-          "FileManager"
-        ];
+        xdg.desktopEntries.yazi = lib.mkIf isLinux {
+          name = "Yazi";
+          comment = "Terminal file manager";
+          exec = "kitty -e yazi %u";
+          icon = "folder";
+          categories = [
+            "System"
+            "FileManager"
+          ];
+        };
       };
-    };
   };
 }
