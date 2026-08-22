@@ -33,6 +33,8 @@ modules/
     │   │   └── hardware.nix
     │   └── astraeus/
     │       └── astraeus.nix # den.hosts + Astraeus aspect
+    ├── portable-apps.nix     # shared Home Manager application layer
+    ├── ghostty.nix           # cross-platform Ghostty Home Manager aspect
     ├── security/
     │   ├── general.nix
     │   ├── kernel.nix
@@ -121,6 +123,7 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 - `aarch64-darwin`, `isLaptop = true`, local user `nolan`, home `/Users/nolan`
 - Hostname is `Astraeus`
 - Includes the Determinate foundation and the portable `fish`, `git`, `dev`, `macAppUtil`, `fonts`, `btop`, `fastfetch`, `yazi`, `kitty`, `zed`, `vscode`, and AI CLI aspects
+- Includes the shared portable application layer, browsers, LocalSend, Vesktop, Ghostty, and portable Cursor/Antigravity aspects
 - Determinate Nix is externally installed and configured through its nix-darwin module
 - Fish is registered in `/etc/shells` and an idempotent nix-darwin activation hook reconciles the existing macOS admin user's Directory Services login shell
 - mac-app-util manages launchable trampolines for Nix/Home-Manager-installed macOS applications
@@ -128,7 +131,7 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 Linux hosts continue to use the `weeb` account and `/home/weeb`; the Mac user is independently `nolan`.
 
 **common** (`modules/common.nix`) bundles all shared aspects — see that file for the full list.
-It remains a Linux-oriented bundle and is not included by the Mac host.
+It remains a Linux-oriented bundle and is not included by the Mac host. Its portable application members are provided through Home Manager aspects shared with Astraeus.
 
 ## Schema Options (`modules/schema.nix`)
 
@@ -159,7 +162,12 @@ Defined in `setup.nix` and available everywhere:
 - Both `weeb` and `nolan` use the Fish user-shell battery. Existing macOS admin-user shell state is reconciled declaratively during Darwin activation.
 - Git configuration is in Home Manager, including the platform-derived `safe.directory`
 - The `dev` aspect provides portable tools through Home Manager and Linux system integration through NixOS
+- `portableApps` owns the cross-platform user application/CLI layer; Linux system packages retain only genuine system integration
+- Browser packages and extensions are owned by Home Manager; Linux Brave policies remain NixOS-managed, while Darwin enterprise-policy parity remains deferred until a robust managed-preferences/profile path is available
+- LocalSend is a shared Home Manager application; Linux firewall and persistence remain NixOS-only
+- Ghostty is a shared Home Manager aspect using `ghostty` on Linux and `ghostty-bin` on Darwin
 - Linux-only Matugen themes, Qt/QML paths, and desktop-entry/persistence pieces remain scoped to NixOS; the corresponding portable user applications are evaluated separately on Darwin
+- ONLYOFFICE, Proton VPN, Celluloid, Linux desktop/system integrations, and Syncthing remain Linux-only or deferred; no macOS replacements are added here
 - Homebrew, nix-homebrew, and Apple Command Line Tools remain deferred; `macAppUtil` is the Nix-native app-launcher integration used here
 
 The `determinate` aspect imports `inputs.determinate.darwinModules.default` and enables `determinateNix` for the Darwin foundation. Determinate Nix itself remains externally installed on the Mac.

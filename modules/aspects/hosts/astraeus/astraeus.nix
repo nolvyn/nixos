@@ -13,6 +13,11 @@
       fish
       git
       dev
+      portableApps
+      browser
+      localsend
+      vesktop
+      ghostty
       macAppUtil
       fonts
       btop
@@ -25,6 +30,8 @@
       ai.codex
       ai.claude
       ai.opencode
+      ai.cursor
+      ai.antigravity
     ];
 
     darwin = { host, ... }: {

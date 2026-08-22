@@ -1,6 +1,10 @@
 { ... }:
 {
   den.aspects.localsend = {
+    homeManager = { pkgs, ... }: {
+      home.packages = [ pkgs.localsend ];
+    };
+
     nixos = { host, ... }: {
       programs.localsend = {
         enable = true;

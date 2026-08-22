@@ -29,6 +29,7 @@
       locale
       localsend
       optimizations
+      portableApps
       sddm
       security.general
       security.kernel
@@ -43,6 +44,7 @@
       vscode
       yazi
       zed
+      ghostty
     ];
 
     nixos =
@@ -52,29 +54,14 @@
           brightnessctl
           celluloid
           dunst
-          exiftool
-          file
-          filen-desktop
-          ghostty
           glib
-          gzip
-          jq
           lynis
-          mediainfo
           nautilus
           networkmanagerapplet
           onlyoffice-desktopeditors
           playerctl
           proton-vpn
           resources
-          ripgrep
-          ripunzip
-          sherlock
-          slack
-          spotify
-          tree
-          unrar
-          wget
         ];
 
       };
