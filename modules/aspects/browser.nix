@@ -88,6 +88,67 @@ in
       };
     };
 
+    darwin =
+      { lib, pkgs, ... }:
+      let
+        policyPlist = (pkgs.formats.plist { }).generate "com.brave.Browser.plist" bravePolicies;
+        policyPlistArg = lib.escapeShellArg (toString policyPlist);
+      in
+      {
+        # Brave reads mandatory macOS policies from the system managed
+        # preferences domain, not from ordinary user defaults.
+        system.activationScripts.postActivation.text = lib.mkAfter ''
+          policyDir="/Library/Managed Preferences"
+          policyFile="$policyDir/com.brave.Browser.plist"
+
+          if ! /bin/mkdir -p "$policyDir" \
+            || ! /usr/sbin/chown root:wheel "$policyDir" \
+            || ! /bin/chmod 0755 "$policyDir"; then
+            printf >&2 'error: could not prepare %s\n' "$policyDir"
+            exit 1
+          fi
+
+          if ! /usr/bin/plutil -lint ${policyPlistArg} > /dev/null 2>&1; then
+            printf >&2 'error: generated Brave policy plist failed validation\n'
+            exit 1
+          fi
+
+          if [[ -L "$policyFile" ]]; then
+            printf >&2 'error: refusing to manage a symlink at the Brave policy target: %s\n' "$policyFile"
+            exit 1
+          fi
+
+          if [[ -e "$policyFile" && ! -f "$policyFile" ]]; then
+            printf >&2 'error: refusing to replace non-file Brave policy target: %s\n' "$policyFile"
+            exit 1
+          fi
+
+          if [[ -f "$policyFile" ]] && /usr/bin/cmp -s ${policyPlistArg} "$policyFile"; then
+            if ! /usr/sbin/chown root:wheel "$policyFile" || ! /bin/chmod 0644 "$policyFile"; then
+              printf >&2 'error: could not reconcile metadata for %s\n' "$policyFile"
+              exit 1
+            fi
+          else
+            temporaryPolicy=$(/usr/bin/mktemp "$policyDir/.com.brave.Browser.plist.XXXXXX") || {
+              printf >&2 'error: could not create a temporary Brave policy plist\n'
+              exit 1
+            }
+            trap '/bin/rm -f "$temporaryPolicy"' EXIT
+
+            if ! /bin/cp ${policyPlistArg} "$temporaryPolicy" \
+              || ! /usr/sbin/chown root:wheel "$temporaryPolicy" \
+              || ! /bin/chmod 0644 "$temporaryPolicy" \
+              || ! /bin/mv -f "$temporaryPolicy" "$policyFile"; then
+              printf >&2 'error: could not atomically install %s\n' "$policyFile"
+              exit 1
+            fi
+
+            trap - EXIT
+            /usr/bin/killall cfprefsd > /dev/null 2>&1 || true
+          fi
+        '';
+      };
+
     homeManager =
       { host, pkgs, ... }:
       {
@@ -108,10 +169,9 @@ in
           extensions = lib.optionals (lib.hasSuffix "darwin" host.system) browserExtensions;
         };
 
-        # Brave's macOS enterprise-policy path is deliberately not synthesized
-        # as user defaults or a managed-preferences activation hack here. The
-        # Linux policy source remains authoritative until a robust profile/MDM
-        # mechanism is available for Darwin.
+        # The shared bravePolicies attrset is installed by the Darwin system
+        # block as a root-owned managed-preferences plist. A configuration
+        # profile fallback remains deliberately out of scope.
       };
   };
 }
