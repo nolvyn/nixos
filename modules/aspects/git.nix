@@ -1,8 +1,10 @@
-# Check out https://www.youtube.com/watch?v=20BN4gqHwaQ
 { ... }:
 {
   den.aspects.git = {
-    homeManager = { host, ... }: {
+    homeManager = { host, pkgs, ... }: {
+      home.packages = with pkgs; [
+        gh
+      ];
       programs.git = {
         enable = true;
         lfs.enable = true;
@@ -11,6 +13,10 @@
           user.email = host.git.userEmail;
           init.defaultBranch = "main";
           safe.directory = [ host.flakeDir ];
+          credential."https://github.com".helper = [
+            ""
+            "${pkgs.gh}/bin/gh auth git-credential"
+          ];
         };
       };
     };

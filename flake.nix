@@ -31,7 +31,7 @@
     impermanence.url = "github:nix-community/impermanence";
     import-tree.url = "github:denful/import-tree";
     llm-agents.url = "github:numtide/llm-agents.nix";
-    mac-app-util.url = "github:hraban/mac-app-util";
+    mac-app-util.url = "github:mcflis/mac-app-util/d90c36aaa2b35a4fe01edb77160574d0979f74a1";
     moe-gaming = {
       url = "github:nolvyn/moe-gaming-nix";
       inputs.nixpkgs.follows = "nixpkgs";
