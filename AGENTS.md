@@ -127,6 +127,7 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 - Determinate Nix is externally installed and configured through its nix-darwin module
 - Fish is registered in `/etc/shells` and an idempotent nix-darwin activation hook reconciles the existing macOS admin user's Directory Services login shell
 - mac-app-util manages launchable trampolines for Nix/Home-Manager-installed macOS applications
+- Darwin Home Manager GUI apps use `targets.darwin.linkApps` and mac-app-util trampolines; do not re-enable `copyApps` without deliberately accepting macOS App Management/TCC requirements. The mac-app-util aspect safely migrates the old generated copy directory during activation.
 
 Linux hosts continue to use the `weeb` account and `/home/weeb`; the Mac user is independently `nolan`.
 
@@ -162,7 +163,7 @@ Defined in `setup.nix` and available everywhere:
 - Both `weeb` and `nolan` use the Fish user-shell battery. Existing macOS admin-user shell state is reconciled declaratively during Darwin activation.
 - Git configuration is in Home Manager, including the platform-derived `safe.directory`
 - The `dev` aspect provides portable tools through Home Manager and Linux system integration through NixOS
-- `portableApps` owns the cross-platform user application/CLI layer; Linux system packages retain only genuine system integration
+- `portableApps` owns the cross-platform user application/CLI layer; Linux system packages retain only genuine system integration. Filen intentionally uses `pkgs.unstable.filen-desktop` on both Linux and Darwin.
 - Browser packages and extensions are owned by Home Manager; Linux Brave policies remain NixOS-managed, while Darwin enterprise-policy parity remains deferred until a robust managed-preferences/profile path is available
 - LocalSend is a shared Home Manager application; Linux firewall and persistence remain NixOS-only
 - Ghostty is a shared Home Manager aspect using `ghostty` on Linux and `ghostty-bin` on Darwin

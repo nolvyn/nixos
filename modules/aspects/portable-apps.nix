@@ -5,7 +5,7 @@
       home.packages = with pkgs; [
         exiftool
         file
-        filen-desktop
+        unstable.filen-desktop
         gzip
         jq
         mediainfo
