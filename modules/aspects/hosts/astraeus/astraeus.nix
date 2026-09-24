@@ -10,6 +10,7 @@
   den.aspects.Astraeus = {
     includes = with den.aspects; [
       determinate
+      homebrew
       fish
       git
       dev

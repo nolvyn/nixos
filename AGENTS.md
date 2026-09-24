@@ -35,6 +35,7 @@ modules/
     │       └── astraeus.nix # den.hosts + Astraeus aspect
     ├── portable-apps.nix     # shared Home Manager application layer
     ├── ghostty.nix           # cross-platform Ghostty Home Manager aspect
+    ├── homebrew.nix          # native Homebrew bootstrap + package reconciliation
     ├── security/
     │   ├── general.nix
     │   ├── kernel.nix
@@ -123,6 +124,8 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 - `aarch64-darwin`, `isLaptop = true`, local user `nolan`, home `/Users/nolan`
 - Hostname is `Astraeus`
 - Includes the Determinate foundation and the portable `fish`, `git`, `dev`, `macAppUtil`, `fonts`, `btop`, `fastfetch`, `yazi`, `kitty`, `zed`, `vscode`, and AI CLI aspects
+- Includes the native ARM Homebrew foundation: `nix-homebrew` bootstraps `/opt/homebrew`, while nix-darwin reconciles the declared package set and uninstalls undeclared packages on activation
+- Proton VPN is installed declaratively through the `protonvpn` Homebrew cask
 - Includes the shared portable application layer, browsers, LocalSend, Vesktop, Ghostty, and portable Cursor/Antigravity aspects
 - Determinate Nix is externally installed and configured through its nix-darwin module
 - Fish is registered in `/etc/shells` and an idempotent nix-darwin activation hook reconciles the existing macOS admin user's Directory Services login shell
@@ -169,8 +172,9 @@ Defined in `setup.nix` and available everywhere:
 - LocalSend is a shared Home Manager application; Linux firewall and persistence remain NixOS-only
 - Ghostty is a shared Home Manager aspect using `ghostty` on Linux and `ghostty-bin` on Darwin
 - Linux-only Matugen themes, Qt/QML paths, and desktop-entry/persistence pieces remain scoped to NixOS; the corresponding portable user applications are evaluated separately on Darwin
-- ONLYOFFICE, Proton VPN, Celluloid, Linux desktop/system integrations, and Syncthing remain Linux-only or deferred; no macOS replacements are added here
-- Homebrew, nix-homebrew, and Apple Command Line Tools remain deferred; `macAppUtil` is the Nix-native app-launcher integration used here
+- ONLYOFFICE, Celluloid, Linux desktop/system integrations, and Syncthing remain Linux-only or deferred; no macOS replacements are added here
+- `nix-homebrew` owns the native ARM `/opt/homebrew` installation on Astraeus, while nix-darwin owns its declared package state; taps remain mutable and Proton VPN is the only declared cask
+- Apple Command Line Tools remain deferred; `macAppUtil` remains the Nix-native app-launcher integration used here
 - The `dev` aspect creates `~/projects` idempotently during Home Manager activation while leaving its contents mutable for cloned repositories
 
 The `determinate` aspect imports `inputs.determinate.darwinModules.default` and enables `determinateNix` for the Darwin foundation. Determinate Nix itself remains externally installed on the Mac.
