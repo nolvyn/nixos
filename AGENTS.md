@@ -171,6 +171,7 @@ Defined in `setup.nix` and available everywhere:
 - Linux-only Matugen themes, Qt/QML paths, and desktop-entry/persistence pieces remain scoped to NixOS; the corresponding portable user applications are evaluated separately on Darwin
 - ONLYOFFICE, Proton VPN, Celluloid, Linux desktop/system integrations, and Syncthing remain Linux-only or deferred; no macOS replacements are added here
 - Homebrew, nix-homebrew, and Apple Command Line Tools remain deferred; `macAppUtil` is the Nix-native app-launcher integration used here
+- The `dev` aspect creates `~/projects` idempotently during Home Manager activation while leaving its contents mutable for cloned repositories
 
 The `determinate` aspect imports `inputs.determinate.darwinModules.default` and enables `determinateNix` for the Darwin foundation. Determinate Nix itself remains externally installed on the Mac.
 

@@ -2,8 +2,27 @@
 {
   den.aspects.dev = {
     homeManager =
-      { pkgs, ... }:
       {
+        config,
+        lib,
+        pkgs,
+        ...
+      }:
+      let
+        projectsDirectory = "${config.home.homeDirectory}/projects";
+      in
+      {
+        home.activation.ensureProjectsDirectory = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          projectsDirectory=${lib.escapeShellArg projectsDirectory}
+
+          if [[ -e "$projectsDirectory" && ! -d "$projectsDirectory" ]]; then
+            printf >&2 'error: refusing to replace non-directory projects path: %s\n' "$projectsDirectory"
+            exit 1
+          fi
+
+          run ${pkgs.coreutils}/bin/mkdir -p "$projectsDirectory"
+        '';
+
         home.packages = with pkgs; [
           # JS/TS
           nodejs
