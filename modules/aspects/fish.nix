@@ -14,17 +14,12 @@
       {
         host,
         lib,
-        pkgs,
         ...
       }:
       let
         dsclUser = lib.escapeShellArg "/Users/${host.userName}";
       in
       {
-        # Den v0.18 registers the shell for nix-darwin but does not yet add it
-        # to environment.shells. Keep the shell path stable across upgrades.
-        environment.shells = [ pkgs.fish ];
-
         # Existing macOS accounts are Directory Services-owned. nix-darwin
         # intentionally does not mutate their UserShell, so reconcile it at
         # activation time after /etc/shells has been generated.

@@ -7,8 +7,10 @@
         programs.rofi = {
           enable = true;
           package = pkgs.rofi;
-          font = "Sans Serif 13";
-          terminal = "${pkgs.kitty}/bin/kitty";
+          settings = {
+            font = "Sans Serif 13";
+            terminal = "${pkgs.kitty}/bin/kitty";
+          };
           theme = "moe";
         };
 
