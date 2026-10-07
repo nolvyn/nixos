@@ -17,6 +17,7 @@ flake.nix                  # Auto-generated — DO NOT edit manually
 TODO.md                    # Intentionally deferred audit and maintenance work
 config/                    # Runtime Hyprland, OmniWM, Quickshell, and Matugen configuration
 docs/den/                  # Archival Den snapshots; flake.lock is authoritative
+docs/astraeus-manual-setup.md # Fresh Mac bootstrap and manual approvals/sign-ins
 scripts/                   # Operational helpers; nixos-anywhere.sh is destructive
 modules/
 ├── inputs.nix             # Source of truth for all flake inputs
@@ -132,7 +133,8 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 - Determinate Nix is externally installed and configured through its nix-darwin module
 - Fish is registered in `/etc/shells` and an idempotent nix-darwin activation hook reconciles the existing macOS admin user's Directory Services login shell
 - mac-app-util manages launchable trampolines for Nix/Home-Manager-installed macOS applications and is temporarily pinned to upstream PR #44 (`CFBundleIconName`/`Assets.car` Tahoe handling); remove the pin once an equivalent fix merges upstream
-- Darwin Home Manager GUI apps use `targets.darwin.linkApps` and mac-app-util trampolines; do not re-enable `copyApps` without deliberately accepting macOS App Management/TCC requirements. The mac-app-util aspect safely migrates the old generated copy directory and otherwise uses the upstream trampoline activation.
+- Darwin Home Manager GUI apps use `targets.darwin.linkApps` and upstream mac-app-util trampoline activation; do not re-enable `copyApps` without deliberately accepting macOS App Management/TCC requirements. The completed copyApps migration hook and forced overwrite have been retired; unexpected existing directories now receive Home Manager's normal collision protection.
+- Fresh Mac bootstrap, required manual approvals, optional permissions, and account sign-ins are documented in `docs/astraeus-manual-setup.md`.
 - Brave's Darwin bundle identifier can be checked on the Mac with `/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$HOME/Applications/Home Manager Apps/Brave Browser.app/Contents/Info.plist"`
 
 Linux hosts continue to use the `weeb` account and `/home/weeb`; the Mac user is independently `nolan`.
@@ -165,12 +167,12 @@ Defined in `setup.nix` and available everywhere:
 - `unstableOverlay` → `pkgs.unstable` (DeterminateSystems weekly unstable)
 - NixOS and Home Manager `stateVersion` remain `25.11`; this is independent of the package-set version
 - nix-darwin `system.stateVersion` is `7`
-- Fish user configuration is primarily in Home Manager; Linux-only Fish persistence remains in NixOS
+- Fish user configuration is primarily in Home Manager; Linux-only Fish persistence remains in NixOS. The locked Den Fish battery also owns Darwin `/etc/shells` registration; do not duplicate it.
 - Both `weeb` and `nolan` use the Fish user-shell battery. Existing macOS admin-user shell state is reconciled declaratively during Darwin activation.
 - Git configuration is in Home Manager, including the platform-derived `safe.directory`
 - The `dev` aspect provides portable tools through Home Manager and Linux system integration through NixOS
 - `portableApps` owns the cross-platform user application/CLI layer; Linux system packages retain only genuine system integration. Filen intentionally uses `pkgs.unstable.filen-desktop` on both Linux and Darwin.
-- Browser packages and extensions are owned by Home Manager; the single shared `bravePolicies` attrset remains Linux `programs.chromium.extraOpts` and is also rendered to `/Library/Managed Preferences/com.brave.Browser.plist` on Darwin, where a root launchd self-healing reconciler is called both during activation and on native path events. A configuration-profile fallback remains deferred.
+- Browser packages are owned by Home Manager, with shared `pkgs.unstable.brave`. Linux installs the shared extensions through `programs.chromium`; Darwin force-installs them through root-owned Brave and Chrome managed-preferences plists, never Home Manager files inside browser profiles. The shared `bravePolicies` attrset remains Linux `programs.chromium.extraOpts` and is also rendered to `/Library/Managed Preferences/com.brave.Browser.plist` on Darwin. Both Darwin browser policy reconcilers run during activation and on native path events. A configuration-profile fallback remains deferred.
 - LocalSend is a shared Home Manager application; Linux firewall and persistence remain NixOS-only
 - Ghostty is a shared Home Manager aspect using `ghostty` on Linux and `ghostty-bin` on Darwin
 - Linux-only Matugen themes, Qt/QML paths, and desktop-entry/persistence pieces remain scoped to NixOS; the corresponding portable user applications are evaluated separately on Darwin

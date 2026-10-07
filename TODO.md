@@ -105,6 +105,25 @@ implementation.
       several real entries are genuinely mixed (`.config/heroic` holds both settings and a large cache).
       Revisit as its own decision, not as an extension of a cleanup pass.
 
+13. **Astraeus reproducibility follow-up**
+    - Keep the mac-app-util Tahoe icon source pin and modern SBCL wrapper until an
+      equivalent upstream fix can be verified on the Mac; keep OmniWM 0.7.5 until
+      a deliberate package update is validated.
+    - Homebrew taps/cask versions and managed Web Store extension payloads remain
+      mutable. Version pinning beyond the current Nix lock is a separate decision;
+      mutable AI/MCP tools are already tracked above.
+    - The Phase 7 audit found old `ipc.sock` and `ipc.sock.secret` files in
+      `~/Library/Caches/com.barut.OmniWM`; the running 0.7.5 process uses only
+      `~/Library/Application Support/com.barut.OmniWM/ipc.sock`. Leave the old
+      files until cleanup is explicitly requested; do not touch the live socket.
+    - Review any remaining temporary Terminal browser App Data grants in System
+      Settings. Chrome's protected External Extensions directory was not readable
+      during the audit; the evaluated configuration creates no extension files
+      there, and the prior migration reported all eight legacy symlinks removed.
+      Do not grant extra access just to inspect it.
+    - Workspace Bar customization, Syncthing on Astraeus, optional Screen Recording,
+      and MDM experimentation remain outside this audit's implementation scope.
+
 ## Intentional decisions
 
 - Install targets are expected to use NVMe storage, so Disko intentionally retains
