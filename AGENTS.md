@@ -15,7 +15,7 @@
 ```
 flake.nix                  # Auto-generated — DO NOT edit manually
 TODO.md                    # Intentionally deferred audit and maintenance work
-config/                    # Runtime Hyprland, Quickshell, and Matugen configuration
+config/                    # Runtime Hyprland, OmniWM, Quickshell, and Matugen configuration
 docs/den/                  # Archival Den snapshots; flake.lock is authoritative
 scripts/                   # Operational helpers; nixos-anywhere.sh is destructive
 modules/
@@ -124,6 +124,8 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 - `aarch64-darwin`, `isLaptop = true`, local user `nolan`, home `/Users/nolan`
 - Hostname is `Astraeus`
 - Includes the Determinate foundation and the portable `fish`, `git`, `dev`, `macAppUtil`, `fonts`, `btop`, `fastfetch`, `yazi`, `kitty`, `zed`, `vscode`, and AI CLI aspects
+- Includes the host-only `omniwm` aspect: Home Manager installs a Nix-native OmniWM 0.7.5 pin based on `pkgs.unstable.omniwm` and its user LaunchAgent, while nix-darwin enables separate Spaces
+- OmniWM uses the repo-backed native `config/omniwm/settings.toml` through an out-of-store symlink; ordinary keybinding/config edits do not require a Darwin rebuild
 - Includes the native ARM Homebrew foundation: `nix-homebrew` bootstraps `/opt/homebrew`, while nix-darwin reconciles the declared package set and uninstalls undeclared packages on activation
 - Proton VPN is installed declaratively through the `protonvpn` Homebrew cask
 - Includes the shared portable application layer, browsers, LocalSend, Vesktop, Ghostty, and portable Cursor/Antigravity aspects
@@ -175,6 +177,8 @@ Defined in `setup.nix` and available everywhere:
 - ONLYOFFICE, Celluloid, Linux desktop/system integrations, and Syncthing remain Linux-only or deferred; no macOS replacements are added here
 - `nix-homebrew` owns the native ARM `/opt/homebrew` installation on Astraeus, while nix-darwin owns its declared package state; taps remain mutable and Proton VPN is the only declared cask
 - Apple Command Line Tools remain deferred; `macAppUtil` remains the Nix-native app-launcher integration used here
+- Darwin's pinned `macAppUtil` package uses the root `unstable` SBCL package set; its upstream trampoline modules remain authoritative
+- OmniWM 0.7.5 is Nix-managed on Astraeus by overriding the `pkgs.unstable.omniwm` release asset; it is not a Homebrew cask. Accessibility and Input Monitoring approval remain manual macOS security steps.
 - The `dev` aspect creates `~/projects` idempotently during Home Manager activation while leaving its contents mutable for cloned repositories
 
 The `determinate` aspect imports `inputs.determinate.darwinModules.default` and enables `determinateNix` for the Darwin foundation. Determinate Nix itself remains externally installed on the Mac.

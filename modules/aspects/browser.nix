@@ -7,6 +7,10 @@ let
     "mnjggcdmjocbbbhaepdhchncahnbgone" # SponsorBlock for YouTube
   ];
 
+  extensionInstallForcelist = map (
+    id: "${id};https://clients2.google.com/service/update2/crx"
+  ) browserExtensions;
+
   bravePolicies = {
     # Brave-Specific Policies
     BraveAIChatEnabled = false;
@@ -71,6 +75,14 @@ let
       "password_signin"
     ];
   };
+
+  darwinBravePolicies = bravePolicies // {
+    ExtensionInstallForcelist = extensionInstallForcelist;
+  };
+
+  darwinChromePolicies = {
+    ExtensionInstallForcelist = extensionInstallForcelist;
+  };
 in
 {
   den.aspects.browser = {
@@ -92,122 +104,155 @@ in
       { lib, pkgs, ... }:
       let
         policyDir = "/Library/Managed Preferences";
-        policyFile = "${policyDir}/com.brave.Browser.plist";
-        policyPlist = (pkgs.formats.plist { }).generate "com.brave.Browser.plist" bravePolicies;
-        policyPlistArg = lib.escapeShellArg (toString policyPlist);
-        policyReconciler = pkgs.writeShellScript "brave-managed-policy-reconciler" ''
-          set -eu
+        policyFiles = {
+          brave = "${policyDir}/com.brave.Browser.plist";
+          chrome = "${policyDir}/com.google.Chrome.plist";
+        };
+        policyPlists = {
+          brave = (pkgs.formats.plist { }).generate "com.brave.Browser.plist" darwinBravePolicies;
+          chrome = (pkgs.formats.plist { }).generate "com.google.Chrome.plist" darwinChromePolicies;
+        };
+        mkPolicyReconciler =
+          {
+            name,
+            policyFile,
+            policyPlist,
+          }:
+          pkgs.writeShellScript "${name}-managed-policy-reconciler" ''
+            set -eu
 
-          policyDir=${lib.escapeShellArg policyDir}
-          policyFile=${lib.escapeShellArg policyFile}
-          desired=${policyPlistArg}
-          temporaryPolicy=""
+            policyDir=${lib.escapeShellArg policyDir}
+            policyFile=${lib.escapeShellArg policyFile}
+            desired=${lib.escapeShellArg (toString policyPlist)}
+            temporaryPolicy=""
 
-          fail() {
-            printf >&2 'error: %s\n' "$1"
-            exit 1
-          }
+            fail() {
+              printf >&2 'error: %s\n' "$1"
+              exit 1
+            }
 
-          cleanup() {
-            if [ -n "$temporaryPolicy" ] && { [ -e "$temporaryPolicy" ] || [ -L "$temporaryPolicy" ]; }; then
-              /bin/rm -f "$temporaryPolicy"
+            cleanup() {
+              if [ -n "$temporaryPolicy" ] && { [ -e "$temporaryPolicy" ] || [ -L "$temporaryPolicy" ]; }; then
+                /bin/rm -f "$temporaryPolicy"
+              fi
+            }
+            trap cleanup EXIT
+
+            if ! /usr/bin/plutil -lint "$desired" > /dev/null 2>&1; then
+              fail "generated policy plist failed validation: $policyFile"
             fi
-          }
-          trap cleanup EXIT
 
-          if ! /usr/bin/plutil -lint "$desired" > /dev/null 2>&1; then
-            fail "generated Brave policy plist failed validation"
-          fi
-
-          if [ -L "$policyDir" ] || { [ -e "$policyDir" ] && [ ! -d "$policyDir" ]; }; then
-            fail "refusing to manage an unsafe managed-preferences directory: $policyDir"
-          fi
-
-          if ! /bin/mkdir -p "$policyDir" \
-            || ! /usr/sbin/chown root:wheel "$policyDir" \
-            || ! /bin/chmod 0755 "$policyDir"; then
-            fail "could not prepare $policyDir"
-          fi
-
-          if [ -L "$policyFile" ]; then
-            fail "refusing to manage a symlink at the Brave policy target: $policyFile"
-          fi
-
-          if [ -e "$policyFile" ] && [ ! -f "$policyFile" ]; then
-            fail "refusing to replace non-file Brave policy target: $policyFile"
-          fi
-
-          if [ -f "$policyFile" ] && /usr/bin/cmp -s "$desired" "$policyFile"; then
-            if ! /usr/sbin/chown root:wheel "$policyFile" || ! /bin/chmod 0644 "$policyFile"; then
-              fail "could not reconcile metadata for $policyFile"
+            if [ -L "$policyDir" ] || { [ -e "$policyDir" ] && [ ! -d "$policyDir" ]; }; then
+              fail "refusing to manage an unsafe managed-preferences directory: $policyDir"
             fi
-            exit 0
-          fi
 
-          temporaryPolicy=$(/usr/bin/mktemp "$policyDir/.com.brave.Browser.plist.XXXXXX") || \
-            fail "could not create a temporary Brave policy plist"
+            if ! /bin/mkdir -p "$policyDir" \
+              || ! /usr/sbin/chown root:wheel "$policyDir" \
+              || ! /bin/chmod 0755 "$policyDir"; then
+              fail "could not prepare $policyDir"
+            fi
 
-          if ! /bin/cp "$desired" "$temporaryPolicy" \
-            || ! /usr/sbin/chown root:wheel "$temporaryPolicy" \
-            || ! /bin/chmod 0644 "$temporaryPolicy" \
-            || ! /bin/mv -f "$temporaryPolicy" "$policyFile"; then
-            fail "could not atomically install $policyFile"
-          fi
+            if [ -L "$policyFile" ]; then
+              fail "refusing to manage a symlink at the policy target: $policyFile"
+            fi
 
-          temporaryPolicy=""
-          /usr/bin/killall cfprefsd > /dev/null 2>&1 || true
-        '';
+            if [ -e "$policyFile" ] && [ ! -f "$policyFile" ]; then
+              fail "refusing to replace non-file policy target: $policyFile"
+            fi
+
+            if [ -f "$policyFile" ] && /usr/bin/cmp -s "$desired" "$policyFile"; then
+              if ! /usr/sbin/chown root:wheel "$policyFile" || ! /bin/chmod 0644 "$policyFile"; then
+                fail "could not reconcile metadata for $policyFile"
+              fi
+              exit 0
+            fi
+
+            temporaryPolicy=$(/usr/bin/mktemp "$policyDir/.${name}.XXXXXX") || \
+              fail "could not create a temporary policy plist"
+
+            if ! /bin/cp "$desired" "$temporaryPolicy" \
+              || ! /usr/sbin/chown root:wheel "$temporaryPolicy" \
+              || ! /bin/chmod 0644 "$temporaryPolicy" \
+              || ! /bin/mv -f "$temporaryPolicy" "$policyFile"; then
+              fail "could not atomically install $policyFile"
+            fi
+
+            temporaryPolicy=""
+            /usr/bin/killall cfprefsd > /dev/null 2>&1 || true
+          '';
+        bravePolicyReconciler = mkPolicyReconciler {
+          name = "brave";
+          policyFile = policyFiles.brave;
+          policyPlist = policyPlists.brave;
+        };
+        chromePolicyReconciler = mkPolicyReconciler {
+          name = "chrome";
+          policyFile = policyFiles.chrome;
+          policyPlist = policyPlists.chrome;
+        };
+        mkPolicyDaemon =
+          {
+            label,
+            policyFile,
+            command,
+          }:
+          {
+            inherit command;
+            serviceConfig = {
+              Label = label;
+              RunAtLoad = true;
+              KeepAlive = {
+                PathState = {
+                  "${policyFile}" = false;
+                };
+              };
+              WatchPaths = [
+                policyDir
+                policyFile
+              ];
+              ThrottleInterval = 10;
+            };
+          };
       in
       {
         # Brave reads mandatory macOS policies from the system managed
         # preferences domain, not from ordinary user defaults. Both Darwin
         # activation and the root launchd daemon call this same reconciler.
         system.activationScripts.postActivation.text = lib.mkAfter ''
-          ${lib.escapeShellArg (toString policyReconciler)}
+          ${lib.escapeShellArg (toString bravePolicyReconciler)}
+          ${lib.escapeShellArg (toString chromePolicyReconciler)}
         '';
 
-        launchd.daemons."com.nolvyn.brave-managed-policies" = {
-          command = policyReconciler;
-          serviceConfig = {
-            Label = "com.nolvyn.brave-managed-policies";
-            RunAtLoad = true;
-            KeepAlive = {
-              PathState = {
-                "${policyFile}" = false;
-              };
-            };
-            WatchPaths = [
-              policyDir
-              policyFile
-            ];
-            ThrottleInterval = 10;
+        launchd.daemons = {
+          "com.nolvyn.brave-managed-policies" = mkPolicyDaemon {
+            label = "com.nolvyn.brave-managed-policies";
+            policyFile = policyFiles.brave;
+            command = bravePolicyReconciler;
+          };
+          "com.nolvyn.chrome-managed-policies" = mkPolicyDaemon {
+            label = "com.nolvyn.chrome-managed-policies";
+            policyFile = policyFiles.chrome;
+            command = chromePolicyReconciler;
           };
         };
       };
 
     homeManager =
-      { host, pkgs, ... }:
+      { pkgs, ... }:
       {
         programs.brave = {
           enable = true;
-          package = pkgs.warm.brave;
-          # Linux Chromium policy owns the force-installed extensions for both
-          # Brave and Google Chrome. Home Manager owns them on Darwin.
-          extensions = lib.optionals (lib.hasSuffix "darwin" host.system) browserExtensions;
+          package = pkgs.unstable.brave;
         };
 
         programs.google-chrome = {
           enable = true;
           package = pkgs.warm.google-chrome;
-          # Home Manager's Linux module intentionally rejects external
-          # extensions for proprietary Chrome. Darwin supports the Web Store
-          # update mechanism, so keep the shared extensions there.
-          extensions = lib.optionals (lib.hasSuffix "darwin" host.system) browserExtensions;
         };
 
-        # The shared bravePolicies attrset is installed by the Darwin system
-        # block as a root-owned managed-preferences plist. A configuration
-        # profile fallback remains deliberately out of scope.
+        # Darwin extension force-installation is handled by the root-owned
+        # managed-preferences plists in the system block. This avoids writing
+        # into browser-owned Application Support directories.
       };
   };
 }

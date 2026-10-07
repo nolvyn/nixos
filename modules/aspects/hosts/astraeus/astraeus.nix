@@ -11,6 +11,7 @@
     includes = with den.aspects; [
       determinate
       homebrew
+      omniwm
       fish
       git
       dev
