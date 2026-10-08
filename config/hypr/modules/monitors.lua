@@ -16,10 +16,3 @@ hl.monitor({
     transform = 3,
     bitdepth = 10,
 })
-
-hl.monitor({
-    output = c.laptopScreen,
-    mode = "highres@highrr",
-    position = "0x0",
-    scale = 1.25,
-})

@@ -13,5 +13,4 @@ return {
 
     mainMonitor     = "desc:Guangxi Century Innovation Display Electronics Co. Ltd 27M2U-D 0000000000000",
     verticalMonitor = "desc:Shenzhen KTC Technology Group H24T7 0x00000001",
-    laptopScreen    = "desc:Lenovo Group Limited 0x41A8",
 }

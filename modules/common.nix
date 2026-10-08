@@ -39,7 +39,6 @@
       security.network
       security.ssh
       security.systemd
-      syncthing
       theme
       user
       vesktop

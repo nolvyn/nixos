@@ -103,7 +103,7 @@ remain in scope.
 
 ### Evaluation and correctness
 
-- Evaluate both `WeebMachine` and `MoeNote`.
+- Evaluate both `WeebMachine` and `Astraeus`.
 - Verify the Den aspect graph, schema, batteries, overlays, module arguments,
   host-specific includes, and automatic Home Manager wiring.
 - Check desktop/laptop conditionals and ensure settings cannot leak into the
@@ -124,7 +124,7 @@ remain in scope.
   and network-facing services.
 - Review agenix recipients, identity paths, ownership, permissions, and
   host-specific secret selection without decrypting secret values.
-- Check Syncthing, LocalSend, printing, qBittorrent, discovery services,
+- Check LocalSend, printing, qBittorrent, discovery services,
   virtualization, gaming, and AI tools for unnecessary exposure or unsafe
   defaults.
 - Look for plaintext credentials, leaked tokens, insecure downloads, mutable
@@ -139,8 +139,9 @@ remain in scope.
   dependencies, and hardware modules.
 - Verify important system and user state is persisted intentionally while
   temporary state remains ephemeral.
-- Check host SSH identities, agenix identities, password files, Syncthing
-  identity, NetworkManager state, application data, logs, and machine identity.
+- Check host SSH identities, agenix identities, password files, any future
+  synchronization identity, NetworkManager state, application data, logs, and
+  machine identity.
 - Trace ordering between mounts, rollback, secret decryption, users,
   networking, display management, and Home Manager.
 - Identify anything that could cause data loss, boot failure, login lockout,
@@ -153,7 +154,7 @@ remain in scope.
   warm, unstable, or other package sets.
 - Look for duplicate package sets, unnecessary services, redundant
   applications, oversized closures, and avoidable boot-time work.
-- Check laptop power-management behavior and possible conflicts involving TLP,
+- Check laptop power-management behavior and possible conflicts involving
   firmware updates, Bluetooth, graphics, suspend, and desktop services.
 - Identify dependencies whose reproducibility or security relies on mutable
   upstream state.
@@ -163,7 +164,7 @@ remain in scope.
 ### Desktop behavior and usability
 
 - Inspect Hyprland Lua modules, keybindings, autostart, monitor fallbacks,
-  Hypridle, Hyprlock, SDDM, Quickshell QML, Rofi, Kitty, Dunst, Matugen
+  Hyprlock, SDDM, Quickshell QML, Rofi, Kitty, Dunst, Matugen
   templates, browser configuration, and Home Manager links.
 - Verify referenced commands, packages, files, icons, templates, and paths
   exist on every applicable host.
@@ -189,7 +190,7 @@ remain in scope.
 1. Record the initial Git status, diff, repository structure, hosts, aspects,
    inputs, generated files, and available validation tools.
 2. Determine the exact locked revisions of important upstream projects.
-3. Build a `WeebMachine` versus `MoeNote` matrix showing shared and
+3. Build a `WeebMachine` versus `Astraeus` matrix showing shared and
    host-specific configuration.
 4. Read every in-scope file; searches and successful evaluation alone do not
    count as full coverage.
@@ -208,7 +209,6 @@ Run evaluation with lock-file updates disabled:
 
 - `nix flake check --no-update-lock-file`
 - `nix eval --no-update-lock-file .#nixosConfigurations.WeebMachine.config.system.build.toplevel.drvPath`
-- `nix eval --no-update-lock-file .#nixosConfigurations.MoeNote.config.system.build.toplevel.drvPath`
 
 Use non-formatting syntax checks for shell, Lua, QML, TOML, and other formats
 when the required tools are available.
@@ -216,7 +216,6 @@ when the required tools are available.
 Non-activating builds may be used when needed:
 
 - `nix build --no-link --no-update-lock-file .#nixosConfigurations.WeebMachine.config.system.build.toplevel`
-- `nix build --no-link --no-update-lock-file .#nixosConfigurations.MoeNote.config.system.build.toplevel`
 
 State beforehand if a validation requires a large download or substantial
 resources. If a check cannot be run, report the exact reason and the command
@@ -243,7 +242,7 @@ Return one final report containing:
    - Suggested verification
 3. A separate section for unverified concerns that require hardware or runtime
    testing.
-4. A `WeebMachine` versus `MoeNote` configuration and validation matrix.
+4. A `WeebMachine` versus `Astraeus` configuration and validation matrix.
 5. Security, persistence, recovery, reproducibility, performance, and closure
    observations, with measurements where available.
 6. Documentation drift and remaining validation gaps.
