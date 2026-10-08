@@ -41,10 +41,14 @@ Determinate, Homebrew, OmniWM, and mac-app-util foundations and host overrides.
 
 Homebrew is bootstrapped at `/opt/homebrew` by nix-homebrew. Do not run a separate
 Homebrew installer. The declared casks are Proton VPN (`protonvpn`, owned by the
-Homebrew aspect) and the official ChatGPT desktop app (`chatgpt`, owned by the
-shared `ai.chatgpt` aspect). Activation uninstalls undeclared formulae/casks.
+shared `proton` aspect) and the official ChatGPT desktop app (`chatgpt`, owned by
+the shared `ai.chatgpt` aspect). Activation uninstalls undeclared formulae/casks.
 Taps and cask versions remain mutable, so this reproduces package ownership
 rather than identical application binaries.
+
+The Homebrew aspect manages the installation infrastructure; individual feature
+aspects own their casks. Proton Pass desktop is not declared yet; the browser
+extension remains managed by the browser aspect.
 
 ChatGPT installs as `/Applications/ChatGPT.app` through Homebrew and retains its
 native updater. Do not install an additional copy through Nixpkgs, the Mac App

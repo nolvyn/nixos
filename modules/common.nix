@@ -29,6 +29,7 @@
       locale
       localsend
       optimizations
+      proton
       sddm
       security.general
       security.kernel
@@ -78,7 +79,6 @@
           networkmanagerapplet
           onlyoffice-desktopeditors
           playerctl
-          proton-vpn
           resources
         ];
 

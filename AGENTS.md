@@ -37,6 +37,7 @@ modules/
     ├── ai/chatgpt.nix        # Codex CLI + platform-specific desktop application
     ├── ghostty.nix           # cross-platform Ghostty Home Manager aspect
     ├── homebrew.nix          # native Homebrew bootstrap + package reconciliation
+    ├── proton.nix            # Proton VPN packages + Linux settings persistence
     ├── security/
     │   ├── general.nix
     │   ├── kernel.nix
@@ -132,7 +133,7 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 - Includes the host-only `omniwm` aspect: Home Manager installs a Nix-native OmniWM 0.7.5 pin based on `pkgs.unstable.omniwm` and its user LaunchAgent, while nix-darwin enables separate Spaces
 - OmniWM uses the repo-backed native `config/omniwm/settings.toml` through an out-of-store symlink; ordinary keybinding/config edits do not require a Darwin rebuild
 - Includes the native ARM Homebrew foundation: `nix-homebrew` bootstraps `/opt/homebrew`, while nix-darwin reconciles the declared package set and uninstalls undeclared packages on activation
-- Proton VPN is installed declaratively through the `protonvpn` Homebrew cask
+- The shared `proton` aspect installs Proton VPN through the `protonvpn` Homebrew cask
 - The shared `ai.chatgpt` aspect owns the official `chatgpt` Homebrew cask on Darwin and the existing Codex CLI through `llm-agents.nix`; native desktop updates remain enabled
 - nix-darwin `programs.mas` owns Mac App Store app presence/cleanup (currently no desired apps); `update = false` leaves app updating to macOS without changing App Store preferences
 - Determinate Nix is externally installed and configured through its nix-darwin module
@@ -185,10 +186,11 @@ Defined in `setup.nix` and available everywhere:
 - `ai.chatgpt` (defined via `den.aspects.ai.provides.chatgpt`) owns `programs.codex`, its `pkgs.llm-agents.codex` package, plugins, skills, MCP configuration, and oh-my-codex on both platforms. Its NixOS block preserves `.codex` persistence, its Linux Home Manager integration retains `codex-desktop-linux`, and its Darwin block declares only the `chatgpt` Homebrew cask. Upstream Codex input/program names are unchanged.
 - Browser packages are owned by Home Manager, with shared `pkgs.unstable.brave`. Linux installs the shared extensions through `programs.chromium`; Darwin force-installs them through root-owned Brave and Chrome managed-preferences plists, never Home Manager files inside browser profiles. The shared `bravePolicies` attrset remains Linux `programs.chromium.extraOpts` and is also rendered to `/Library/Managed Preferences/com.brave.Browser.plist` on Darwin. Both Darwin browser policy reconcilers run during activation and on native path events. A configuration-profile fallback remains deferred.
 - LocalSend is a shared Home Manager application; Linux firewall and persistence remain NixOS-only
+- `proton` owns the existing Linux `pkgs.proton-vpn` system package and the Darwin `protonvpn` Homebrew cask. Both Linux hosts persist `.config/Proton/VPN`; VPN cache/logs remain ephemeral. Shared keyring and NetworkManager profile persistence remain in the security aspects. The similarly named Valve Proton gaming integration stays in `gaming`; Proton Pass desktop is not declared.
 - Ghostty is a shared Home Manager aspect using `ghostty` on Linux and `ghostty-bin` on Darwin
 - Linux-only Matugen themes, Qt/QML paths, and desktop-entry/persistence pieces remain in NixOS or Linux-guarded Home Manager blocks; portable user applications are shared through `common` on Darwin
 - ONLYOFFICE, Celluloid, Linux desktop/system integrations, and Syncthing remain Linux-only or deferred; no macOS replacements are added here
-- `nix-homebrew` owns the native ARM `/opt/homebrew` installation on Astraeus, while nix-darwin owns its declared package state; taps remain mutable. The `homebrew` aspect declares `protonvpn`, and `ai.chatgpt` adds `chatgpt` through normal module merging; cleanup remains `uninstall`. ChatGPT is Homebrew-owned, outside Nix app links and MAS management, with its native updater left enabled.
+- `nix-homebrew` owns the native ARM `/opt/homebrew` installation on Astraeus, while nix-darwin owns its declared package state; taps remain mutable. The `homebrew` aspect provides infrastructure; `proton` declares `protonvpn`, and `ai.chatgpt` declares `chatgpt` through normal module merging. Cleanup remains `uninstall`. ChatGPT is Homebrew-owned, outside Nix app links and MAS management, with its native updater left enabled.
 - Apple Command Line Tools remain deferred; `macAppUtil` remains the Nix-native app-launcher integration used here
 - Darwin's pinned `macAppUtil` package uses the root `unstable` SBCL package set; its upstream trampoline modules remain authoritative
 - OmniWM 0.7.5 is Nix-managed on Astraeus by overriding the `pkgs.unstable.omniwm` release asset; it is not a Homebrew cask. Accessibility and Input Monitoring approval remain manual macOS security steps.
