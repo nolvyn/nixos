@@ -15,13 +15,13 @@ implementation.
      affected, but the just-created recovery copy of ephemeral state is lost.
    - Do not change or exercise these paths on either real machine without a reviewed recovery plan.
 
-2. **Syncthing private host-key sharing**
-   - Reconsider synchronizing both machines' plaintext SSH/age host-key backups between both peers.
-   - Evaluate an offline or separately encrypted recovery backup.
+2. **Future cross-host synchronization scope**
+   - Decide which folders, if any, should be shared between WeebMachine and Astraeus.
+   - Keep host keys and other recovery credentials out of ordinary peer synchronization unless separately encrypted.
 
-3. **Syncthing database persistence**
-   - Decide whether avoiding a full index rescan after ephemeral-root reboots is worth persisting the database.
-   - Keep the declaratively managed configuration and secret-provided identity separate from the rebuildable index.
+3. **Future synchronization implementation**
+   - Choose a synchronization tool and decide whether its index/database should persist once the sharing scope is settled.
+   - Keep declarative configuration and any secret-provided identity separate from rebuildable indexes.
 
 4. **SDDM service ordering**
    - The current `mkForce` ordering was added for a previously observed problem; keep it until that
@@ -40,7 +40,7 @@ implementation.
 
 7. **Gaming-specific laptop configuration**
    - Revisit Steam keybindings, workspace rules, and packages if a future laptop is intended for gaming.
-   - The currently shared rules are harmless on MoeNote and do not require immediate changes.
+   - The currently shared rules do not require immediate changes.
 
 8. **Core-dump retention**
    - Decide whether persisted crash dumps should have stricter size or age limits, or be disabled.
@@ -121,7 +121,7 @@ implementation.
       during the audit; the evaluated configuration creates no extension files
       there, and the prior migration reported all eight legacy symlinks removed.
       Do not grant extra access just to inspect it.
-    - Workspace Bar customization, Syncthing on Astraeus, optional Screen Recording,
+    - Workspace Bar customization, future WeebMachine/Astraeus synchronization, optional Screen Recording,
       and MDM experimentation remain outside this audit's implementation scope.
 
 ## Intentional decisions

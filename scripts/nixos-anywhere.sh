@@ -32,10 +32,9 @@ die() {
 }
 
 usage() {
-    echo "Usage: $0 [1|2|3]"
+    echo "Usage: $0 [1|2]"
     echo "  1 - Reinstall WeebMachine"
-    echo "  2 - Reinstall MoeNote"
-    echo "  3 - Custom target"
+    echo "  2 - Custom target"
     exit 1
 }
 
@@ -94,8 +93,7 @@ echo "  3. SSH port 22 is open on target"
 echo ""
 echo "Select target:"
 echo "  1) WeebMachine"
-echo "  2) MoeNote"
-echo "  3) Custom"
+echo "  2) Custom"
 read -rp "Choice: " choice
 
 case $choice in
@@ -104,10 +102,6 @@ case $choice in
         reinstall "WeebMachine" "$ip" "$FLAKE_DIR/secrets/host-keys/weebmachine/ssh_host_ed25519_key"
         ;;
     2)
-        read -rp "MoeNote IP: " ip
-        reinstall "MoeNote" "$ip" "$FLAKE_DIR/secrets/host-keys/moenote/ssh_host_ed25519_key"
-        ;;
-    3)
         read -rp "Hostname (must match flake nixosConfigurations): " host
         read -rp "IP address: " ip
         read -rp "Path to host key (without .pub): " keypath

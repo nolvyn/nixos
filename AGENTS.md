@@ -30,9 +30,6 @@ modules/
     │   ├── weebmachine/
     │   │   ├── weebmachine.nix   # den.hosts + WeebMachine aspect
     │   │   └── hardware.nix
-    │   ├── moenote/
-    │   │   ├── moenote.nix       # den.hosts + MoeNote aspect
-    │   │   └── hardware.nix
     │   └── astraeus/
     │       └── astraeus.nix # den.hosts + Astraeus aspect
     ├── ai/chatgpt.nix        # Codex CLI + platform-specific desktop application
@@ -122,14 +119,7 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 - `x86_64-linux`, `isDesktop = true`, user `weeb`
 - Includes: `common` + `anki` + `printing` + `qbittorrent` (gaming comes from `common`)
 - WeebMachine-only extras: Anki with `.local/share/Anki2` persistence
-- Hypridle is intentionally not started; the desktop is expected to remain awake
-
-**MoeNote** (`modules/aspects/hosts/moenote/moenote.nix`)
-- `x86_64-linux`, `isLaptop = true`, user `weeb`
-- Former laptop, deliberately retained as a reference configuration
-- Includes: `common` + `tlp`
-- Shared gaming comes from `common`, including the Linux Steam/Proton integration and launchers
-- MoeNote-only extras: `fprintd`, `upower`, `hypridle.conf` symlink and hostname-gated Hypridle autostart
+- Hypridle is not included; the desktop is expected to remain awake
 
 **Astraeus** (`modules/aspects/hosts/astraeus/astraeus.nix`)
 - `aarch64-darwin`, `isLaptop = true`, local user `nolan`, home `/Users/nolan`
@@ -149,7 +139,7 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 - Fresh Mac bootstrap, required manual approvals, optional permissions, and account sign-ins are documented in `docs/astraeus-manual-setup.md`.
 - Brave's Darwin bundle identifier can be checked on the Mac with `/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$HOME/Applications/Home Manager Apps/Brave Browser.app/Contents/Info.plist"`
 
-Linux hosts continue to use the `weeb` account and `/home/weeb`; the Mac user is independently `nolan`.
+WeebMachine continues to use the `weeb` account and `/home/weeb`; the Mac user is independently `nolan`.
 
 **common** (`modules/common.nix`) bundles all shared aspects — see that file for the full list.
 Every host includes it once. It owns the simple shared `home.packages` list directly;
@@ -192,11 +182,11 @@ Defined in `setup.nix` and available everywhere:
 - `ai.chatgpt` (defined via `den.aspects.ai.provides.chatgpt`) owns `programs.codex`, its `pkgs.llm-agents.codex` package, plugins, skills, MCP configuration, and oh-my-codex on both platforms. Its NixOS block preserves `.codex` persistence, its Linux Home Manager integration retains `codex-desktop-linux`, and its Darwin block declares only the `chatgpt` Homebrew cask. Upstream Codex input/program names are unchanged.
 - Browser packages are owned by Home Manager, with shared `pkgs.unstable.brave`. Linux installs the shared extensions through `programs.chromium`; Darwin force-installs them through root-owned Brave and Chrome managed-preferences plists, never Home Manager files inside browser profiles. The shared `bravePolicies` attrset remains Linux `programs.chromium.extraOpts` and is also rendered to `/Library/Managed Preferences/com.brave.Browser.plist` on Darwin. Both Darwin browser policy reconcilers run during activation and on native path events. A configuration-profile fallback remains deferred.
 - LocalSend is a shared Home Manager application; Linux firewall and persistence remain NixOS-only
-- `proton` owns the existing Linux `pkgs.proton-vpn` system package and the Darwin `protonvpn` Homebrew cask. Both Linux hosts persist `.config/Proton`; VPN cache/logs remain ephemeral. Shared keyring and NetworkManager profile persistence remain in the security aspects. The similarly named Valve Proton gaming integration stays in `gaming`; Proton Pass desktop is not declared.
+- `proton` owns the existing Linux `pkgs.proton-vpn` system package and the Darwin `protonvpn` Homebrew cask. WeebMachine persists `.config/Proton`; VPN cache/logs remain ephemeral. Shared keyring and NetworkManager profile persistence remain in the security aspects. The similarly named Valve Proton gaming integration stays in `gaming`; Proton Pass desktop is not declared.
 - `gaming` is included once through `common`. Home Manager owns Prism Launcher on all hosts through `pkgs.prismlauncher`, including its Java runtimes. Linux Heroic is a NixOS system package through `pkgs.warm.heroic`. Darwin Steam and Heroic are Homebrew casks declared in `gaming.darwin`; Heroic is not also installed through Nix on Darwin. Linux Steam, ProtonPlus, compatibility tools, persistence, and `ntsync` remain in the NixOS block. Do not install a duplicate Prism Homebrew cask.
 - Ghostty is a shared Home Manager aspect using `ghostty` on Linux and `ghostty-bin` on Darwin
 - Linux-only Matugen themes, Qt/QML paths, and desktop-entry/persistence pieces remain in NixOS or Linux-guarded Home Manager blocks; portable user applications are shared through `common` on Darwin
-- ONLYOFFICE, Celluloid, Linux desktop/system integrations, and Syncthing remain Linux-only or deferred; no macOS replacements are added here
+- ONLYOFFICE, Celluloid, and Linux desktop/system integrations remain Linux-only or deferred; no macOS replacements are added here. Cross-host synchronization is deferred pending a new WeebMachine/Astraeus design.
 - `nix-homebrew` owns the native ARM `/opt/homebrew` installation on Astraeus, while nix-darwin owns its declared package state; taps remain mutable. The `homebrew` aspect provides infrastructure; `proton` declares `protonvpn`, `ai.chatgpt` declares `chatgpt`, and `gaming` declares `steam` and `heroic` through normal module merging. Cleanup remains `uninstall`. ChatGPT, Steam, and Heroic are Homebrew-owned, outside Nix app links and MAS management, with their native updaters left enabled.
 - Apple Command Line Tools remain deferred; `macAppUtil` remains the Nix-native app-launcher integration used here
 - Darwin's pinned `macAppUtil` package uses the root `unstable` SBCL package set; its upstream trampoline modules remain authoritative
