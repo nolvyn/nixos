@@ -98,8 +98,10 @@
       };
     };
 
-    homeManager = { pkgs, ... }: {
-      home.packages = with pkgs; [ pwvucontrol ]; # Audio control GUI
-    };
+    homeManager =
+      { lib, pkgs, ... }:
+      lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+        home.packages = with pkgs; [ pwvucontrol ]; # Audio control GUI
+      };
   };
 }

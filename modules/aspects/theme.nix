@@ -39,14 +39,22 @@
       };
     };
 
-    homeManager = { host, config, ... }: {
-      home.file = {
-        ".config/gtk-3.0/gtk.css".text = "@import 'colors.css';";
-        ".config/gtk-4.0/gtk.css".text = "@import 'colors.css';";
+    homeManager =
+      {
+        host,
+        config,
+        lib,
+        pkgs,
+        ...
+      }:
+      lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+        home.file = {
+          ".config/gtk-3.0/gtk.css".text = "@import 'colors.css';";
+          ".config/gtk-4.0/gtk.css".text = "@import 'colors.css';";
 
-        ".config/matugen/config.toml".source =
-          config.lib.file.mkOutOfStoreSymlink "${host.flakeDir}/config/matugen/config.toml";
+          ".config/matugen/config.toml".source =
+            config.lib.file.mkOutOfStoreSymlink "${host.flakeDir}/config/matugen/config.toml";
+        };
       };
-    };
   };
 }

@@ -4,6 +4,8 @@ These are the manual steps for restoring the declared Astraeus environment on
 an Apple Silicon Mac. Packages, app links, launchd jobs, browser extension
 policies, Fish, and the OmniWM configuration are managed by this repository.
 Personal data, account sessions, and Apple security approvals remain outside Nix.
+All shared applications and tools come from `common`; Astraeus adds the
+Determinate, Homebrew, OmniWM, and mac-app-util foundations and host overrides.
 
 ## Bootstrap
 
@@ -38,9 +40,18 @@ Personal data, account sessions, and Apple security approvals remain outside Nix
    Keep intended settings edits in the repository and commit them.
 
 Homebrew is bootstrapped at `/opt/homebrew` by nix-homebrew. Do not run a separate
-Homebrew installer. Proton VPN is the only declared cask; activation uninstalls
-undeclared formulae/casks. Taps and the cask version remain mutable, so this
-reproduces package ownership rather than an identical Proton VPN binary.
+Homebrew installer. The declared casks are Proton VPN (`protonvpn`, owned by the
+Homebrew aspect) and the official ChatGPT desktop app (`chatgpt`, owned by the
+shared `ai.chatgpt` aspect). Activation uninstalls undeclared formulae/casks.
+Taps and cask versions remain mutable, so this reproduces package ownership
+rather than identical application binaries.
+
+ChatGPT installs as `/Applications/ChatGPT.app` through Homebrew and retains its
+native updater. Do not install an additional copy through Nixpkgs, the Mac App
+Store, or the deprecated `codex-app` cask. The Codex CLI remains independently
+Nix-managed through `llm-agents.nix`, with its existing settings, plugins, MCP
+servers, skills, and oh-my-codex integration. On Linux, the same `ai.chatgpt`
+aspect retains the `codex-desktop-linux` integration and persistence.
 
 Mac App Store apps are owned separately by nix-darwin `programs.mas`. Its desired
 set is currently empty, and activation removes undeclared MAS apps (not built-in
@@ -74,6 +85,8 @@ Activation does not run `mas update` or change Apple's Automatic Updates setting
 - Run `gh auth login` when GitHub authentication is needed; the declared Git
   credential helper uses GitHub CLI. Retain credentials in its supported local
   storage/Keychain, never in this repository.
+- Launch `/Applications/ChatGPT.app` and sign in to OpenAI after activation.
+  Desktop sign-in and feature-dependent macOS permissions remain manual.
 - Sign in to Proton VPN and Proton Pass, Filen, Slack, Spotify, Vesktop,
   browsers, editors, and AI tools as needed. Restore personal browser data and
   other user files from your own backup or the relevant app's sync service.
