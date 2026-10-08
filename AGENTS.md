@@ -23,7 +23,7 @@ modules/
 ├── inputs.nix             # Source of truth for all flake inputs
 ├── setup.nix              # den.default + overlays + batteries
 ├── schema.nix             # den.schema.host custom options
-├── common.nix             # den.aspects.common — shared aspect bundle
+├── common.nix             # shared entry point: aspects + simple Home Manager packages
 └── aspects/
     ├── hosts/
     │   ├── weebmachine/
@@ -34,7 +34,7 @@ modules/
     │   │   └── hardware.nix
     │   └── astraeus/
     │       └── astraeus.nix # den.hosts + Astraeus aspect
-    ├── portable-apps.nix     # shared Home Manager application layer
+    ├── ai/chatgpt.nix        # Codex CLI + platform-specific desktop application
     ├── ghostty.nix           # cross-platform Ghostty Home Manager aspect
     ├── homebrew.nix          # native Homebrew bootstrap + package reconciliation
     ├── security/
@@ -94,6 +94,9 @@ Every aspect uses the attrset form (not dot-chained assignments):
 
 - Omit `nixos`, `homeManager`, `darwin`, or `includes` if not needed.
 - If an aspect only needs one block, include only that block.
+- OS class blocks apply only to their platform. Guard Linux-only Home Manager
+  settings with `lib.mkIf pkgs.stdenv.hostPlatform.isLinux`; shared aspects must
+  evaluate safely when included by either NixOS or Darwin hosts.
 
 ## Batteries — All Opt-In
 
@@ -118,19 +121,20 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 
 **MoeNote** (`modules/aspects/hosts/moenote/moenote.nix`)
 - `x86_64-linux`, `isLaptop = true`, user `weeb`
+- Former laptop, deliberately retained as a reference configuration
 - Includes: `common` + `tlp`
 - MoeNote-only extras: `fprintd`, `upower`, `hypridle.conf` symlink and hostname-gated Hypridle autostart
 
 **Astraeus** (`modules/aspects/hosts/astraeus/astraeus.nix`)
 - `aarch64-darwin`, `isLaptop = true`, local user `nolan`, home `/Users/nolan`
 - Hostname is `Astraeus`
-- Includes the Determinate foundation and the portable `fish`, `git`, `dev`, `macAppUtil`, `fonts`, `btop`, `fastfetch`, `yazi`, `kitty`, `zed`, `vscode`, and AI CLI aspects
+- Includes `common` once for shared applications, CLI tools, development environments, fonts, and configuration; adds only `determinate`, `homebrew`, `omniwm`, and `macAppUtil`
 - Includes the host-only `omniwm` aspect: Home Manager installs a Nix-native OmniWM 0.7.5 pin based on `pkgs.unstable.omniwm` and its user LaunchAgent, while nix-darwin enables separate Spaces
 - OmniWM uses the repo-backed native `config/omniwm/settings.toml` through an out-of-store symlink; ordinary keybinding/config edits do not require a Darwin rebuild
 - Includes the native ARM Homebrew foundation: `nix-homebrew` bootstraps `/opt/homebrew`, while nix-darwin reconciles the declared package set and uninstalls undeclared packages on activation
 - Proton VPN is installed declaratively through the `protonvpn` Homebrew cask
+- The shared `ai.chatgpt` aspect owns the official `chatgpt` Homebrew cask on Darwin and the existing Codex CLI through `llm-agents.nix`; native desktop updates remain enabled
 - nix-darwin `programs.mas` owns Mac App Store app presence/cleanup (currently no desired apps); `update = false` leaves app updating to macOS without changing App Store preferences
-- Includes the shared portable application layer, browsers, LocalSend, Vesktop, Ghostty, and portable Cursor/Antigravity aspects
 - Determinate Nix is externally installed and configured through its nix-darwin module
 - Fish is registered in `/etc/shells` and an idempotent nix-darwin activation hook reconciles the existing macOS admin user's Directory Services login shell
 - mac-app-util manages launchable trampolines for Nix/Home-Manager-installed macOS applications and is temporarily pinned to upstream PR #44 (`CFBundleIconName`/`Assets.car` Tahoe handling); remove the pin once an equivalent fix merges upstream
@@ -141,7 +145,11 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 Linux hosts continue to use the `weeb` account and `/home/weeb`; the Mac user is independently `nolan`.
 
 **common** (`modules/common.nix`) bundles all shared aspects — see that file for the full list.
-It remains a Linux-oriented bundle and is not included by the Mac host. Its portable application members are provided through Home Manager aspects shared with Astraeus.
+Every host includes it once. It owns the simple shared `home.packages` list directly;
+substantial features remain in their dedicated aspects. Linux system integration
+stays in `nixos` blocks, Darwin integration in `darwin` blocks, and Linux-only Home
+Manager settings are platform-guarded. Rofi, PipeWire utilities, Hyprland config,
+GTK/Matugen files, and XDG user-directory remapping are not enabled on Darwin.
 
 ## Schema Options (`modules/schema.nix`)
 
@@ -173,13 +181,14 @@ Defined in `setup.nix` and available everywhere:
 - Both `weeb` and `nolan` use the Fish user-shell battery. Existing macOS admin-user shell state is reconciled declaratively during Darwin activation.
 - Git configuration is in Home Manager, including the platform-derived `safe.directory`
 - The `dev` aspect provides portable tools through Home Manager and Linux system integration through NixOS
-- `portableApps` owns the cross-platform user application/CLI layer; Linux system packages retain only genuine system integration. Filen intentionally uses `pkgs.unstable.filen-desktop` on both Linux and Darwin.
+- `common.homeManager` owns the simple cross-platform user application/CLI packages; Linux system packages retain only genuine system integration. Filen intentionally uses `pkgs.unstable.filen-desktop` on both Linux and Darwin.
+- `ai.chatgpt` (defined via `den.aspects.ai.provides.chatgpt`) owns `programs.codex`, its `pkgs.llm-agents.codex` package, plugins, skills, MCP configuration, and oh-my-codex on both platforms. Its NixOS block preserves `.codex` persistence, its Linux Home Manager integration retains `codex-desktop-linux`, and its Darwin block declares only the `chatgpt` Homebrew cask. Upstream Codex input/program names are unchanged.
 - Browser packages are owned by Home Manager, with shared `pkgs.unstable.brave`. Linux installs the shared extensions through `programs.chromium`; Darwin force-installs them through root-owned Brave and Chrome managed-preferences plists, never Home Manager files inside browser profiles. The shared `bravePolicies` attrset remains Linux `programs.chromium.extraOpts` and is also rendered to `/Library/Managed Preferences/com.brave.Browser.plist` on Darwin. Both Darwin browser policy reconcilers run during activation and on native path events. A configuration-profile fallback remains deferred.
 - LocalSend is a shared Home Manager application; Linux firewall and persistence remain NixOS-only
 - Ghostty is a shared Home Manager aspect using `ghostty` on Linux and `ghostty-bin` on Darwin
-- Linux-only Matugen themes, Qt/QML paths, and desktop-entry/persistence pieces remain scoped to NixOS; the corresponding portable user applications are evaluated separately on Darwin
+- Linux-only Matugen themes, Qt/QML paths, and desktop-entry/persistence pieces remain in NixOS or Linux-guarded Home Manager blocks; portable user applications are shared through `common` on Darwin
 - ONLYOFFICE, Celluloid, Linux desktop/system integrations, and Syncthing remain Linux-only or deferred; no macOS replacements are added here
-- `nix-homebrew` owns the native ARM `/opt/homebrew` installation on Astraeus, while nix-darwin owns its declared package state; taps remain mutable and Proton VPN is the only declared cask
+- `nix-homebrew` owns the native ARM `/opt/homebrew` installation on Astraeus, while nix-darwin owns its declared package state; taps remain mutable. The `homebrew` aspect declares `protonvpn`, and `ai.chatgpt` adds `chatgpt` through normal module merging; cleanup remains `uninstall`. ChatGPT is Homebrew-owned, outside Nix app links and MAS management, with its native updater left enabled.
 - Apple Command Line Tools remain deferred; `macAppUtil` remains the Nix-native app-launcher integration used here
 - Darwin's pinned `macAppUtil` package uses the root `unstable` SBCL package set; its upstream trampoline modules remain authoritative
 - OmniWM 0.7.5 is Nix-managed on Astraeus by overriding the `pkgs.unstable.omniwm` release asset; it is not a Homebrew cask. Accessibility and Input Monitoring approval remain manual macOS security steps.
@@ -190,7 +199,7 @@ The `determinate` aspect imports `inputs.determinate.darwinModules.default` and 
 ## Dormant Aspects
 
 `floorp`, `neovim`, `location`, and `virtualization` are defined but intentionally
-not included by `common` or either host. Keep them inactive unless a host explicitly
+not included by `common` or any host. Keep them inactive unless a host explicitly
 opts in; their presence does not enable the corresponding programs or services.
 
 ## Bundled Den References
@@ -210,5 +219,5 @@ truth for the Den API. The authoritative version is the `den` revision in
 
 1. Create `modules/aspects/hosts/<hostname>/` with `<hostname>.nix`; add `hardware.nix` for NixOS hosts when needed.
 2. Declare `den.hosts.<system>.<Hostname>` with `isDesktop`/`isLaptop` and the host's `users.<name> = {}`.
-3. Declare `den.aspects.<Hostname>` with the includes required by that host. Linux hosts normally include `den.aspects.common`; minimal Darwin hosts need not.
+3. Declare `den.aspects.<Hostname>` with `den.aspects.common` once, then add only host-specific or platform-specific aspects and overrides.
 4. Update this AGENTS.md with the new host's summary.

@@ -5,7 +5,7 @@
       agenix
       ai.antigravity
       ai.claude
-      ai.codex
+      ai.chatgpt
       ai.cursor
       ai.general
       ai.opencode
@@ -29,7 +29,6 @@
       locale
       localsend
       optimizations
-      portableApps
       sddm
       security.general
       security.kernel
@@ -46,6 +45,25 @@
       zed
       ghostty
     ];
+
+    homeManager = { pkgs, ... }: {
+      home.packages = with pkgs; [
+        exiftool
+        file
+        unstable.filen-desktop
+        gzip
+        jq
+        mediainfo
+        ripgrep
+        ripunzip
+        sherlock
+        slack
+        spotify
+        tree
+        unrar
+        wget
+      ];
+    };
 
     nixos =
       { pkgs, ... }:

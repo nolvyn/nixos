@@ -9,31 +9,11 @@
 
   den.aspects.Astraeus = {
     includes = with den.aspects; [
+      common
       determinate
       homebrew
       omniwm
-      fish
-      git
-      dev
-      portableApps
-      browser
-      localsend
-      vesktop
-      ghostty
       macAppUtil
-      fonts
-      btop
-      fastfetch
-      yazi
-      kitty
-      zed
-      vscode
-      ai.general
-      ai.codex
-      ai.claude
-      ai.opencode
-      ai.cursor
-      ai.antigravity
     ];
 
     darwin = { host, ... }: {

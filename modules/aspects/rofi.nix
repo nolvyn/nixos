@@ -2,8 +2,8 @@
 {
   den.aspects.rofi = {
     homeManager =
-      { pkgs, ... }:
-      {
+      { lib, pkgs, ... }:
+      lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
         programs.rofi = {
           enable = true;
           package = pkgs.rofi;
