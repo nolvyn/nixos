@@ -8,14 +8,14 @@
       fonts = {
         enableDefaultPackages = false;
         packages = with pkgs; [
+          corefonts # Microsoft fonts (Arial, Times New Roman, etc)
+          dejavu_fonts
           inter
           nerd-fonts.jetbrains-mono
           noto-fonts
           noto-fonts-cjk-sans
           noto-fonts-cjk-serif
           noto-fonts-color-emoji
-          dejavu_fonts
-          corefonts # Microsoft fonts (Arial, Times New Roman, etc)
         ];
         fontconfig.defaultFonts = {
           monospace = [
@@ -39,14 +39,14 @@
 
     darwin = { pkgs, ... }: {
       fonts.packages = with pkgs; [
+        corefonts
+        dejavu_fonts
         inter
         nerd-fonts.jetbrains-mono
         noto-fonts
         noto-fonts-cjk-sans
         noto-fonts-cjk-serif
         noto-fonts-color-emoji
-        dejavu_fonts
-        corefonts
       ];
     };
   };

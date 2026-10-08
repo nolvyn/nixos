@@ -1,9 +1,9 @@
 { lib, ... }:
 let
   browserExtensions = [
-    "ghmbeldphafepmbegfdlkpapadhbakde" # Proton Pass
-    "gbefmodhlophhakmoecijeppjblibmie" # Linguist
     "ponfpcnoihfmfllpaingbgckeeldkhle" # Enhancer for YouTube
+    "gbefmodhlophhakmoecijeppjblibmie" # Linguist
+    "ghmbeldphafepmbegfdlkpapadhbakde" # Proton Pass
     "mnjggcdmjocbbbhaepdhchncahnbgone" # SponsorBlock for YouTube
   ];
 

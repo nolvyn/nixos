@@ -11,9 +11,9 @@
       {
         nixpkgs.overlays = [ inputs.nix-vscode-extensions.overlays.default ];
         environment.persistence."/persistent".users.${host.userName}.directories = [
+          ".config/Code"
           ".vscode"
           ".vscode-shared"
-          ".config/Code"
         ];
       };
 
@@ -29,18 +29,18 @@
 
           profiles.default.extensions =
             (with pkgs.vscode-extensions; [
-              jnoortheen.nix-ide
-              sumneko.lua
-              rust-lang.rust-analyzer
               charliermarsh.ruff
               dart-code.dart-code
               dart-code.flutter
+              jnoortheen.nix-ide
+              rust-lang.rust-analyzer
+              sumneko.lua
               tamasfe.even-better-toml
             ])
             ++ (with pkgs.stable.vscode-extensions; [
               # nixpkgs-unstable jedi-language-server has a broken dep constraint (requires jedi<0.20, unstable ships 0.20.0)
-              ms-python.python
               ms-python.debugpy
+              ms-python.python
               ms-python.vscode-pylance
               ms-toolsai.jupyter
               ms-toolsai.jupyter-keymap
@@ -52,8 +52,8 @@
             ++ lib.optionals isLinux (
               with pkgs.vscode-marketplace;
               [
-                theqtcompany.qt-qml
                 theqtcompany.qt-core
+                theqtcompany.qt-qml
               ]
             );
 

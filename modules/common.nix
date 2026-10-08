@@ -4,16 +4,16 @@
     includes = with den.aspects; [
       agenix
       ai.antigravity
-      ai.claude
       ai.chatgpt
+      ai.claude
       ai.cursor
       ai.general
       ai.opencode
       audio
       bluetooth
       browser
-      btrfs
       btop
+      btrfs
       cache
       dev
       disko
@@ -21,6 +21,8 @@
       file
       fish
       fonts
+      gaming
+      ghostty
       git
       hyprland
       impermanence
@@ -30,6 +32,7 @@
       localsend
       optimizations
       proton
+      rofi
       sddm
       security.general
       security.kernel
@@ -40,12 +43,28 @@
       theme
       user
       vesktop
-      rofi
       vscode
       yazi
       zed
-      ghostty
     ];
+
+    nixos =
+      { pkgs, ... }:
+      {
+        environment.systemPackages = with pkgs; [
+          brightnessctl
+          celluloid
+          dunst
+          glib
+          lynis
+          nautilus
+          networkmanagerapplet
+          onlyoffice-desktopeditors
+          playerctl
+          resources
+        ];
+
+      };
 
     homeManager = { pkgs, ... }: {
       home.packages = with pkgs; [
@@ -65,23 +84,5 @@
         wget
       ];
     };
-
-    nixos =
-      { pkgs, ... }:
-      {
-        environment.systemPackages = with pkgs; [
-          brightnessctl
-          celluloid
-          dunst
-          glib
-          lynis
-          nautilus
-          networkmanagerapplet
-          onlyoffice-desktopeditors
-          playerctl
-          resources
-        ];
-
-      };
   };
 }
