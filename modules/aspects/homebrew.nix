@@ -15,7 +15,6 @@
 
         homebrew = {
           enable = true;
-          casks = [ "protonvpn" ];
           global.autoUpdate = false;
           onActivation.cleanup = "uninstall";
         };
