@@ -14,8 +14,9 @@ in
     # master.url = "github:nixos/nixpkgs/master";
     # specific.url = "github:nixos/nixpkgs/e0892a72016721b30e65ac2ac3303cbf694dc738";
     darwin = {
-      url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-darwin/nix-darwin/master";
+      # Master's module library and installer tools require matching Nixpkgs.
+      inputs.nixpkgs.follows = "unstable";
     };
     unstable.url = "https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly/0.1";
     warm.url = "github:nixos/nixpkgs/nixos-${version}";

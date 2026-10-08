@@ -10,8 +10,8 @@
     };
     codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
     darwin = {
-      url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-darwin/nix-darwin/master";
+      inputs.nixpkgs.follows = "unstable";
     };
     den.url = "github:denful/den/latest";
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";

@@ -129,6 +129,7 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 - OmniWM uses the repo-backed native `config/omniwm/settings.toml` through an out-of-store symlink; ordinary keybinding/config edits do not require a Darwin rebuild
 - Includes the native ARM Homebrew foundation: `nix-homebrew` bootstraps `/opt/homebrew`, while nix-darwin reconciles the declared package set and uninstalls undeclared packages on activation
 - Proton VPN is installed declaratively through the `protonvpn` Homebrew cask
+- nix-darwin `programs.mas` owns Mac App Store app presence/cleanup (currently no desired apps); `update = false` leaves app updating to macOS without changing App Store preferences
 - Includes the shared portable application layer, browsers, LocalSend, Vesktop, Ghostty, and portable Cursor/Antigravity aspects
 - Determinate Nix is externally installed and configured through its nix-darwin module
 - Fish is registered in `/etc/shells` and an idempotent nix-darwin activation hook reconciles the existing macOS admin user's Directory Services login shell
@@ -162,6 +163,7 @@ All under `den.schema.host`:
 Defined in `setup.nix` and available everywhere:
 
 - default `pkgs` follows `stable` (DeterminateSystems nixpkgs 26.05 chilled)
+- nix-darwin master follows `unstable` for its matching module library/system packages; root, Linux, and shared Home Manager package selections remain unchanged
 - `stableOverlay` → `pkgs.stable` (the same 26.05 chilled input)
 - `warmOverlay` → `pkgs.warm` (`nixos-26.05` release branch)
 - `unstableOverlay` → `pkgs.unstable` (DeterminateSystems weekly unstable)
