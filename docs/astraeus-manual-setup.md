@@ -42,6 +42,14 @@ Homebrew installer. Proton VPN is the only declared cask; activation uninstalls
 undeclared formulae/casks. Taps and the cask version remain mutable, so this
 reproduces package ownership rather than an identical Proton VPN binary.
 
+Mac App Store apps are owned separately by nix-darwin `programs.mas`. Its desired
+set is currently empty, and activation removes undeclared MAS apps (not built-in
+macOS apps). Before the first switch on an existing Mac, run
+`nix shell .#darwinConfigurations.Astraeus.config.programs.mas.package -c mas list`
+and declare any apps you want to retain in `programs.mas.packages`. If apps are
+added later, sign into the Mac App Store as `nolan` before installing them.
+Activation does not run `mas update` or change Apple's Automatic Updates setting.
+
 ## Required Apple approvals
 
 - OmniWM requires **Accessibility** and **Input Monitoring**. Approve the actual

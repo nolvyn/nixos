@@ -1,4 +1,4 @@
-{ den, ... }:
+{ den, inputs, ... }:
 {
   den.hosts.aarch64-darwin.Astraeus = {
     hostName = "Astraeus";
@@ -38,6 +38,18 @@
 
     darwin = { host, ... }: {
       networking.computerName = host.hostName;
+
+      programs.mas = {
+        enable = true;
+        packages = { };
+        cleanup = true;
+        update = false;
+      };
+    };
+
+    # Home Manager otherwise inherits nix-darwin's newer package source.
+    homeManager = {
+      _module.args.pkgsPath = inputs.nixpkgs;
     };
   };
 }
