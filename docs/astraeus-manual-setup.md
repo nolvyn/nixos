@@ -41,8 +41,9 @@ Determinate, Homebrew, OmniWM, and mac-app-util foundations and host overrides.
 
 Homebrew is bootstrapped at `/opt/homebrew` by nix-homebrew. Do not run a separate
 Homebrew installer. The declared casks are Proton VPN (`protonvpn`, owned by the
-shared `proton` aspect) and the official ChatGPT desktop app (`chatgpt`, owned by
-the shared `ai.chatgpt` aspect). Activation uninstalls undeclared formulae/casks.
+shared `proton` aspect), the official ChatGPT desktop app (`chatgpt`, owned by
+`ai.chatgpt`), and Steam and Heroic (`steam` and `heroic`, owned by `gaming`).
+Activation uninstalls undeclared formulae/casks.
 Taps and cask versions remain mutable, so this reproduces package ownership
 rather than identical application binaries.
 
@@ -56,6 +57,21 @@ Store, or the deprecated `codex-app` cask. The Codex CLI remains independently
 Nix-managed through `llm-agents.nix`, with its existing settings, plugins, MCP
 servers, skills, and oh-my-codex integration. On Linux, the same `ai.chatgpt`
 aspect retains the `codex-desktop-linux` integration and persistence.
+
+The shared `gaming` aspect installs Heroic through the `heroic` Homebrew cask at
+`/Applications/Heroic.app`, with its native updater left enabled. Heroic is not
+also installed through Nix on macOS; Linux installs `pkgs.warm.heroic` as a
+NixOS system package, not through Home Manager.
+Prism Launcher uses Home Manager's Nixpkgs package and its bundled Java runtime
+selection. Launch Prism from `~/Applications/Home Manager Apps`; do not install
+a duplicate Prism Homebrew cask.
+Game downloads, accounts, saves, and launcher data remain mutable personal state.
+Windows-game compatibility runners in Heroic are selected separately as needed.
+
+Steam installs at `/Applications/Steam.app` through Homebrew and retains its
+native updater. Its current [Homebrew cask](https://github.com/Homebrew/homebrew-cask/blob/master/Casks/s/steam.rb)
+requires Rosetta on Apple Silicon. Accept Apple's Rosetta installation prompt
+when launching Steam if needed; this approval is a manual setup step.
 
 Mac App Store apps are owned separately by nix-darwin `programs.mas`. Its desired
 set is currently empty, and activation removes undeclared MAS apps (not built-in
@@ -91,6 +107,8 @@ Activation does not run `mas update` or change Apple's Automatic Updates setting
   storage/Keychain, never in this repository.
 - Launch `/Applications/ChatGPT.app` and sign in to OpenAI after activation.
   Desktop sign-in and feature-dependent macOS permissions remain manual.
+- Sign in to Steam and the stores used in Heroic, and add your Microsoft account
+  in Prism Launcher when needed. Restore game saves from backups or cloud sync.
 - Sign in to Proton VPN and Proton Pass, Filen, Slack, Spotify, Vesktop,
   browsers, editors, and AI tools as needed. Restore personal browser data and
   other user files from your own backup or the relevant app's sync service.
@@ -109,7 +127,7 @@ choices for the apps/features you use, not bootstrap prerequisites.
 ## Not required
 
 Keep SIP enabled. No MDM, TCC database edits, Full Disk Access workaround,
-Terminal access to Brave/Chrome App Data, Apple CLT/Xcode, Rosetta, or Intel
+Terminal access to Brave/Chrome App Data, Apple CLT/Xcode, or Intel
 Homebrew is required for this configuration. Terminal's temporary browser App
 Data access used during migration is not part of fresh setup. Existing grants
 can be reviewed in System Settings → Privacy & Security → Files & Folders;

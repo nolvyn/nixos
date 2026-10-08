@@ -50,8 +50,8 @@ in
         stableOverlay
       ];
       nix.settings.experimental-features = [
-        "nix-command"
         "flakes"
+        "nix-command"
       ];
       system.stateVersion = version;
       home-manager.backupFileExtension = "backup";

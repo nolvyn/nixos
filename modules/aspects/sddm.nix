@@ -15,10 +15,10 @@
         enableHidpi = true;
         theme = "sddm-astronaut-theme";
         extraPackages = with pkgs; [
-          sddm-astronaut
+          bibata-cursors
           kdePackages.qtmultimedia
           kdePackages.qtsvg
-          bibata-cursors
+          sddm-astronaut
         ];
         settings = {
           Theme = {

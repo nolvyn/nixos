@@ -1,6 +1,49 @@
 { ... }:
 {
   den.aspects.dev = {
+    nixos =
+      { host, pkgs, ... }:
+      {
+        environment.persistence."/persistent".users.${host.userName} = {
+          directories = [
+            ".android"
+            ".cache/qtshadercache-x86_64-little_endian-lp64"
+            ".config/.wrangler"
+            ".config/flutter"
+            ".dart-tool"
+            ".local/share/jupyter"
+            ".local/share/uv"
+            ".local/state/quickshell"
+          ];
+          files = [
+            ".flutter"
+          ];
+        };
+
+        environment.systemPackages = with pkgs; [
+          # C++
+          gcc
+
+          # Qt/QML
+          kdePackages.qtdeclarative
+          kdePackages.qtimageformats
+          kdePackages.qtmultimedia
+          kdePackages.qtsvg
+          quickshell
+        ];
+
+        programs.nix-ld = {
+          enable = true;
+          libraries = with pkgs; [
+            libxkbcommon
+            vulkan-loader
+            wayland
+          ];
+        };
+
+        users.users.${host.userName}.extraGroups = [ "kvm" ]; # Needed for Android emulator hardware acceleration
+      };
+
     homeManager =
       {
         config,
@@ -51,49 +94,6 @@
         ];
 
         programs.direnv.enable = true;
-      };
-
-    nixos =
-      { host, pkgs, ... }:
-      {
-        environment.persistence."/persistent".users.${host.userName} = {
-          directories = [
-            ".android"
-            ".dart-tool"
-            ".cache/qtshadercache-x86_64-little_endian-lp64"
-            ".config/.wrangler"
-            ".config/flutter"
-            ".local/share/jupyter"
-            ".local/share/uv"
-            ".local/state/quickshell"
-          ];
-          files = [
-            ".flutter"
-          ];
-        };
-
-        environment.systemPackages = with pkgs; [
-          # C++
-          gcc
-
-          # Qt/QML
-          kdePackages.qtdeclarative
-          kdePackages.qtimageformats
-          kdePackages.qtmultimedia
-          kdePackages.qtsvg
-          quickshell
-        ];
-
-        programs.nix-ld = {
-          enable = true;
-          libraries = with pkgs; [
-            wayland
-            libxkbcommon
-            vulkan-loader
-          ];
-        };
-
-        users.users.${host.userName}.extraGroups = [ "kvm" ]; # Needed for Android emulator hardware acceleration
       };
   };
 }

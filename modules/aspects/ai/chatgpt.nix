@@ -8,11 +8,6 @@
   flake-file.inputs.codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
 
   den.aspects.ai.provides.chatgpt = {
-    darwin = {
-      # Homebrew owns the desktop app; its native updater remains enabled.
-      homebrew.casks = [ "chatgpt" ];
-    };
-
     nixos =
       { host, ... }:
       {
@@ -20,6 +15,11 @@
           directories = [ ".codex" ];
         };
       };
+
+    darwin = {
+      # Homebrew owns the desktop app; its native updater remains enabled.
+      homebrew.casks = [ "chatgpt" ];
+    };
 
     homeManager =
       {
@@ -110,8 +110,8 @@
                   git
                   gnugrep
                   gnused
-                  openssh
                   nodejs
+                  openssh
                   uv
                 ];
               };

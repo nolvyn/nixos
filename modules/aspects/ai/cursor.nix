@@ -25,13 +25,13 @@
             extensions =
               with pkgs.vscode-extensions;
               [
+                charliermarsh.ruff
                 jnoortheen.nix-ide
                 rust-lang.rust-analyzer
-                charliermarsh.ruff
               ]
               ++ (with pkgs.stable.vscode-extensions; [
-                ms-python.python
                 ms-python.debugpy
+                ms-python.python
                 ms-python.vscode-pylance
               ]);
 

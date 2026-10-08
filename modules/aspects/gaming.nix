@@ -41,7 +41,6 @@
           # warm channel: default heroic pulls insecure pnpm-10.29.2
           # (CVE-2026-48995/50014/50015).
           warm.heroic
-          prismlauncher
           protonplus
         ];
 
@@ -65,6 +64,21 @@
         # aagl.enableNixpkgsReleaseBranchCheck = false;
 
         boot.kernelModules = [ "ntsync" ];
+      };
+
+    darwin = {
+      homebrew.casks = [
+        "heroic"
+        "steam"
+      ];
+    };
+
+    homeManager =
+      { pkgs, ... }:
+      {
+        home.packages = [
+          pkgs.prismlauncher
+        ];
       };
   };
 }

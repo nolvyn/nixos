@@ -9,7 +9,6 @@
     includes = with den.aspects; [
       common
       anki
-      gaming
       printing
       qbittorrent
     ];

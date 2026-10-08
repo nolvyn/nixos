@@ -9,6 +9,7 @@
 - Never touch: `secrets/` `assets/`
 - Never delete a file without asking first
 - Run `git add -A && git commit` before making large changes
+- Never push unless the user explicitly requests it for the current task. Prior push requests do not authorize future pushes, and requests for a clean or committed working tree do not imply permission to push.
 
 ## Project Layout
 
@@ -36,6 +37,7 @@ modules/
     │       └── astraeus.nix # den.hosts + Astraeus aspect
     ├── ai/chatgpt.nix        # Codex CLI + platform-specific desktop application
     ├── ghostty.nix           # cross-platform Ghostty Home Manager aspect
+    ├── gaming.nix            # shared launchers + platform-specific Steam integration
     ├── homebrew.nix          # native Homebrew bootstrap + package reconciliation
     ├── proton.nix            # Proton VPN packages + Linux settings persistence
     ├── security/
@@ -86,8 +88,8 @@ Every aspect uses the attrset form (not dot-chained assignments):
 {
   den.aspects.foo = {
     nixos = { host, config, pkgs, lib, ... }: { ... };
-    homeManager = { host, config, pkgs, ... }: { ... };
     darwin = { host, config, pkgs, ... }: { ... };
+    homeManager = { host, config, pkgs, ... }: { ... };
     includes = [ den.aspects.bar ];
   };
 }
@@ -95,6 +97,8 @@ Every aspect uses the attrset form (not dot-chained assignments):
 
 - Omit `nixos`, `homeManager`, `darwin`, or `includes` if not needed.
 - If an aspect only needs one block, include only that block.
+- Keep platform class blocks in the order `nixos`, `darwin`, then `homeManager`; omit any class that is not needed while preserving that relative order.
+- Keep set-like `includes`, package, app, and cask lists alphabetized when their order is not semantic. Keep `common` first in host include lists, and preserve intentional precedence or grouping elsewhere.
 - OS class blocks apply only to their platform. Guard Linux-only Home Manager
   settings with `lib.mkIf pkgs.stdenv.hostPlatform.isLinux`; shared aspects must
   evaluate safely when included by either NixOS or Darwin hosts.
@@ -116,7 +120,7 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 
 **WeebMachine** (`modules/aspects/hosts/weebmachine/weebmachine.nix`)
 - `x86_64-linux`, `isDesktop = true`, user `weeb`
-- Includes: `common` + `anki` + `gaming` + `printing` + `qbittorrent`
+- Includes: `common` + `anki` + `printing` + `qbittorrent` (gaming comes from `common`)
 - WeebMachine-only extras: Anki with `.local/share/Anki2` persistence
 - Hypridle is intentionally not started; the desktop is expected to remain awake
 
@@ -124,6 +128,7 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 - `x86_64-linux`, `isLaptop = true`, user `weeb`
 - Former laptop, deliberately retained as a reference configuration
 - Includes: `common` + `tlp`
+- Shared gaming comes from `common`, including the Linux Steam/Proton integration and launchers
 - MoeNote-only extras: `fprintd`, `upower`, `hypridle.conf` symlink and hostname-gated Hypridle autostart
 
 **Astraeus** (`modules/aspects/hosts/astraeus/astraeus.nix`)
@@ -134,6 +139,7 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 - OmniWM uses the repo-backed native `config/omniwm/settings.toml` through an out-of-store symlink; ordinary keybinding/config edits do not require a Darwin rebuild
 - Includes the native ARM Homebrew foundation: `nix-homebrew` bootstraps `/opt/homebrew`, while nix-darwin reconciles the declared package set and uninstalls undeclared packages on activation
 - The shared `proton` aspect installs Proton VPN through the `protonvpn` Homebrew cask
+- The shared `gaming` aspect installs Steam and Heroic through the `steam` and `heroic` Homebrew casks and provides Prism Launcher through Home Manager; Steam's cask requires Rosetta on Apple Silicon
 - The shared `ai.chatgpt` aspect owns the official `chatgpt` Homebrew cask on Darwin and the existing Codex CLI through `llm-agents.nix`; native desktop updates remain enabled
 - nix-darwin `programs.mas` owns Mac App Store app presence/cleanup (currently no desired apps); `update = false` leaves app updating to macOS without changing App Store preferences
 - Determinate Nix is externally installed and configured through its nix-darwin module
@@ -186,11 +192,12 @@ Defined in `setup.nix` and available everywhere:
 - `ai.chatgpt` (defined via `den.aspects.ai.provides.chatgpt`) owns `programs.codex`, its `pkgs.llm-agents.codex` package, plugins, skills, MCP configuration, and oh-my-codex on both platforms. Its NixOS block preserves `.codex` persistence, its Linux Home Manager integration retains `codex-desktop-linux`, and its Darwin block declares only the `chatgpt` Homebrew cask. Upstream Codex input/program names are unchanged.
 - Browser packages are owned by Home Manager, with shared `pkgs.unstable.brave`. Linux installs the shared extensions through `programs.chromium`; Darwin force-installs them through root-owned Brave and Chrome managed-preferences plists, never Home Manager files inside browser profiles. The shared `bravePolicies` attrset remains Linux `programs.chromium.extraOpts` and is also rendered to `/Library/Managed Preferences/com.brave.Browser.plist` on Darwin. Both Darwin browser policy reconcilers run during activation and on native path events. A configuration-profile fallback remains deferred.
 - LocalSend is a shared Home Manager application; Linux firewall and persistence remain NixOS-only
-- `proton` owns the existing Linux `pkgs.proton-vpn` system package and the Darwin `protonvpn` Homebrew cask. Both Linux hosts persist `.config/Proton/VPN`; VPN cache/logs remain ephemeral. Shared keyring and NetworkManager profile persistence remain in the security aspects. The similarly named Valve Proton gaming integration stays in `gaming`; Proton Pass desktop is not declared.
+- `proton` owns the existing Linux `pkgs.proton-vpn` system package and the Darwin `protonvpn` Homebrew cask. Both Linux hosts persist `.config/Proton`; VPN cache/logs remain ephemeral. Shared keyring and NetworkManager profile persistence remain in the security aspects. The similarly named Valve Proton gaming integration stays in `gaming`; Proton Pass desktop is not declared.
+- `gaming` is included once through `common`. Home Manager owns Prism Launcher on all hosts through `pkgs.prismlauncher`, including its Java runtimes. Linux Heroic is a NixOS system package through `pkgs.warm.heroic`. Darwin Steam and Heroic are Homebrew casks declared in `gaming.darwin`; Heroic is not also installed through Nix on Darwin. Linux Steam, ProtonPlus, compatibility tools, persistence, and `ntsync` remain in the NixOS block. Do not install a duplicate Prism Homebrew cask.
 - Ghostty is a shared Home Manager aspect using `ghostty` on Linux and `ghostty-bin` on Darwin
 - Linux-only Matugen themes, Qt/QML paths, and desktop-entry/persistence pieces remain in NixOS or Linux-guarded Home Manager blocks; portable user applications are shared through `common` on Darwin
 - ONLYOFFICE, Celluloid, Linux desktop/system integrations, and Syncthing remain Linux-only or deferred; no macOS replacements are added here
-- `nix-homebrew` owns the native ARM `/opt/homebrew` installation on Astraeus, while nix-darwin owns its declared package state; taps remain mutable. The `homebrew` aspect provides infrastructure; `proton` declares `protonvpn`, and `ai.chatgpt` declares `chatgpt` through normal module merging. Cleanup remains `uninstall`. ChatGPT is Homebrew-owned, outside Nix app links and MAS management, with its native updater left enabled.
+- `nix-homebrew` owns the native ARM `/opt/homebrew` installation on Astraeus, while nix-darwin owns its declared package state; taps remain mutable. The `homebrew` aspect provides infrastructure; `proton` declares `protonvpn`, `ai.chatgpt` declares `chatgpt`, and `gaming` declares `steam` and `heroic` through normal module merging. Cleanup remains `uninstall`. ChatGPT, Steam, and Heroic are Homebrew-owned, outside Nix app links and MAS management, with their native updaters left enabled.
 - Apple Command Line Tools remain deferred; `macAppUtil` remains the Nix-native app-launcher integration used here
 - Darwin's pinned `macAppUtil` package uses the root `unstable` SBCL package set; its upstream trampoline modules remain authoritative
 - OmniWM 0.7.5 is Nix-managed on Astraeus by overriding the `pkgs.unstable.omniwm` release asset; it is not a Homebrew cask. Accessibility and Input Monitoring approval remain manual macOS security steps.
