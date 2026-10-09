@@ -7,7 +7,8 @@
 
   den.aspects.WeebMachine = {
     includes = with den.aspects; [
-      common
+      nixosDesktop
+      workstation
       anki
       printing
       qbittorrent

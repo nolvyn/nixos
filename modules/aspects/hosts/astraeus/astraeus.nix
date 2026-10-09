@@ -9,7 +9,7 @@
 
   den.aspects.Astraeus = {
     includes = with den.aspects; [
-      common
+      workstation
       determinate
       homebrew
       macAppUtil

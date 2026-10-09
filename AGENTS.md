@@ -24,7 +24,8 @@ modules/
 ├── inputs.nix             # Source of truth for all flake inputs
 ├── setup.nix              # den.default + overlays + batteries
 ├── schema.nix             # den.schema.host custom options
-├── common.nix             # shared entry point: aspects + simple Home Manager packages
+├── common.nix             # portable Home Manager baseline
+├── profiles.nix           # explicit platform/role bundles
 └── aspects/
     ├── hosts/
     │   ├── weebmachine/
@@ -95,7 +96,7 @@ Every aspect uses the attrset form (not dot-chained assignments):
 - Omit `nixos`, `homeManager`, `darwin`, or `includes` if not needed.
 - If an aspect only needs one block, include only that block.
 - Keep platform class blocks in the order `nixos`, `darwin`, then `homeManager`; omit any class that is not needed while preserving that relative order.
-- Keep set-like `includes`, package, app, and cask lists alphabetized when their order is not semantic. Keep `common` first in host include lists, and preserve intentional precedence or grouping elsewhere.
+- Keep set-like `includes`, package, app, and cask lists alphabetized when their order is not semantic. Keep baseline profiles before host-specific overrides, and preserve intentional precedence or grouping elsewhere.
 - OS class blocks apply only to their platform. Guard Linux-only Home Manager
   settings with `lib.mkIf pkgs.stdenv.hostPlatform.isLinux`; shared aspects must
   evaluate safely when included by either NixOS or Darwin hosts.
@@ -117,14 +118,15 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 
 **WeebMachine** (`modules/aspects/hosts/weebmachine/weebmachine.nix`)
 - `x86_64-linux`, `isDesktop = true`, user `weeb`
-- Includes: `common` + `anki` + `printing` + `qbittorrent` (gaming comes from `common`)
+- Includes: `anki` + `nixosDesktop` + `printing` + `qbittorrent` + `workstation`
+- `nixosDesktop` supplies the current NixOS base, security, storage, and Linux desktop policy; `workstation` supplies gaming and personal applications
 - WeebMachine-only extras: Anki with `.local/share/Anki2` persistence
 - Hypridle is not included; the desktop is expected to remain awake
 
 **Astraeus** (`modules/aspects/hosts/astraeus/astraeus.nix`)
 - `aarch64-darwin`, `isLaptop = true`, local user `nolan`, home `/Users/nolan`
 - Hostname is `Astraeus`
-- Includes `common` once for shared applications, CLI tools, development environments, fonts, and configuration; adds only `determinate`, `homebrew`, `omniwm`, and `macAppUtil`
+- Includes `workstation` for shared applications, CLI tools, development environments, fonts, and configuration; adds only `determinate`, `homebrew`, `omniwm`, and `macAppUtil`
 - Includes the host-only `omniwm` aspect: Home Manager installs a Nix-native OmniWM 0.7.5 pin based on `pkgs.unstable.omniwm` and its user LaunchAgent, while nix-darwin enables separate Spaces
 - OmniWM uses the repo-backed native `config/omniwm/settings.toml` through an out-of-store symlink; ordinary keybinding/config edits do not require a Darwin rebuild
 - Includes the native ARM Homebrew foundation: `nix-homebrew` bootstraps `/opt/homebrew`, while nix-darwin reconciles the declared package set and uninstalls undeclared packages on activation
@@ -141,12 +143,35 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 
 WeebMachine continues to use the `weeb` account and `/home/weeb`; the Mac user is independently `nolan`.
 
-**common** (`modules/common.nix`) bundles all shared aspects — see that file for the full list.
-Every host includes it once. It owns the simple shared `home.packages` list directly;
-substantial features remain in their dedicated aspects. Linux system integration
-stays in `nixos` blocks, Darwin integration in `darwin` blocks, and Linux-only Home
-Manager settings are platform-guarded. Rofi, PipeWire utilities, Hyprland config,
-GTK/Matugen files, and XDG user-directory remapping are not enabled on Darwin.
+**Profiles** (`modules/common.nix` and `modules/profiles.nix`) are explicit
+role bundles over the reusable feature aspects:
+
+- `common` is the portable Home Manager baseline: shell-independent user tools,
+  terminals, Git, file management, and system monitors. It does not own storage,
+  Linux desktop services, Darwin casks, or the personal workstation package list.
+- `nixosBase` contains the current NixOS cache, locale, and optimization policy.
+- `nixosStorage` contains the current Disko/Btrfs/impermanence layout and rollback
+  policy. It assumes the existing NVMe/LUKS/Btrfs contract and is not a generic
+  server storage profile.
+- `nixosSecurity` contains the current persistence-backed identity and security
+  aspects. Its `environment.persistence` declarations must be paired with a
+  compatible storage profile.
+- `linuxDesktop` contains Linux desktop Home Manager settings plus NixOS desktop
+  services and packages. Rofi is Linux-only, not NixOS-only, but is intentionally
+  selected through this role bundle rather than `common`.
+- `nixosDesktop` composes the current NixOS base, security, storage, and Linux
+  desktop profiles for WeebMachine-style systems.
+- `workstation` composes `common` with the personal applications, development,
+  gaming, AI, browser, communication, VPN, and editor aspects. It is deliberately
+  opt-in for future servers.
+
+Every host should select profiles deliberately. Platform class blocks still apply
+only to their platform: `nixos` is NixOS system configuration, `darwin` is
+nix-darwin system configuration, and `homeManager` is user configuration on any
+host where Home Manager is enabled. A Linux `mkIf` guard means Linux Home Manager,
+not specifically NixOS. Standalone Linux Home Manager users may select the
+Home Manager projection of `linuxDesktop`, while the external OS supplies system
+services such as PipeWire, Bluetooth, or the compositor.
 
 ## Schema Options (`modules/schema.nix`)
 
@@ -178,14 +203,14 @@ Defined in `setup.nix` and available everywhere:
 - Both `weeb` and `nolan` use the Fish user-shell battery. Existing macOS admin-user shell state is reconciled declaratively during Darwin activation.
 - Git configuration is in Home Manager, including the platform-derived `safe.directory`
 - The `dev` aspect provides portable tools through Home Manager and Linux system integration through NixOS
-- `common.homeManager` owns the simple cross-platform user application/CLI packages; Linux system packages retain only genuine system integration. Filen intentionally uses `pkgs.unstable.filen-desktop` on both Linux and Darwin.
+- `common` owns only the portable Home Manager baseline. `workstation.homeManager` owns the personal application/CLI package list; Linux system packages remain in `linuxDesktop`, `nixosSecurity`, or `workstation` according to their role. Filen intentionally uses `pkgs.unstable.filen-desktop` on both Linux and Darwin.
 - `ai.chatgpt` (defined via `den.aspects.ai.provides.chatgpt`) owns `programs.codex`, its `pkgs.llm-agents.codex` package, plugins, skills, MCP configuration, and oh-my-codex on both platforms. Its NixOS block preserves `.codex` persistence, its Linux Home Manager integration retains `codex-desktop-linux`, and its Darwin block declares only the `chatgpt` Homebrew cask. Upstream Codex input/program names are unchanged.
 - Browser packages are owned by Home Manager, with shared `pkgs.unstable.brave`. Linux installs the shared extensions through `programs.chromium`; Darwin force-installs them through root-owned Brave and Chrome managed-preferences plists, never Home Manager files inside browser profiles. The shared `bravePolicies` attrset remains Linux `programs.chromium.extraOpts` and is also rendered to `/Library/Managed Preferences/com.brave.Browser.plist` on Darwin. Both Darwin browser policy reconcilers run during activation and on native path events. A configuration-profile fallback remains deferred.
 - LocalSend is a shared Home Manager application; Linux firewall and persistence remain NixOS-only
 - `proton` owns the existing Linux `pkgs.proton-vpn` system package and the Darwin `protonvpn` Homebrew cask. WeebMachine persists `.config/Proton`; VPN cache/logs remain ephemeral. Shared keyring and NetworkManager profile persistence remain in the security aspects. The similarly named Valve Proton gaming integration stays in `gaming`; Proton Pass desktop is not declared.
-- `gaming` is included once through `common`. Home Manager owns Prism Launcher on all hosts through `pkgs.prismlauncher`, including its Java runtimes. Linux Heroic is a NixOS system package through `pkgs.warm.heroic`. Darwin Steam and Heroic are Homebrew casks declared in `gaming.darwin`; Heroic is not also installed through Nix on Darwin. Linux Steam, ProtonPlus, compatibility tools, persistence, and `ntsync` remain in the NixOS block. Do not install a duplicate Prism Homebrew cask.
+- `gaming` is included once through `workstation`. Home Manager owns Prism Launcher on all workstation hosts through `pkgs.prismlauncher`, including its Java runtimes. Linux Heroic is a NixOS system package through `pkgs.warm.heroic`. Darwin Steam and Heroic are Homebrew casks declared in `gaming.darwin`; Heroic is not also installed through Nix on Darwin. Linux Steam, ProtonPlus, compatibility tools, persistence, and `ntsync` remain in the NixOS block. Do not install a duplicate Prism Homebrew cask.
 - Ghostty is a shared Home Manager aspect using `ghostty` on Linux and `ghostty-bin` on Darwin
-- Linux-only Matugen themes, Qt/QML paths, and desktop-entry/persistence pieces remain in NixOS or Linux-guarded Home Manager blocks; portable user applications are shared through `common` on Darwin
+- Linux-only Matugen themes, Qt/QML paths, and desktop-entry/persistence pieces remain in NixOS or Linux-guarded Home Manager blocks; portable user applications are shared through `workstation` on Darwin
 - ONLYOFFICE, Celluloid, and Linux desktop/system integrations remain Linux-only or deferred; no macOS replacements are added here. Cross-host synchronization is deferred pending a new WeebMachine/Astraeus design.
 - `nix-homebrew` owns the native ARM `/opt/homebrew` installation on Astraeus, while nix-darwin owns its declared package state; taps remain mutable. The `homebrew` aspect provides infrastructure; `proton` declares `protonvpn`, `ai.chatgpt` declares `chatgpt`, and `gaming` declares `steam` and `heroic` through normal module merging. Cleanup remains `uninstall`. ChatGPT, Steam, and Heroic are Homebrew-owned, outside Nix app links and MAS management, with their native updaters left enabled.
 - Apple Command Line Tools remain deferred; `macAppUtil` remains the Nix-native app-launcher integration used here
@@ -198,7 +223,7 @@ The `determinate` aspect imports `inputs.determinate.darwinModules.default` and 
 ## Dormant Aspects
 
 `floorp`, `neovim`, `location`, and `virtualization` are defined but intentionally
-not included by `common` or any host. Keep them inactive unless a host explicitly
+not included by any profile or host. Keep them inactive unless a host explicitly
 opts in; their presence does not enable the corresponding programs or services.
 
 ## Bundled Den References
@@ -210,7 +235,7 @@ truth for the Den API. The authoritative version is the `den` revision in
 ## Adding a New Aspect
 
 1. Create `modules/aspects/<name>.nix` with the attrset form above. Use `homeManager` for portable user configuration, `nixos` for Linux system integration, and `darwin` for macOS system integration.
-2. Add `den.aspects.<name>` to the `includes` list in `modules/common.nix` (or a specific host file if it's host-only).
+2. Add `den.aspects.<name>` to the narrowest appropriate profile in `modules/profiles.nix`, or directly to a host file if it is host-only. Keep `common` limited to genuinely portable Home Manager baseline features.
 3. If it needs a new flake input, declare it via `flake-file.inputs` inside the aspect file, then run `nix run .#write-flake`.
 4. Update this AGENTS.md if the aspect introduces a new pattern or has host-conditional behavior.
 
@@ -218,5 +243,5 @@ truth for the Den API. The authoritative version is the `den` revision in
 
 1. Create `modules/aspects/hosts/<hostname>/` with `<hostname>.nix`; add `hardware.nix` for NixOS hosts when needed.
 2. Declare `den.hosts.<system>.<Hostname>` with `isDesktop`/`isLaptop` and the host's `users.<name> = {}`.
-3. Declare `den.aspects.<Hostname>` with `den.aspects.common` once, then add only host-specific or platform-specific aspects and overrides.
+3. Declare `den.aspects.<Hostname>` with explicit role profiles such as `nixosDesktop`, `workstation`, or `linuxDesktop`, then add only host-specific or platform-specific aspects and overrides. Do not assume `common` is a complete host configuration.
 4. Update this AGENTS.md with the new host's summary.
