@@ -64,15 +64,18 @@
         packages = [ pkgs.apparmor-profiles ];
       };
 
-      fileSystems."/proc" = {
-        device = "proc";
-        fsType = "proc";
-        options = [
-          "defaults"
-          "hidepid=invisible"
-        ];
-        neededForBoot = true;
-      };
+      # Breaks Rocket League
+      /*
+        fileSystems."/proc" = {
+          device = "proc";
+          fsType = "proc";
+          options = [
+            "defaults"
+            "hidepid=invisible"
+          ];
+          neededForBoot = true;
+        };
+      */
 
       services.dbus.implementation = "broker";
 

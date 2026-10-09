@@ -85,7 +85,10 @@
                 name = "bluetooth-volume-step.lua";
                 type = "script/lua";
                 provides = "policy.bluetooth-volume-step";
-                requires = [ "support.standard-event-source" ];
+                # `extraConfig` is rendered as JSON; dependency names in this
+                # field become quoted strings, but WirePlumber expects component
+                # identifiers. The main profile already loads the standard
+                # event source through `policy.standard`.
               }
             ];
             "wireplumber.profiles" = {
