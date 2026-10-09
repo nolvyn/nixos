@@ -4,8 +4,9 @@ These are the manual steps for restoring the declared Astraeus environment on
 an Apple Silicon Mac. Packages, app links, launchd jobs, browser extension
 policies, Fish, and the OmniWM configuration are managed by this repository.
 Personal data, account sessions, and Apple security approvals remain outside Nix.
-All shared applications and tools come from `common`; Astraeus adds the
-Determinate, Homebrew, OmniWM, and mac-app-util foundations and host overrides.
+The `workstation` profile provides the portable Home Manager baseline plus shared
+applications and tools; Astraeus adds the Determinate, Homebrew, OmniWM, and
+mac-app-util foundations and host overrides.
 
 ## Bootstrap
 
