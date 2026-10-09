@@ -139,6 +139,6 @@ implementation.
 - Broad AI-agent shell and repository permissions are intentional. Mutable AI/MCP dependencies remain
   deferred above, but the permissions themselves should not be narrowed without a separate decision.
 - The packages in `workstation` are intentionally shared by both machines; the
-  portable `common` baseline and role-specific profiles keep future servers from
+  portable `base` profile and role-specific profiles keep future servers from
   inheriting workstation applications. Closure size alone is not a reason to split
   the workstation package set into host-specific aspects.
