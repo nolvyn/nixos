@@ -17,7 +17,6 @@
 flake.nix                  # Auto-generated — DO NOT edit manually
 TODO.md                    # Intentionally deferred audit and maintenance work
 config/                    # Runtime Hyprland, OmniWM, Quickshell, and Matugen configuration
-docs/den/                  # Archival Den snapshots; flake.lock is authoritative
 docs/astraeus-manual-setup.md # Fresh Mac bootstrap and manual approvals/sign-ins
 scripts/                   # Operational helpers; nixos-anywhere.sh is destructive
 modules/
@@ -105,8 +104,11 @@ Every aspect uses the attrset form (not dot-chained assignments):
 - Keep platform class blocks in the order `nixos`, `darwin`, then `homeManager`; omit any class that is not needed while preserving that relative order.
 - Keep set-like `includes`, package, app, and cask lists alphabetized when their order is not semantic. Keep baseline profiles before host-specific overrides, and preserve intentional precedence or grouping elsewhere.
 - OS class blocks apply only to their platform. Guard Linux-only Home Manager
-  settings with `lib.mkIf pkgs.stdenv.hostPlatform.isLinux`; shared aspects must
-  evaluate safely when included by either NixOS or Darwin hosts.
+  settings with `pkgs.stdenv.hostPlatform.isLinux` and Darwin-only settings with
+  `pkgs.stdenv.hostPlatform.isDarwin`; shared aspects must evaluate safely when
+  included by either NixOS or Darwin hosts. Use `host.class` only in schema or
+  policy contexts, or in import lists that must be resolved before `pkgs` is
+  available.
 
 ## Batteries — All Opt-In
 
@@ -124,14 +126,14 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 ## Hosts
 
 **WeebMachine** (`modules/aspects/hosts/weebmachine/weebmachine.nix`)
-- `x86_64-linux`, `isDesktop = true`, user `weeb`
+- `x86_64-linux`, user `weeb`
 - Includes: `nixosBase` + `nixosStorage` + `nixosSecurity` + `linuxDesktop` + `workstation` + `anki` + `printing` + `qbittorrent`
 - The explicit NixOS profiles supply the current base, storage, security, and Linux desktop policy; `workstation` supplies gaming and personal applications
 - WeebMachine-only extras: Anki with `.local/share/Anki2` persistence
 - Hypridle is not included; the desktop is expected to remain awake
 
 **Astraeus** (`modules/aspects/hosts/astraeus/astraeus.nix`)
-- `aarch64-darwin`, `isLaptop = true`, local user `nolan`, home `/Users/nolan`
+- `aarch64-darwin`, local user `nolan`, home `/Users/nolan`
 - Hostname is `Astraeus`
 - Includes `workstation` for shared applications, CLI tools, development environments, fonts, and configuration; adds only `determinate`, `homebrew`, `omniwm`, and `macAppUtil`
 - Includes the host-only `omniwm` aspect: Home Manager installs a Nix-native OmniWM 0.7.5 pin based on `pkgs.unstable.omniwm` and its user LaunchAgent, while nix-darwin enables separate Spaces
@@ -188,8 +190,6 @@ All under `den.schema.host`:
 | `flakeDir` | str | Linux: `"/home/${host.userName}/nixos"`; Darwin: `"/Users/${host.userName}/nixos"` |
 | `git.userName` | str | `"nolvyn"` |
 | `git.userEmail` | str | `"245221879+nolvyn@users.noreply.github.com"` |
-| `isDesktop` | enableOption | false |
-| `isLaptop` | enableOption | false |
 
 `host.flakeDir` is derived from `host.system`: Linux hosts use `/home/<user>/nixos`, while Darwin hosts use `/Users/<user>/nixos`.
 
@@ -231,12 +231,6 @@ The `determinate` aspect imports `inputs.determinate.darwinModules.default` and 
 not included by any profile or host. Keep them inactive unless a host explicitly
 opts in; their presence does not enable the corresponding programs or services.
 
-## Bundled Den References
-
-The files under `docs/den/` are archival source snapshots and are not the source of
-truth for the Den API. The authoritative version is the `den` revision in
-`flake.lock`; inspect that locked source whenever behavior or API details matter.
-
 ## Adding a New Aspect
 
 1. Create `modules/aspects/<name>.nix` with the attrset form above. Use `homeManager` for portable user configuration, `nixos` for Linux system integration, and `darwin` for macOS system integration.
@@ -247,6 +241,6 @@ truth for the Den API. The authoritative version is the `den` revision in
 ## Adding a New Host
 
 1. Create `modules/aspects/hosts/<hostname>/` with `<hostname>.nix`; add `hardware.nix` for NixOS hosts when needed.
-2. Declare `den.hosts.<system>.<Hostname>` with `isDesktop`/`isLaptop` and the host's `users.<name> = {}`.
+2. Declare `den.hosts.<system>.<Hostname>` with the host's `users.<name> = {}`.
 3. Declare `den.aspects.<Hostname>` with explicit role profiles such as `nixosBase`, `nixosStorage`, `nixosSecurity`, `linuxDesktop`, or `workstation`, then add only host-specific or platform-specific aspects and overrides. Do not assume `base` is a complete host configuration.
 4. Update this AGENTS.md with the new host's summary.
