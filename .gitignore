@@ -1,5 +1,6 @@
 .claude/
 .omc/
+.omx/
 config/quickshell/bar/.qmlls.ini
 result
 secrets/host-keys/
