@@ -30,7 +30,8 @@
         ...
       }:
       let
-        isLinux = lib.hasSuffix "linux" host.system;
+        isNixOS = host.class == "nixos";
+        isLinux = pkgs.stdenv.hostPlatform.isLinux;
         mkPlugin =
           name:
           builtins.path {
@@ -38,13 +39,14 @@
             path = "${inputs.openai-plugins}/plugins/${name}";
           };
       in
-      lib.recursiveUpdate
-        {
-          imports = lib.optional isLinux inputs.codex-desktop-linux.homeManagerModules.default;
+      {
+        # Module imports must not depend on pkgs, or evaluation recurses.
+        imports = lib.optional isNixOS inputs.codex-desktop-linux.homeManagerModules.default;
 
-          home.packages = [ pkgs.llm-agents.oh-my-codex ];
+        home.packages = [ pkgs.llm-agents.oh-my-codex ];
 
-          programs.codex = {
+        programs = {
+          codex = {
             enable = true;
             package = pkgs.llm-agents.codex;
             enableMcpIntegration = true;
@@ -93,30 +95,29 @@
             };
           };
         }
-        (
-          lib.optionalAttrs isLinux {
-            programs.codexDesktopLinux = {
+        // lib.optionalAttrs isLinux {
+          codexDesktopLinux = {
+            enable = true;
+            # cliPackage = pkgs.llm-agents.codex;
+            computerUseUi.enable = true;
+            remoteMobileControl.enable = true;
+            remoteControl = {
               enable = true;
-              # cliPackage = pkgs.llm-agents.codex;
-              computerUseUi.enable = true;
-              remoteMobileControl.enable = true;
-              remoteControl = {
-                enable = true;
-                package = pkgs.llm-agents.codex;
-                extraPackages = with pkgs; [
-                  bash
-                  coreutils
-                  findutils
-                  git
-                  gnugrep
-                  gnused
-                  nodejs
-                  openssh
-                  uv
-                ];
-              };
+              package = pkgs.llm-agents.codex;
+              extraPackages = with pkgs; [
+                bash
+                coreutils
+                findutils
+                git
+                gnugrep
+                gnused
+                nodejs
+                openssh
+                uv
+              ];
             };
-          }
-        );
+          };
+        };
+      };
   };
 }

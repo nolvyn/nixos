@@ -59,7 +59,7 @@
         ...
       }:
       let
-        linuxAliases = lib.optionalAttrs (lib.hasSuffix "linux" host.system) {
+        linuxAliases = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
           nhs = "nh os switch";
           sure = "sudo reboot";
           rup = "ripunzip unzip-file";
