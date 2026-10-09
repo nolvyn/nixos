@@ -18,9 +18,9 @@
       };
 
     homeManager =
-      { host, pkgs, ... }:
+      { pkgs, ... }:
       let
-        isLinux = lib.hasSuffix "linux" host.system;
+        isLinux = pkgs.stdenv.hostPlatform.isLinux;
       in
       {
         nixpkgs.overlays = [ inputs.nix-vscode-extensions.overlays.default ];

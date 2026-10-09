@@ -2,9 +2,9 @@
 {
   den.aspects.yazi = {
     homeManager =
-      { host, ... }:
+      { pkgs, ... }:
       let
-        isLinux = lib.hasSuffix "linux" host.system;
+        isLinux = pkgs.stdenv.hostPlatform.isLinux;
       in
       {
         programs.yazi = {

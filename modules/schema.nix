@@ -10,10 +10,7 @@
       flakeDir = lib.mkOption {
         type = lib.types.str;
         default =
-          if lib.hasSuffix "darwin" host.system then
-            "/Users/${host.userName}/nixos"
-          else
-            "/home/${host.userName}/nixos";
+          if host.class == "darwin" then "/Users/${host.userName}/nixos" else "/home/${host.userName}/nixos";
       };
 
       git = {
@@ -26,9 +23,6 @@
           default = "245221879+nolvyn@users.noreply.github.com";
         };
       };
-
-      isDesktop = lib.mkEnableOption "Desktop Machine Configuration";
-      isLaptop = lib.mkEnableOption "Laptop Configuration";
     };
   };
 }

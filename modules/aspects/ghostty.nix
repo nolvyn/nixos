@@ -1,10 +1,10 @@
-{ lib, ... }:
+{ ... }:
 {
   den.aspects.ghostty = {
     homeManager =
-      { host, pkgs, ... }:
+      { pkgs, ... }:
       let
-        isDarwin = lib.hasSuffix "darwin" host.system;
+        isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
       in
       {
         programs.ghostty = {
