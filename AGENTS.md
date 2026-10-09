@@ -24,9 +24,15 @@ modules/
 ├── inputs.nix             # Source of truth for all flake inputs
 ├── setup.nix              # den.default + overlays + batteries
 ├── schema.nix             # den.schema.host custom options
-├── common.nix             # portable Home Manager baseline
-├── profiles.nix           # explicit platform/role bundles
 └── aspects/
+    ├── profiles/          # explicit platform/role bundles
+    │   ├── base.nix       # portable Home Manager baseline
+    │   ├── linux-desktop.nix
+    │   ├── nixos-base.nix
+    │   ├── nixos-desktop.nix
+    │   ├── nixos-security.nix
+    │   ├── nixos-storage.nix
+    │   └── workstation.nix
     ├── hosts/
     │   ├── weebmachine/
     │   │   ├── weebmachine.nix   # den.hosts + WeebMachine aspect
@@ -143,10 +149,10 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 
 WeebMachine continues to use the `weeb` account and `/home/weeb`; the Mac user is independently `nolan`.
 
-**Profiles** (`modules/common.nix` and `modules/profiles.nix`) are explicit
+**Profiles** (`modules/aspects/profiles/`) are explicit
 role bundles over the reusable feature aspects:
 
-- `common` is the portable Home Manager baseline: shell-independent user tools,
+- `base` is the portable Home Manager baseline: shell-independent user tools,
   terminals, Git, file management, and system monitors. It does not own storage,
   Linux desktop services, Darwin casks, or the personal workstation package list.
 - `nixosBase` contains the current NixOS cache, locale, and optimization policy.
@@ -158,10 +164,10 @@ role bundles over the reusable feature aspects:
   compatible storage profile.
 - `linuxDesktop` contains Linux desktop Home Manager settings plus NixOS desktop
   services and packages. Rofi is Linux-only, not NixOS-only, but is intentionally
-  selected through this role bundle rather than `common`.
+  selected through this role bundle rather than `base`.
 - `nixosDesktop` composes the current NixOS base, security, storage, and Linux
   desktop profiles for WeebMachine-style systems.
-- `workstation` composes `common` with the personal applications, development,
+- `workstation` composes `base` with the personal applications, development,
   gaming, AI, browser, communication, VPN, and editor aspects. It is deliberately
   opt-in for future servers.
 
@@ -203,7 +209,7 @@ Defined in `setup.nix` and available everywhere:
 - Both `weeb` and `nolan` use the Fish user-shell battery. Existing macOS admin-user shell state is reconciled declaratively during Darwin activation.
 - Git configuration is in Home Manager, including the platform-derived `safe.directory`
 - The `dev` aspect provides portable tools through Home Manager and Linux system integration through NixOS
-- `common` owns only the portable Home Manager baseline. `workstation.homeManager` owns the personal application/CLI package list; Linux system packages remain in `linuxDesktop`, `nixosSecurity`, or `workstation` according to their role. Filen intentionally uses `pkgs.unstable.filen-desktop` on both Linux and Darwin.
+- `base` owns only the portable Home Manager baseline. `workstation.homeManager` owns the personal application/CLI package list; Linux system packages remain in `linuxDesktop`, `nixosSecurity`, or `workstation` according to their role. Filen intentionally uses `pkgs.unstable.filen-desktop` on both Linux and Darwin.
 - `ai.chatgpt` (defined via `den.aspects.ai.provides.chatgpt`) owns `programs.codex`, its `pkgs.llm-agents.codex` package, plugins, skills, MCP configuration, and oh-my-codex on both platforms. Its NixOS block preserves `.codex` persistence, its Linux Home Manager integration retains `codex-desktop-linux`, and its Darwin block declares only the `chatgpt` Homebrew cask. Upstream Codex input/program names are unchanged.
 - Browser packages are owned by Home Manager, with shared `pkgs.unstable.brave`. Linux installs the shared extensions through `programs.chromium`; Darwin force-installs them through root-owned Brave and Chrome managed-preferences plists, never Home Manager files inside browser profiles. The shared `bravePolicies` attrset remains Linux `programs.chromium.extraOpts` and is also rendered to `/Library/Managed Preferences/com.brave.Browser.plist` on Darwin. Both Darwin browser policy reconcilers run during activation and on native path events. A configuration-profile fallback remains deferred.
 - LocalSend is a shared Home Manager application; Linux firewall and persistence remain NixOS-only
@@ -235,7 +241,7 @@ truth for the Den API. The authoritative version is the `den` revision in
 ## Adding a New Aspect
 
 1. Create `modules/aspects/<name>.nix` with the attrset form above. Use `homeManager` for portable user configuration, `nixos` for Linux system integration, and `darwin` for macOS system integration.
-2. Add `den.aspects.<name>` to the narrowest appropriate profile in `modules/profiles.nix`, or directly to a host file if it is host-only. Keep `common` limited to genuinely portable Home Manager baseline features.
+2. Add `den.aspects.<name>` to the narrowest appropriate profile file in `modules/aspects/profiles/`, or directly to a host file if it is host-only. Keep `base` limited to genuinely portable Home Manager baseline features.
 3. If it needs a new flake input, declare it via `flake-file.inputs` inside the aspect file, then run `nix run .#write-flake`.
 4. Update this AGENTS.md if the aspect introduces a new pattern or has host-conditional behavior.
 
@@ -243,5 +249,5 @@ truth for the Den API. The authoritative version is the `den` revision in
 
 1. Create `modules/aspects/hosts/<hostname>/` with `<hostname>.nix`; add `hardware.nix` for NixOS hosts when needed.
 2. Declare `den.hosts.<system>.<Hostname>` with `isDesktop`/`isLaptop` and the host's `users.<name> = {}`.
-3. Declare `den.aspects.<Hostname>` with explicit role profiles such as `nixosDesktop`, `workstation`, or `linuxDesktop`, then add only host-specific or platform-specific aspects and overrides. Do not assume `common` is a complete host configuration.
+3. Declare `den.aspects.<Hostname>` with explicit role profiles such as `nixosDesktop`, `workstation`, or `linuxDesktop`, then add only host-specific or platform-specific aspects and overrides. Do not assume `base` is a complete host configuration.
 4. Update this AGENTS.md with the new host's summary.
