@@ -7,7 +7,10 @@
 
   den.aspects.WeebMachine = {
     includes = with den.aspects; [
-      nixosDesktop
+      nixosBase
+      nixosStorage
+      nixosSecurity
+      linuxDesktop
       workstation
       anki
       printing
