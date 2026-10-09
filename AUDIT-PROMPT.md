@@ -6,8 +6,7 @@ reliability, maintainability, boot and runtime performance, closure size,
 desktop usability, and confidence that both machines can rebuild successfully.
 
 Before doing anything, read `AGENTS.md` completely and follow it as the
-canonical project rules. `CLAUDE.md` only imports `AGENTS.md`; it is not a
-separate source of project instructions.
+canonical project rules.
 
 ## No autonomous remediation
 

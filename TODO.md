@@ -50,13 +50,7 @@ implementation.
    - Verify which packaged profiles are actually attached to running applications on both hosts.
    - Add or change profiles individually only when a concrete confinement goal is identified.
 
-10. **Archival Den snapshot provenance**
-    - The snapshots under `docs/den/` have an unknown originating revision and intentionally remain
-      non-authoritative.
-    - If they are regenerated, record the Den revision, source-tree dirty state, generation command,
-      and timestamp. Continue using `flake.lock` as the API source of truth.
-
-11. **Build-artifact growth under `projects/`**
+10. **Build-artifact growth under `projects/`**
     - Rust and Flutter build output reached roughly 389 GB across two repositories before a manual
       cleanup on 2026-07-30. Nothing bounds it today, so it will accumulate again.
     - Research a durable approach before committing: a shared `CARGO_TARGET_DIR`, `sccache`, and
@@ -67,7 +61,7 @@ implementation.
     - A shared target directory introduces cargo lock contention between concurrent builds and makes
       `cargo clean` all-or-nothing across projects. Evaluate that cost before adopting it.
 
-12. **Persistent-store visibility and orphan handling**
+11. **Persistent-store visibility and orphan handling**
     - Nothing in this configuration ever deletes from `/persistent`. The rollback service touches only
       `@`, `@home`, `@old_roots`, and `@old_home_roots`; `@persistent` is never referenced. The store
       grows monotonically for the life of the machine.
@@ -105,7 +99,7 @@ implementation.
       several real entries are genuinely mixed (`.config/heroic` holds both settings and a large cache).
       Revisit as its own decision, not as an extension of a cleanup pass.
 
-13. **Astraeus reproducibility follow-up**
+12. **Astraeus reproducibility follow-up**
     - Keep the mac-app-util Tahoe icon source pin and modern SBCL wrapper until an
       equivalent upstream fix can be verified on the Mac; keep OmniWM 0.7.5 until
       a deliberate package update is validated.
