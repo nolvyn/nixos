@@ -103,6 +103,8 @@ implementation.
     - Keep the mac-app-util Tahoe icon source pin and modern SBCL wrapper until an
       equivalent upstream fix can be verified on the Mac; OmniWM is deliberately
       pinned to the validated v0.7.6 release.
+    - Retire Astraeus's local MAS module patch once nix-darwin validates numeric
+      app IDs instead of treating diagnostic output as installed applications.
     - Homebrew taps/cask versions and managed Web Store extension payloads remain
       mutable. Version pinning beyond the current Nix lock is a separate decision;
       mutable AI/MCP tools are already tracked above.

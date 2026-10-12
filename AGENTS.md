@@ -142,7 +142,7 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 - The shared `proton` aspect installs Proton VPN through the `protonvpn` Homebrew cask
 - The shared `gaming` aspect installs Steam and Heroic through the `steam` and `heroic` Homebrew casks and provides Prism Launcher through Home Manager; Steam's cask requires Rosetta on Apple Silicon
 - The shared `ai.chatgpt` aspect owns the official `chatgpt` Homebrew cask on Darwin and the existing Codex CLI through `llm-agents.nix`; native desktop updates remain enabled
-- nix-darwin `programs.mas` owns Mac App Store app presence/cleanup (currently no desired apps); `update = false` leaves app updating to macOS without changing App Store preferences
+- nix-darwin `programs.mas` owns Mac App Store app presence/cleanup (currently no desired apps); `update = false` leaves app updating to macOS without changing App Store preferences. Astraeus replaces only the upstream MAS module with a declaratively patched copy that accepts positive numeric app IDs, preventing MAS's empty-inventory warnings from becoming cleanup targets; retire this patch once upstream filters diagnostic lines.
 - Determinate Nix is externally installed and configured through its nix-darwin module
 - Fish is registered in `/etc/shells` and an idempotent nix-darwin activation hook reconciles the existing macOS admin user's Directory Services login shell
 - mac-app-util manages launchable trampolines for Nix/Home-Manager-installed macOS applications and is temporarily pinned to upstream PR #44 (`CFBundleIconName`/`Assets.car` Tahoe handling); remove the pin once an equivalent fix merges upstream
