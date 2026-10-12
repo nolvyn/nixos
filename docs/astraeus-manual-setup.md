@@ -29,12 +29,14 @@ mac-app-util foundations and host overrides.
 
    ```sh
    nix build .#darwinConfigurations.Astraeus.system
-   sudo ./result/sw/bin/darwin-rebuild switch --flake .#Astraeus
+   sudo /nix/var/nix/profiles/default/bin/nix-env --profile /nix/var/nix/profiles/system --set ./result
+   sudo ./result/sw/bin/darwin-rebuild activate --no-flake
    ```
 
-   Subsequent changes use `darwin-rebuild build --flake .#Astraeus` and
-   `sudo darwin-rebuild switch --flake .#Astraeus`. Inspect any activation
-   collision before moving an existing file; do not blindly overwrite it.
+   Use the same build, set-profile, and activate sequence for subsequent changes.
+   Building as your user avoids root's Git ownership check on the checkout;
+   activation uses the exact built generation. Inspect any activation collision
+   before moving an existing file; do not blindly overwrite it.
 5. Log out and back in if separate Spaces changed, and to start a new session
    with Fish and the managed environment. Keep the checkout at the declared
    path: OmniWM reads `config/omniwm/settings.toml` through a live symlink.
