@@ -5,7 +5,11 @@
 ## Safety
 
 - NEVER run `nixos-rebuild switch` or `nixos-rebuild boot`
-- Safe eval commands: `nix flake check` or `nix eval .#nixosConfigurations.WeebMachine`
+- Safe eval commands: `nix flake check` or a targeted, bounded system-derivation evaluation. Do not evaluate full host attrsets or run host evaluations in parallel; the recursive module values can overflow or consume excessive resources. For example:
+  ```sh
+  timeout --signal=TERM --kill-after=5s 45s nice -n 10 nix eval --raw .#nixosConfigurations.WeebMachine.config.system.build.toplevel.drvPath
+  timeout --signal=TERM --kill-after=5s 45s nice -n 10 nix eval --raw .#darwinConfigurations.Astraeus.config.system.build.toplevel.drvPath
+  ```
 - Never touch: `secrets/` `assets/`
 - Never delete a file without asking first
 - Run `git add -A && git commit` before making large changes
