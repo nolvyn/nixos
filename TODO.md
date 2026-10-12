@@ -101,8 +101,8 @@ implementation.
 
 12. **Astraeus reproducibility follow-up**
     - Keep the mac-app-util Tahoe icon source pin and modern SBCL wrapper until an
-      equivalent upstream fix can be verified on the Mac; keep OmniWM 0.7.5 until
-      a deliberate package update is validated.
+      equivalent upstream fix can be verified on the Mac; OmniWM is deliberately
+      pinned to the validated v0.7.6 release.
     - Homebrew taps/cask versions and managed Web Store extension payloads remain
       mutable. Version pinning beyond the current Nix lock is a separate decision;
       mutable AI/MCP tools are already tracked above.
@@ -111,8 +111,8 @@ implementation.
       Do not touch the live Application Support socket.
     - Review optional browser App Data access in System Settings; do not grant
       extra access merely to inspect protected browser directories.
-    - Workspace Bar customization, future WeebMachine/Astraeus synchronization, optional Screen Recording,
-      and MDM experimentation remain outside this audit's implementation scope.
+    - Future WeebMachine/Astraeus synchronization, optional Screen Recording, and MDM
+      experimentation remain outside this audit's implementation scope.
 
 ## Intentional decisions
 

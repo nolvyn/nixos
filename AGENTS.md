@@ -136,7 +136,7 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 - `aarch64-darwin`, local user `nolan`, home `/Users/nolan`
 - Hostname is `Astraeus`
 - Includes `workstation` for shared applications, CLI tools, development environments, fonts, and configuration; adds only `determinate`, `homebrew`, `omniwm`, and `macAppUtil`
-- Includes the host-only `omniwm` aspect: Home Manager installs a Nix-native OmniWM 0.7.5 pin based on `pkgs.unstable.omniwm` and its user LaunchAgent, while nix-darwin enables separate Spaces
+- Includes the host-only `omniwm` aspect: Home Manager installs a Nix-native OmniWM 0.7.6 pin based on `pkgs.unstable.omniwm` and its user LaunchAgent, while nix-darwin enables separate Spaces
 - OmniWM uses the repo-backed native `config/omniwm/settings.toml` through an out-of-store symlink; ordinary keybinding/config edits do not require a Darwin rebuild
 - Includes the native ARM Homebrew foundation: `nix-homebrew` bootstraps `/opt/homebrew`, while nix-darwin reconciles the declared package set and uninstalls undeclared packages on activation
 - The shared `proton` aspect installs Proton VPN through the `protonvpn` Homebrew cask
@@ -220,7 +220,7 @@ Defined in `setup.nix` and available everywhere:
 - `nix-homebrew` owns the native ARM `/opt/homebrew` installation on Astraeus, while nix-darwin owns its declared package state; taps remain mutable. The `homebrew` aspect provides infrastructure; `proton` declares `protonvpn`, `ai.chatgpt` declares `chatgpt`, and `gaming` declares `steam` and `heroic` through normal module merging. Cleanup remains `uninstall`. ChatGPT, Steam, and Heroic are Homebrew-owned, outside Nix app links and MAS management, with their native updaters left enabled.
 - Apple Command Line Tools remain deferred; `macAppUtil` remains the Nix-native app-launcher integration used here
 - Darwin's pinned `macAppUtil` package uses the root `unstable` SBCL package set; its upstream trampoline modules remain authoritative
-- OmniWM 0.7.5 is Nix-managed on Astraeus by overriding the `pkgs.unstable.omniwm` release asset; it is not a Homebrew cask. Accessibility and Input Monitoring approval remain manual macOS security steps.
+- OmniWM 0.7.6 is Nix-managed on Astraeus by overriding the `pkgs.unstable.omniwm` release asset; it is not a Homebrew cask. Its Workspace Bar fills the menu-bar area left of the notch with frosted material (`transparentBackground = false`, `solidBlackBackground = false`, `backgroundOpacity = 0.1`), while native right-side controls remain macOS-managed; underlying application-menu text may show through the material. `Control+Option+M` opens application menus and `Control+Option+B` toggles the bar. Accessibility and Input Monitoring approval remain manual macOS security steps.
 - The `dev` aspect creates `~/projects` idempotently during Home Manager activation while leaving its contents mutable for cloned repositories
 
 The `determinate` aspect imports `inputs.determinate.darwinModules.default` and enables `determinateNix` for the Darwin foundation. Determinate Nix itself remains externally installed on the Mac.

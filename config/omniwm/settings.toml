@@ -172,7 +172,7 @@ hideEmptyWorkspaces = true
 hideInNativeFullscreen = false
 hoverPreviewsEnabled = true
 notchActiveZoneWidth = 100.0
-notchMode = "splitActiveLeft"
+notchMode = "fillLeftOfNotch"
 notificationBadgeRefreshIntervalSeconds = 5.0
 notificationBadges = "off"
 position = "overlappingMenuBar"
@@ -1011,7 +1011,7 @@ binding = "Unassigned"
 id = "removeWindowMark"
 
 [[hotkeys]]
-binding = "Unassigned"
+binding = "Control+Option+B"
 id = "toggleWorkspaceBarVisibility"
 
 [[hotkeys]]
