@@ -12,7 +12,16 @@
       { host, ... }:
       {
         environment.persistence."/persistent".users.${host.userName} = {
-          directories = [ ".codex" ];
+          directories = [
+            ".codex"
+            ".config/Codex"
+            {
+              # Includes Linux settings, Electron flags, and private pairing keys.
+              directory = ".config/codex-desktop";
+              mode = "0700";
+            }
+            ".local/state/codex-desktop"
+          ];
         };
       };
 
@@ -32,6 +41,9 @@
       let
         isNixOS = host.class == "nixos";
         isLinux = pkgs.stdenv.hostPlatform.isLinux;
+        linuxSessionVariables = lib.optionalAttrs isLinux {
+          CODEX_LINUX_DISABLE_USAGE_REPORTING = "1";
+        };
         mkPlugin =
           name:
           builtins.path {
@@ -44,6 +56,8 @@
         imports = lib.optional isNixOS inputs.codex-desktop-linux.homeManagerModules.default;
 
         home.packages = [ pkgs.llm-agents.oh-my-codex ];
+        home.sessionVariables = linuxSessionVariables;
+        systemd.user.sessionVariables = linuxSessionVariables;
 
         programs = {
           codex = {
@@ -62,16 +76,16 @@
             ];
 
             rules.default = ''
-              prefix_rule(pattern = ["rm", "-rf", "/"], decision = "deny")
-              prefix_rule(pattern = ["rm", "-rf", "~"], decision = "deny")
-              prefix_rule(pattern = ["dd", "if=/dev/"], decision = "deny")
-              prefix_rule(pattern = ["mkfs"], decision = "deny")
+              prefix_rule(pattern = ["rm", "-rf", "/"], decision = "forbidden")
+              prefix_rule(pattern = ["rm", "-rf", "~"], decision = "forbidden")
+              prefix_rule(pattern = ["dd", "if=/dev/"], decision = "forbidden")
+              prefix_rule(pattern = ["mkfs"], decision = "forbidden")
             '';
 
             settings = {
               theme = "dark";
-              model = "gpt-5.6-luna";
-              model_reasoning_effort = "max";
+              model = "gpt-6.1-sol";
+              model_reasoning_effort = "high";
               approval_policy = "on-request";
               sandbox_mode = "danger-full-access";
 
