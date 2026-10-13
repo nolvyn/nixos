@@ -44,6 +44,12 @@
         linuxSessionVariables = lib.optionalAttrs isLinux {
           CODEX_LINUX_DISABLE_USAGE_REPORTING = "1";
         };
+        desktopProxyPython = pkgs.python3.withPackages (ps: [ ps.websockets ]);
+        desktopCli = pkgs.writeShellScriptBin "codex" ''
+          exec ${desktopProxyPython}/bin/python3 \
+            ${../../../scripts/codex-desktop-proxy.py} \
+            ${lib.getExe pkgs.llm-agents.codex} "$@"
+        '';
         mkPlugin =
           name:
           builtins.path {
@@ -92,6 +98,7 @@
               projects."${config.home.homeDirectory}/nixos".trust_level = "trusted";
               projects."${config.home.homeDirectory}/projects/folirei".trust_level = "trusted";
               projects."${config.home.homeDirectory}/projects/shiori".trust_level = "trusted";
+              projects."${config.home.homeDirectory}/projects/gw-analysis".trust_level = "trusted";
 
               mcp_servers.playwright = {
                 command = "npx";
@@ -112,7 +119,8 @@
         // lib.optionalAttrs isLinux {
           codexDesktopLinux = {
             enable = true;
-            # cliPackage = pkgs.llm-agents.codex;
+            # Desktop's JSONL transport needs framing for the service's WebSocket socket.
+            cliPackage = desktopCli;
             computerUseUi.enable = true;
             remoteMobileControl.enable = true;
             remoteControl = {
