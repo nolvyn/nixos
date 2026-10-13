@@ -14,12 +14,7 @@ PanelWindow {
         right: true
     }
 
-    color: Qt.rgba(
-    Colors.md3.surface.r,
-    Colors.md3.surface.g,
-    Colors.md3.surface.b,
-    0.00
-)
+    color: "transparent"
 
     Audio {
         id: audio

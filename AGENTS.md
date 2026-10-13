@@ -23,6 +23,8 @@ TODO.md                    # Intentionally deferred audit and maintenance work
 config/                    # Runtime Hyprland, OmniWM, Quickshell, and Matugen configuration
 docs/astraeus-manual-setup.md # Fresh Mac bootstrap and manual approvals/sign-ins
 scripts/                   # Operational helpers; nixos-anywhere.sh is destructive
+                           # nixos-anywhere-trusted.nix asserts/patches upstream SSH authentication
+                           # rollback-btrfs.sh is embedded in the initrd rollback unit
                            # codex-desktop-proxy.py adapts Desktop JSONL to the Unix WebSocket service
 modules/
 ├── inputs.nix             # Source of truth for all flake inputs
@@ -167,6 +169,10 @@ role bundles over the reusable feature aspects:
 - `nixosStorage` contains the current Disko/Btrfs/impermanence layout and rollback
   policy. It assumes the existing NVMe/LUKS/Btrfs contract and is not a generic
   server storage profile.
+  Its initrd embeds `scripts/rollback-btrfs.sh`: recovery subvolumes are retained
+  for 30 days after archival, using `archived-<epoch>-<counter>` names. Recognized
+  legacy mtime-based names receive a fresh 30-day grace period on migration;
+  unknown names, ordinary directories, and symlinks are not cleanup targets.
 - `nixosSecurity` contains the current persistence-backed identity and security
   aspects. Its `environment.persistence` declarations must be paired with a
   compatible storage profile.
@@ -212,6 +218,9 @@ Defined in `setup.nix` and available everywhere:
 - Fish user configuration is primarily in Home Manager; Linux-only Fish persistence remains in NixOS. The locked Den Fish battery also owns Darwin `/etc/shells` registration; do not duplicate it.
 - Both `weeb` and `nolan` use the Fish user-shell battery. Existing macOS admin-user shell state is reconciled declaratively during Darwin activation.
 - Git configuration is in Home Manager, including the platform-derived `safe.directory`
+- The Git aspect persists Linux `.config/gh` with mode `0700`, alongside the shared
+  keyring persistence in `security.general`, so account selection survives rollback.
+- The printing aspect persists `/var/lib/cups` on NixOS for locally configured queues.
 - The `dev` aspect provides portable tools through Home Manager and Linux system integration through NixOS
 - `base` owns only the portable Home Manager baseline. `workstation.homeManager` owns the personal application/CLI package list; Linux system packages remain in `linuxDesktop`, `nixosSecurity`, or `workstation` according to their role. Filen intentionally uses `pkgs.unstable.filen-desktop` on both Linux and Darwin.
 - `ai.chatgpt` (defined via `den.aspects.ai.provides.chatgpt`) owns `programs.codex`, its `pkgs.llm-agents.codex` package, plugins, skills, MCP configuration, and oh-my-codex on both platforms. Its NixOS block persists `.codex`, the `.config/Codex` Electron profile, the private `0700` `.config/codex-desktop` wrapper configuration (including pairing keys), and `.local/state/codex-desktop` wrapper state. Do not persist the pairing-key subdirectory separately from its parent; cache directories remain ephemeral, and shared keyring persistence remains in `security.general`. Its Linux Home Manager integration retains `codex-desktop-linux`, Computer Use UI, mobile control, and the single declarative remote-control service, and disables community anonymous usage reporting in both session environments. Its Darwin block declares only the `chatgpt` Homebrew cask. Upstream Codex input/program names are unchanged.

@@ -1,6 +1,15 @@
 { ... }:
 {
   den.aspects.git = {
+    nixos = { host, ... }: {
+      environment.persistence."/persistent".users.${host.userName}.directories = [
+        {
+          directory = ".config/gh";
+          mode = "0700";
+        }
+      ];
+    };
+
     homeManager = { host, pkgs, ... }: {
       home.packages = with pkgs; [
         gh

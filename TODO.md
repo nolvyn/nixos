@@ -6,13 +6,16 @@ implementation.
 
 1. **Installer, Disko, impermanence, and recovery safety**
    - Test the fresh-install SSH/age identity bootstrap in a disposable VM.
-   - Design SSH server authentication for the pre-kexec and post-kexec stages.
+   - The installer now binds disk inspection and upstream SSH transports to the confirmed
+     ED25519 key, and stages the recovery identity in `/persistent/etc/ssh` for agenix.
+     Verify the complete pre-kexec/post-kexec installation and first login in a disposable VM.
    - Exercise the installer's fingerprint and destructive disk confirmation checks in a disposable VM.
-   - Test the Btrfs rollback path in a disposable VM, including nested subvolumes and failure recovery.
-   - Decide whether old roots should be retained for 30 days after archival. The current cleanup uses
-     the live subvolume's existing mtime, so after more than 30 days of uninterrupted uptime the
-     recovery snapshot made at the next reboot can be deleted immediately. Persisted data is not
-     affected, but the just-created recovery copy of ephemeral state is lost.
+   - The automated disposable-VM test passed real Btrfs archival, nested-subvolume cleanup,
+     legacy grace, old-mtime retention, directory/symlink exclusions, and repeated rollback.
+     Test the remaining failure recovery and boot-time integration in a disposable VM.
+   - Retention now starts at archival and lasts 30 days, independently of live mtimes.
+     Legacy-name migration and nested-subvolume deletion are now verified on real Btrfs;
+     low-space/failure behavior still needs the disposable VM before a recovery installation.
    - Do not change or exercise these paths on either real machine without a reviewed recovery plan.
 
 2. **Future cross-host synchronization scope**
@@ -31,6 +34,7 @@ implementation.
 
 5. **Pin mutable AI and MCP tools**
    - Pin the versions used by `npx`, `uvx`, and mutable GitHub invocations.
+   - Include the mutable OpenCode plugin and the GitHub flake invocation in `.mcp.json`.
    - Preserve a deliberate update process for security fixes.
 
 6. **Swap, Zram, and hibernation**
@@ -120,12 +124,23 @@ implementation.
     - Future WeebMachine/Astraeus synchronization, optional Screen Recording, and MDM
       experimentation remain outside this audit's implementation scope.
 
+13. **Runtime checks after audit fixes**
+    - Run native Darwin build checks during the next Astraeus maintenance session;
+      this Linux audit verified its bounded system derivation evaluation only.
+    - After a future normal deployment, verify printer queues survive rollback and a test
+      page prints; do not send a print job or change the running machine just for this audit.
+    - Verify GitHub CLI account selection/keyring login survives rollback with the real user
+      profile, and the Quickshell bar renders normally in a fresh desktop session.
+    - These checks are deferred; automated fixtures and builds do not prove hardware behavior.
+
 ## Intentional decisions
 
 - Install targets are expected to use NVMe storage, so Disko intentionally retains
   `/dev/nvme0n1`; the installer requires an explicit inspection and erase confirmation instead.
 - `nixos-anywhere` intentionally remains unpinned to avoid a manual update workflow. The installer
-  therefore trusts its upstream GitHub default branch at execution time.
+  therefore trusts its upstream GitHub default branch at execution time. The local package override
+  requires exactly one matching SSH argument declaration before replacing insecure host-key defaults;
+  upstream changes to that seam stop the build for review instead of silently dropping authentication.
 - The 512 MiB ESP and `boot.loader.systemd-boot.configurationLimit = 50` remain unchanged because
   observed use has been acceptable; the limit bounds boot entries only, not store contents. Revisit
   only if `/boot` usage begins growing materially or an installation fails.
