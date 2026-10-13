@@ -38,8 +38,14 @@ implementation.
    - Preserve a deliberate update process for security fixes.
 
 6. **Swap, Zram, and hibernation**
-   - Evaluate memory pressure and RAM capacity on both machines.
-   - Consider Zram independently from disk-backed swap and hibernation.
+   - WeebMachine's inspection found roughly 64 GB RAM, ample available memory,
+     no current memory pressure, and no OOM messages in the readable boot logs.
+     Astraeus runtime assessment remains deferred to a native maintenance session.
+   - Recommended first step: one Zstd Zram swap device capped at 8 GiB of logical
+     capacity, without disk writeback or changes to swappiness. This allocates
+     compressed RAM on demand; it does not reserve 8 GiB of physical RAM.
+     The configuration was tested in a disposable VM but is not enabled on this host.
+     Disk-backed swap remains a separate decision if sustained workloads need it.
    - Do not add hibernation until its interaction with encryption and the current kernel-security settings is designed.
 
 7. **Gaming-specific laptop configuration**
@@ -47,12 +53,25 @@ implementation.
    - The currently shared rules do not require immediate changes.
 
 8. **Core-dump retention**
-   - Decide whether persisted crash dumps should have stricter size or age limits, or be disabled.
-   - Balance debugging value against disk usage and the possibility of retaining sensitive process memory.
+   - The approved limits are implemented: 1 GiB total, 1 GiB per dump/processing,
+     and seven days by modification time. Normal crash-dump creation and the
+     six-day/eight-day retention boundary passed a disposable VM test.
+   - Verify the limits after a future normal deployment. The running machine was
+     not activated or cleaned during this follow-up. Systemd can temporarily
+     exceed its aggregate limit while processing a dump.
 
 9. **AppArmor runtime verification**
-   - Verify which packaged profiles are actually attached to running applications on both hosts.
-   - Add or change profiles individually only when a concrete confinement goal is identified.
+   - AppArmor applies only to WeebMachine; Astraeus has separate macOS protections.
+   - The old configuration enabled AppArmor but declared no policies to load.
+     The new `nixos-ping` policy explicitly confines the underlying iputils executable.
+     A disposable VM verified attachment in enforce mode, ordinary-user IPv4/IPv6
+     and DNS use, blocked private-file reads and unrelated writes, and an
+     unconfined control proving the same probe could otherwise perform those accesses.
+   - Verify host attachment after a future normal deployment, then consider broader
+     applications individually. The global runtime profile inventory requires
+     privileged access unavailable during this investigation.
+   - Do not bulk-load desktop profiles merely to obtain confined-looking labels;
+     some packaged profiles explicitly allow everything.
 
 10. **Build-artifact growth under `projects/`**
     - Rust and Flutter build output reached roughly 389 GB across two repositories before a manual
@@ -64,6 +83,23 @@ implementation.
       debuginfo settings are likely relevant to the second.
     - A shared target directory introduces cargo lock contention between concurrent builds and makes
       `cargo clean` all-or-nothing across projects. Evaluate that cost before adopting it.
+    - Follow-up inspection found about 66 GB in the examined Rust target directories.
+      Several roots belong to genuinely separate workspaces/FFI integrations;
+      treating all of them as accidental duplicates is not justified.
+    - An isolated synthetic Cargo 1.95 trial confirmed that `build.build-dir` with
+      `{workspace-path-hash}` relocates intermediates while preserving final
+      `target/debug` binaries. Reducing development debug information from 2 to 1
+      reduced intermediate allocation from about 51 MiB to 32 MiB in that trial;
+      this is a mechanism check, not a benchmark of either real application.
+      Disabling incremental compilation reduced it further but slowed the trial's rebuild.
+    - Prefer project-specific `profile.dev.debug = 1` trials while retaining
+      incremental compilation, followed by per-workspace cache relocation only
+      after Flutter/FFI, editor, debugger, and executable-path integration checks.
+      Do not change every project's debugger behavior through a global override.
+    - Cargo's automatic global-cache cleanup does not cover build artifacts.
+      `cargo-sweep` now declares itself unmaintained; do not add it to a cleanup timer.
+      `sccache` requires disabling Rust incremental compilation and does not cache
+      linker-producing crates such as `cdylib`, so it is not a universal solution here.
 
 11. **Persistent-store visibility and orphan handling**
     - Nothing in this configuration ever deletes from `/persistent`. The rollback service touches only
@@ -102,6 +138,17 @@ implementation.
       ~590 GB migration, it does not help `projects/` because that is precious and stays unbounded, and
       several real entries are genuinely mixed (`.config/heroic` holds both settings and a large cache).
       Revisit as its own decision, not as an extension of a cleanup pass.
+    - Follow-up metadata inspection found roughly 19 GB in unmounted home paths:
+      about 9.1 GB under cache directories and 9.9 GB in other data. The cache
+      category is a review shortlist, not blanket deletion authorization; one
+      cache had recent timestamps. Most large inspected candidates were months old.
+      Browser profiles, Wine state, Trash, Documents, and tool configuration remain
+      preserve-first candidates because some are absent from the live home.
+      Symlinks, protected directories, and unreadable metadata were excluded.
+    - The formerly large orphaned launchers now contain only roughly 24 MB combined.
+      Most current readable growth is in declared Steam and projects data, including
+      scientific datasets and virtual-machine images. Keep that distinct from disposable
+      build output; neither directory age nor an absent mount proves safe deletion.
 
 12. **Astraeus reproducibility follow-up**
     - Keep the mac-app-util Tahoe icon source pin and modern SBCL wrapper until an

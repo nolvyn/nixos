@@ -62,6 +62,30 @@
         enable = true;
         killUnconfinedConfinables = true;
         packages = [ pkgs.apparmor-profiles ];
+        # Confine the actual executable reached by NixOS's capability wrapper.
+        # Packaged desktop profiles often allow everything; loading them alone
+        # would give a confined-looking label without useful restrictions.
+        policies.nixos-ping = {
+          state = "enforce";
+          profile = ''
+            abi <abi/4.0>,
+            include <tunables/global>
+
+            profile nixos-ping "${pkgs.iputils}/bin/ping" {
+              include <abstractions/base>
+              include <abstractions/consoles>
+              include <abstractions/nameservice>
+
+              capability net_raw,
+              network inet raw,
+              network inet6 raw,
+
+              "${pkgs.iputils}/bin/ping" mr,
+              /nix/store/*/lib/** mr,
+              @{PROC}/sys/net/ipv6/conf/all/disable_ipv6 r,
+            }
+          '';
+        };
       };
 
       # Breaks Rocket League

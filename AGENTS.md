@@ -221,6 +221,14 @@ Defined in `setup.nix` and available everywhere:
 - The Git aspect persists Linux `.config/gh` with mode `0700`, alongside the shared
   keyring persistence in `security.general`, so account selection survives rollback.
 - The printing aspect persists `/var/lib/cups` on NixOS for locally configured queues.
+- `security.general` explicitly enforces the `nixos-ping` AppArmor policy on
+  the Nix-store iputils executable reached by the capability wrapper. Packaged
+  profiles are parser includes, not automatically loaded policies; broader
+  application confinement requires its own compatibility and denial tests.
+- `security.systemd` limits persisted core dumps to 1 GiB total and per dump,
+  with a 1 GiB processing limit. Its override preserves upstream tmpfiles rules
+  except the coredump age, which is seven days by mtime; a changed upstream
+  coredump rule fails the build for review rather than silently losing retention.
 - The `dev` aspect provides portable tools through Home Manager and Linux system integration through NixOS
 - `base` owns only the portable Home Manager baseline. `workstation.homeManager` owns the personal application/CLI package list; Linux system packages remain in `linuxDesktop`, `nixosSecurity`, or `workstation` according to their role. Filen intentionally uses `pkgs.unstable.filen-desktop` on both Linux and Darwin.
 - `ai.chatgpt` (defined via `den.aspects.ai.provides.chatgpt`) owns `programs.codex`, its `pkgs.llm-agents.codex` package, plugins, skills, MCP configuration, and oh-my-codex on both platforms. Its NixOS block persists `.codex`, the `.config/Codex` Electron profile, the private `0700` `.config/codex-desktop` wrapper configuration (including pairing keys), and `.local/state/codex-desktop` wrapper state. Do not persist the pairing-key subdirectory separately from its parent; cache directories remain ephemeral, and shared keyring persistence remains in `security.general`. Its Linux Home Manager integration retains `codex-desktop-linux`, Computer Use UI, mobile control, and the single declarative remote-control service, and disables community anonymous usage reporting in both session environments. Its Darwin block declares only the `chatgpt` Homebrew cask. Upstream Codex input/program names are unchanged.
