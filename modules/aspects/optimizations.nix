@@ -5,6 +5,13 @@
 {
   den.aspects.optimizations = {
     nixos = { host, pkgs, ... }: {
+      # Compressed swap headroom; capacity is logical, not reserved physical RAM.
+      zramSwap = {
+        enable = true;
+        algorithm = "zstd";
+        memoryMax = 8 * 1024 * 1024 * 1024;
+      };
+
       nix.settings = {
         max-jobs = "auto";
         cores = 0;

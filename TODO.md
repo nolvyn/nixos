@@ -41,10 +41,11 @@ implementation.
    - WeebMachine's inspection found roughly 64 GB RAM, ample available memory,
      no current memory pressure, and no OOM messages in the readable boot logs.
      Astraeus runtime assessment remains deferred to a native maintenance session.
-   - Recommended first step: one Zstd Zram swap device capped at 8 GiB of logical
+   - Implemented in the existing `optimizations.nixos` block: one Zstd Zram swap device capped at 8 GiB of logical
      capacity, without disk writeback or changes to swappiness. This allocates
      compressed RAM on demand; it does not reserve 8 GiB of physical RAM.
-     The configuration was tested in a disposable VM but is not enabled on this host.
+     The configuration was tested in a disposable VM and is ready for a future
+     normal deployment; the running host was not activated during this work.
      Disk-backed swap remains a separate decision if sustained workloads need it.
    - Do not add hibernation until its interaction with encryption and the current kernel-security settings is designed.
 
@@ -72,6 +73,14 @@ implementation.
      privileged access unavailable during this investigation.
    - Do not bulk-load desktop profiles merely to obtain confined-looking labels;
      some packaged profiles explicitly allow everything.
+   - The printing aspect now supplies an enforced Avahi service policy adapted
+     from the packaged profile. The service explicitly selects it and is ordered
+     after the policy loader; loading the policy alone did not attach it in the VM.
+     Policy changes trigger a service restart during a future normal deployment.
+     Two disposable VMs verified enforced attachment, printer-service publication
+     and discovery in both directions, hostname resolution, service restart, and
+     denial of unrelated private-file reads and writes under the selected policy.
+     This checks network discovery, not a physical printer or a print job.
 
 10. **Build-artifact growth under `projects/`**
     - Rust and Flutter build output reached roughly 389 GB across two repositories before a manual
