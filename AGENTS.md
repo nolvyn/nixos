@@ -221,6 +221,13 @@ Defined in `setup.nix` and available everywhere:
 - The Git aspect persists Linux `.config/gh` with mode `0700`, alongside the shared
   keyring persistence in `security.general`, so account selection survives rollback.
 - The printing aspect persists `/var/lib/cups` on NixOS for locally configured queues.
+- The existing `optimizations.nixos` block enables one Zstd Zram swap device,
+  capped at 8 GiB logical capacity (or half of RAM on smaller machines). It does
+  not configure disk swap, writeback, hibernation, or a swappiness override.
+- When AppArmor is enabled, `printing.nixos` adapts the packaged Avahi policy to
+  Nix-store executable/configuration paths and explicitly selects it on the
+  Avahi service. The service waits for the policy loader and restarts when its
+  policy changes. Existing upstream service sandboxing is retained.
 - `security.general` explicitly enforces the `nixos-ping` AppArmor policy on
   the Nix-store iputils executable reached by the capability wrapper. Packaged
   profiles are parser includes, not automatically loaded policies; broader
