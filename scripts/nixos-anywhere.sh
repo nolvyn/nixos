@@ -44,6 +44,10 @@ reinstall() {
     local keypath=$3
     local confirmation
     local fingerprint_confirmation
+    local scanned_keys
+    local installer
+    local extra_files
+    local -a ssh_options
 
     [[ $host =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]] || die "invalid host name: $host"
     [[ $ip =~ ^[A-Za-z0-9][A-Za-z0-9.:%_-]*$ ]] || die "invalid target address: $ip"
@@ -57,31 +61,55 @@ reinstall() {
 
     echo
     echo "==> Target SSH ED25519 fingerprint reported by $ip"
-    ssh-keyscan -T 5 -t ed25519 "$ip" 2>/dev/null | ssh-keygen -lf -
+    temp_dir=$(mktemp -d)
+    ssh-keyscan -T 5 -t ed25519 "$ip" >"$temp_dir/keyscan" 2>/dev/null
+    scanned_keys=$(awk '$2 == "ssh-ed25519" { print $2, $3 }' "$temp_dir/keyscan" | sort -u)
+    [[ -n $scanned_keys && $scanned_keys != *$'\n'* ]] || die "target must present exactly one ED25519 key"
+    printf 'nixos-anywhere-verified %s\n' "$scanned_keys" >"$temp_dir/known_hosts"
+    chmod 400 "$temp_dir/known_hosts"
+    ssh-keygen -lf "$temp_dir/known_hosts"
     echo "Compare this fingerprint with the target console or another trusted source."
     read -rp "Type 'VERIFY $host' after checking it: " fingerprint_confirmation
     [[ $fingerprint_confirmation == "VERIFY $host" ]] || die "SSH fingerprint was not confirmed"
 
+    # Keep these controls in sync with nixos-anywhere-trusted.nix. Options must
+    # precede upstream defaults: OpenSSH uses the first value of each option.
+    export NIXOS_ANYWHERE_KNOWN_HOSTS="$temp_dir/known_hosts"
+    ssh_options=(
+        -o StrictHostKeyChecking=yes
+        -o "UserKnownHostsFile=$NIXOS_ANYWHERE_KNOWN_HOSTS"
+        -o GlobalKnownHostsFile=/dev/null
+        -o KnownHostsCommand=none
+        -o VerifyHostKeyDNS=no
+        -o NoHostAuthenticationForLocalhost=no
+        -o HostKeyAlgorithms=ssh-ed25519
+        -o HostKeyAlias=nixos-anywhere-verified
+        -o CheckHostIP=no
+        -o UpdateHostKeys=no
+        -o ControlPath=none
+    )
+
     echo
     echo "==> Target disk reported by $host"
-    ssh "root@$ip" lsblk -d -o NAME,PATH,MODEL,SERIAL,SIZE,TYPE "$TARGET_DISK"
+    ssh "${ssh_options[@]}" "root@$ip" lsblk -d -o NAME,PATH,MODEL,SERIAL,SIZE,TYPE "$TARGET_DISK"
     echo
     echo "nixos-anywhere will erase and reinstall $TARGET_DISK on $host ($ip)."
     read -rp "Type 'ERASE $host $TARGET_DISK' to continue: " confirmation
     [[ $confirmation == "ERASE $host $TARGET_DISK" ]] || die "disk erase was not confirmed"
 
     echo "==> Preparing host keys for $host"
-    temp_dir=$(mktemp -d)
-
-    install -d -m755 "$temp_dir/etc/ssh"
-    install -m600 "$keypath" "$temp_dir/etc/ssh/ssh_host_ed25519_key"
-    install -m644 "$keypath.pub" "$temp_dir/etc/ssh/ssh_host_ed25519_key.pub"
+    extra_files="$temp_dir/extra-files"
+    install -d -m755 "$extra_files/persistent/etc/ssh"
+    install -m600 "$keypath" "$extra_files/persistent/etc/ssh/ssh_host_ed25519_key"
+    install -m644 "$keypath.pub" "$extra_files/persistent/etc/ssh/ssh_host_ed25519_key.pub"
 
     echo "==> Running nixos-anywhere for $host at $ip"
-    nix run github:nix-community/nixos-anywhere -- \
+    installer=$(nix build --impure --no-link --print-out-paths \
+        --file "$SCRIPT_DIR/nixos-anywhere-trusted.nix")
+    "$installer/bin/nixos-anywhere" \
         --flake "$FLAKE_DIR#$host" \
         --target-host "root@$ip" \
-        --extra-files "$temp_dir"
+        --extra-files "$extra_files"
 }
 
 echo "Nixos-anywhere reinstall script"

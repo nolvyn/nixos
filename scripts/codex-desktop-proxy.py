@@ -54,27 +54,47 @@ async def proxy(socket_path: str) -> None:
         output_transport.close()
 
 
+def proxy_command_index(args: list[str]) -> int | None:
+    """Recognize the command after the global options supported by this adapter."""
+    index = 0
+    value_options = {"-c", "--config", "--enable", "--disable"}
+    while index < len(args):
+        argument = args[index]
+        if argument in value_options:
+            if index + 1 == len(args):
+                return None
+            index += 2
+        elif argument.partition("=")[0] in value_options and "=" in argument:
+            index += 1
+        elif argument.startswith("-c") and len(argument) > 2:
+            index += 1
+        else:
+            break
+    if args[index : index + 2] == ["app-server", "proxy"]:
+        return index
+    return None
+
+
 def main() -> None:
     upstream, *args = sys.argv[1:]
-    # Forward every other CLI operation unchanged to the configured Codex CLI.
-    for index in range(len(args) - 1):
-        if args[index : index + 2] == ["app-server", "proxy"]:
-            parser = argparse.ArgumentParser(description=__doc__)
-            parser.add_argument("--sock")
-            parser.add_argument("-c", "--config", action="append")
-            parser.add_argument("--enable", action="append")
-            parser.add_argument("--disable", action="append")
-            options = parser.parse_args(args[index + 2 :])
-            codex_home = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex"))
-            socket_path = options.sock or str(
-                codex_home / "app-server-control" / "app-server-control.sock"
-            )
-            try:
-                asyncio.run(proxy(socket_path))
-            except (OSError, ValueError, EOFError) as error:
-                print(f"codex desktop proxy: {error}", file=sys.stderr)
-                sys.exit(1)
-            return
+    index = proxy_command_index(args)
+    if index is not None:
+        parser = argparse.ArgumentParser(description=__doc__)
+        parser.add_argument("--sock")
+        parser.add_argument("-c", "--config", action="append")
+        parser.add_argument("--enable", action="append")
+        parser.add_argument("--disable", action="append")
+        options = parser.parse_args(args[:index] + args[index + 2 :])
+        codex_home = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex"))
+        socket_path = options.sock or str(
+            codex_home / "app-server-control" / "app-server-control.sock"
+        )
+        try:
+            asyncio.run(proxy(socket_path))
+        except (OSError, ValueError, EOFError) as error:
+            print(f"codex desktop proxy: {error}", file=sys.stderr)
+            sys.exit(1)
+        return
     os.execv(upstream, [upstream, *args])
 
 
