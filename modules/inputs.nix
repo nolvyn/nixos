@@ -11,8 +11,6 @@ in
 
     nixpkgs.follows = "stable";
 
-    # master.url = "github:nixos/nixpkgs/master";
-    # specific.url = "github:nixos/nixpkgs/e0892a72016721b30e65ac2ac3303cbf694dc738";
     darwin = {
       url = "github:nix-darwin/nix-darwin/master";
       # Master's module library and installer tools require matching Nixpkgs.
