@@ -4,11 +4,10 @@ import QtQuick
 Item {
     id: root
 
-    property real barHeight: 32
     property var sink: Pipewire.defaultAudioSink
 
     implicitWidth: pill.width
-    implicitHeight: root.barHeight
+    implicitHeight: Theme.barHeight
 
     PwObjectTracker {
         objects: [root.sink]
@@ -43,7 +42,7 @@ Item {
         id: pill
 
         width: row.implicitWidth + 20
-        height: root.barHeight - 4
+        height: Theme.barHeight - 4
 
         anchors.centerIn: parent
 
