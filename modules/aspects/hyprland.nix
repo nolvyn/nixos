@@ -1,7 +1,5 @@
-{ inputs, lib, ... }:
+{ lib, ... }:
 {
-  # flake-file.inputs.hyprland.url = "github:hyprwm/Hyprland/v0.55.2";
-
   den.aspects.hyprland = {
     nixos = { host, pkgs, ... }: {
       environment.persistence."/persistent".users.${host.userName}.directories = [
@@ -16,8 +14,6 @@
         enable = true;
         withUWSM = false;
         xwayland.enable = true;
-        # package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-        # portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
       };
 
       environment.sessionVariables.NIXOS_OZONE_WL = "1";
