@@ -45,7 +45,7 @@ mac-app-util foundations and host overrides.
 Homebrew is bootstrapped at `/opt/homebrew` by nix-homebrew. Do not run a separate
 Homebrew installer. The declared casks are Proton VPN (`protonvpn`, owned by the
 shared `proton` aspect), the official ChatGPT desktop app (`chatgpt`, owned by
-`ai.chatgpt`), and Steam and Heroic (`steam` and `heroic`, owned by `gaming`).
+`ai.chatgpt`), and CrossOver, Heroic, NotProton, and Steam (owned by `gaming`).
 Activation uninstalls undeclared formulae/casks.
 Taps and cask versions remain mutable, so this reproduces package ownership
 rather than identical application binaries.
@@ -76,12 +76,20 @@ native updater. Its current [Homebrew cask](https://github.com/Homebrew/homebrew
 requires Rosetta on Apple Silicon. Accept Apple's Rosetta installation prompt
 when launching Steam if needed; this approval is a manual setup step.
 
+CrossOver and NotProton install through the `crossover` and
+`notprotonnot/notproton/notproton` casks. The `gaming` aspect declares NotProton's
+upstream tap; it does not run a post-install script. If macOS blocks NotProton's
+first launch, approve it in System Settings → Privacy & Security → Open Anyway.
+CrossOver license activation and NotProton's Steam/runtime setup remain manual.
+
 Mac App Store apps are owned separately by nix-darwin `programs.mas`. Its desired
-set is currently empty, and activation removes undeclared MAS apps (not built-in
-macOS apps). Before the first switch on an existing Mac, run
+set contains Wuthering Waves (`6475033368`), declared by `gaming.darwin`; the host
+owns MAS enablement and cleanup policy. Activation removes undeclared
+MAS apps (not built-in macOS apps). Before the first switch on an existing Mac, run
 `nix shell .#darwinConfigurations.Astraeus.config.programs.mas.package -c mas list`
-and declare any apps you want to retain in `programs.mas.packages`. If apps are
-added later, sign into the Mac App Store as `nolan` before installing them.
+and declare any apps you want to retain in `programs.mas.packages`. Sign into the
+Mac App Store as `nolan` and acquire declared apps there if needed before
+activation can install them.
 Activation does not run `mas update` or change Apple's Automatic Updates setting.
 
 ## Required Apple approvals

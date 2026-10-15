@@ -67,10 +67,19 @@
       };
 
     darwin = {
-      homebrew.casks = [
-        "heroic"
-        "steam"
-      ];
+      homebrew = {
+        taps = [ "notprotonnot/notproton" ];
+        casks = [
+          "crossover"
+          "heroic"
+          "notprotonnot/notproton/notproton"
+          "steam"
+        ];
+      };
+
+      programs.mas.packages = {
+        "Wuthering Waves" = 6475033368;
+      };
     };
 
     homeManager =

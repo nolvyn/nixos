@@ -55,7 +55,6 @@
 
         programs.mas = {
           enable = true;
-          packages = { };
           cleanup = true;
           update = false;
         };
