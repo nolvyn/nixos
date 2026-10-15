@@ -4,9 +4,7 @@ import QtQuick
 PanelWindow {
     id: topBar
 
-    property real barHeight: 32
-
-    implicitHeight: barHeight
+    implicitHeight: Theme.barHeight
 
     anchors {
         top: true
@@ -21,8 +19,6 @@ PanelWindow {
         anchors.left: parent.left
         anchors.leftMargin: 4
         anchors.verticalCenter: parent.verticalCenter
-
-        barHeight: topBar.implicitHeight
     }
 
     Battery {
