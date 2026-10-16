@@ -50,7 +50,7 @@
           spotify
           tree
           unrar
-          unstable.filen-desktop
+          # unstable.filen-desktop
           wget
         ];
       };

@@ -31,10 +31,6 @@ authorize implementation automatically.
      swap only if sustained workloads need it.
    - Design encryption/kernel-security compatibility before adding hibernation.
 
-6. **Future gaming laptop**
-   - Revisit Steam keybindings, workspace rules, and packages if a future laptop is
-     intended for gaming; current shared rules need no immediate change.
-
 7. **Broader AppArmor confinement — on hold**
    - Resume only by explicit request, application by application, with compatibility
      and denial tests. Do not bulk-load permissive desktop profiles.
