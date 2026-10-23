@@ -32,7 +32,8 @@ die() {
 }
 
 usage() {
-    echo "Usage: $0 [1|2]"
+    echo "Usage: $0"
+    echo "Run without arguments; choose 1 or 2 at the interactive Choice prompt."
     echo "  1 - Reinstall WeebMachine"
     echo "  2 - Custom target"
     exit 1
