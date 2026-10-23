@@ -53,6 +53,12 @@
       }:
       let
         projectsDirectory = "${config.home.homeDirectory}/projects";
+        # Keep supported development clients on the NixOS distrust policy.
+        linuxSessionVariables = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+          NIX_SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
+          REQUESTS_CA_BUNDLE = "/etc/ssl/certs/ca-certificates.crt";
+          UV_SYSTEM_CERTS = "true";
+        };
       in
       {
         home.activation.ensureProjectsDirectory = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -92,6 +98,9 @@
           rustc
           rustfmt
         ];
+
+        home.sessionVariables = linuxSessionVariables;
+        systemd.user.sessionVariables = linuxSessionVariables;
 
         programs.direnv.enable = true;
       };

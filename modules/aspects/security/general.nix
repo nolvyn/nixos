@@ -15,6 +15,14 @@
       security.sudo.enable = false;
       security.sudo-rs.enable = true;
 
+      # CVE-2026-111943: match the upstream NixOS distrust policy.
+      security.pki.caCertificateBlacklist = [
+        "Comodo AAA Services root"
+        "emSign ECC Root CA - G3"
+        "emSign Root CA - C1"
+        "emSign ECC Root CA - C3"
+      ];
+
       nix.settings.allowed-users = [ "@users" ];
 
       # For more information see https://mynixos.com/nixpkgs/option/environment.memoryAllocator.provider
