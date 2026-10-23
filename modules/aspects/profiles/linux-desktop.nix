@@ -6,6 +6,7 @@
   den.aspects.linuxDesktop = {
     includes = with den.aspects; [
       audio
+      blender
       bluetooth
       file
       fonts
