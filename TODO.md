@@ -9,8 +9,6 @@ authorize implementation automatically.
      installation and first login, fingerprint/erase confirmations, and rollback
      failure recovery, low-space behavior, and boot integration.
    - Do not exercise these paths on either real machine without a reviewed recovery plan.
-   - Correct `scripts/nixos-anywhere.sh` help: it advertises `[1|2]` arguments,
-     but selection is interactive and arguments are ignored.
 
 2. **Cross-host synchronization**
    - Decide which folders to share between WeebMachine and Astraeus, then choose
