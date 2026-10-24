@@ -224,7 +224,7 @@ creates mutable `~/projects`; it does not clone or synchronize application data.
 | Project | Inspected starting point | App-worker responsibility / Mac gate |
 |---|---|---|
 | Folirei | Locally committed at `499662faec6b1d05b26394b386c50fcb3cdbc2d3`; publication pending. Apple targets, scoped CocoaPods, optional ARM64 Android and readiness/build helpers prepared without dependency-pin changes | 29 lightweight controls, Linux/Darwin evaluation, formatting/shell checks and independent review passed. Normal pre-push publication is still being resolved under the Linux SDK/CA hold. Native builds, Pods, signing, devices and browser behavior remain unverified. |
-| Shiori | Darwin Rust/Flutter shells declared; Android composition guarded to Linux | Add native Darwin Android tooling/Apple targets and project build/run entry points. Preserve source-validation, renderer/data and accessibility gates. |
+| Shiori | Pushed on `codex/shiori-astraeus-darwin` at [`edfd97e`](https://github.com/nolvyn/shiori/commit/edfd97ee58861930c9dfe6450a4a92cb00f1ada6), not `main`; new Apple runners/FRB Pods wiring and Darwin Android/ARM64 AVD helper | Offline Linux/Darwin shell evaluation, ten fixtures, shell/Nix checks, 17 XML/plists, spec validation and independent review/secret scan passed. Native compilation/linkage, Pod locks, signing/VoiceOver and Android ARM execution remain unrun. |
 | Nemure | Prepared at [`21b1e47`](https://github.com/nolvyn/nemure/commit/21b1e47e0e90fc979832eecdcbc0dc4332c08f49): matched Flutter 3.44.4/Dart 3.12.2 Apple Silicon shell; optional native Android shell | 175 Python and 288 Dart/Flutter tests plus analysis/format, three-platform shell evaluation and independent review passed on Linux. No native Mac build; AlarmKit remains disabled/uncompiled, signing pending and affected-platform SDK hold unresolved. |
 
 #### Folirei — publication pending
@@ -297,6 +297,83 @@ reader parity or replacement for the Linux resource harness is claimed. Full
 Cargo/Flutter/clippy/analyze/native Patrol and real-browser release gates, plus
 earlier reader/audio qualification failures, remain distinct from these 29
 lightweight environment controls.
+
+#### Shiori — use the preparation branch
+
+The verified published source is
+[`edfd97ee58861930c9dfe6450a4a92cb00f1ada6`](https://github.com/nolvyn/shiori/commit/edfd97ee58861930c9dfe6450a4a92cb00f1ada6)
+on `codex/shiori-astraeus-darwin`. **It is not on `main`.** The
+[exact project report and commands](https://github.com/nolvyn/shiori/blob/edfd97ee58861930c9dfe6450a4a92cb00f1ada6/docs/experiments/reports/PROGRAM-ASTRAEUS-DEVELOPMENT-PREP-001.md)
+are authoritative for this preparation. Preserve any existing local changes;
+for the first setup from a clean clone, select its branch explicitly:
+
+```sh
+cd /Users/nolan/projects/shiori
+git fetch origin
+git switch --track origin/codex/shiori-astraeus-darwin
+git rev-parse HEAD
+```
+
+If that local branch already exists, switch to it without `--track` and inspect
+its status/history; do not force-reset it. The reviewed commit above identifies
+this handoff even if the branch later advances. Access to the pinned private
+`nolvyn/epub-rs` engine uses the user's normal Git authentication.
+
+The pins remain Flutter 3.44.4 / Dart 3.12.2, Rust 1.95.0 and FRB 2.12.0.
+The project Darwin shell supplies scoped CocoaPods for its Rust precompile/loader
+path; no global Flutter SPM preference is changed. Apple runners and bounded
+Swift document handling are source preparation, not compilation or usability
+evidence. After the shared Apple setup, these are **future Mac checks**:
+
+```sh
+nix develop .#flutter
+xcode-select -p
+xcrun --sdk macosx --show-sdk-path
+xcrun --sdk iphoneos --show-sdk-path
+xcrun --sdk iphonesimulator --show-sdk-path
+flutter doctor -v
+cd apps/reader-app-flutter
+flutter pub get --enforce-lockfile
+flutter devices
+flutter build macos --debug --no-pub
+flutter build ios --simulator --debug --no-pub
+flutter build ios --debug --no-codesign --no-pub
+flutter run -d macos --no-pub
+flutter run -d DEVICE_ID --no-pub
+```
+
+Replace `DEVICE_ID` with a listed shared simulator/device UDID. First native
+resolution needs network/cache availability; review and commit the generated
+Apple `Podfile.lock` files after successful resolution. No resolved native locks
+were invented on Linux. Source floors remain macOS 10.15 / iOS 13; physical
+signing/provisioning, VoiceOver and real reader/document-provider acceptance
+remain Mac gates.
+
+Unlike the other projects' optional Android shells, Shiori includes Android in
+this Flutter shell and retains its existing Nix `android_sdk.accept_license = true`
+policy. Review the relevant SDK/image licenses before entering it; shell entry
+has no separate license prompt and can realize the SDK/image. The AVD helper
+itself neither accepts licenses nor downloads components. No Android realization
+or license acceptance was performed during this preparation.
+
+The same project shell provides Darwin Android platforms 35/36, build-tools
+35.0.0, NDK 27.2.12479018 plus 28.2.13676358, CMake 3.22.1, JDK 17 and emulator
+36.5.11 with one API-35 `google_apis/arm64-v8a` image. From the repository root
+inside that shell, explicit AVD preparation is:
+
+```sh
+bash tools/setup-reader-android-avd.sh
+emulator -list-avds
+```
+
+The helper creates/reuses only its marked project-private
+`shiori_api35_arm64` guest and refuses foreign, partial, changed, symlinked or
+concurrent state. It does not accept licenses, boot guests or remove existing
+state. The project report contains deliberate emulator/build/run commands;
+Android ARM execution, native NDK behavior and required licensing remain
+operator checks. The affected-platform SDK hold is unresolved. Existing web
+commands remain available with an installed native browser, but Apple browser,
+WASM transport and accessibility runtime behavior were not tested here.
 
 #### Nemure
 
