@@ -146,10 +146,10 @@ Defined in `setup.nix` and available everywhere:
 
 - Fish configuration is Home Manager-owned; Linux persistence is NixOS-only. The Den battery owns Darwin `/etc/shells`; activation reconciles the existing admin user's login shell. Do not duplicate battery settings.
 - Git is Home Manager-owned, including platform-derived `safe.directory`; Linux `.config/gh` persists with mode `0700`. Shared keyring persistence belongs to `security.general`.
-- `dev` owns portable HM tools/NixOS integration and idempotently creates mutable `~/projects`. Linux shell/user-service variables select system certificates for uv, Nix-patched certifi, and environment-aware Requests. Restart existing processes; independent TLS stores remain separate.
+- `dev` owns portable HM tools/NixOS integration and idempotently creates mutable `~/projects`. Its Darwin block declares the sole Xcode MAS install; Darwin HM supplies explicit `astraeus-dev-setup` (license-gated first launch, opt-in native runtime download, shared verified iPhone/iPad reuse). No Apple setup/download runs at activation. Android/Flutter/NDK/JDK and any CocoaPods remain project-scoped; see the Mac handoff. Linux shell/user-service variables select system certificates for uv, Nix-patched certifi, and environment-aware Requests. Restart existing processes; independent TLS stores remain separate.
 - `workstation.homeManager` owns personal apps/CLI packages; Linux system packages belong to role profiles. `unstable.filen-desktop` is currently commented out.
 - Ghostty uses Home Manager `ghostty` on Linux and `ghostty-bin` on Darwin. LocalSend is shared Home Manager; firewall/persistence are NixOS-only.
-- Matugen themes, Qt/QML paths, desktop entries, and persistence remain Linux-guarded or NixOS-only. ONLYOFFICE and Celluloid have no declared Mac replacements. Apple Command Line Tools and cross-host synchronization remain deferred.
+- Matugen themes, Qt/QML paths, desktop entries, and persistence remain Linux-guarded or NixOS-only. ONLYOFFICE and Celluloid have no declared Mac replacements. A separate Apple Command Line Tools install is unnecessary with Xcode; cross-host synchronization remains deferred.
 
 ### Blender
 
