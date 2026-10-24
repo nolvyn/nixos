@@ -97,6 +97,18 @@ supplying `nolan`'s sudo identity and home, so it can use that user's App Store
 session without requesting another password from the noninteractive activation.
 Running `mas` directly as root without `SUDO_UID` and `SUDO_GID` is insufficient.
 
+`mas install` only reinstalls apps already acquired by the signed-in Apple
+Account. For the first installation of these two free apps, run the following
+from `nolan`'s normal terminal and complete any Apple Account prompts:
+
+```sh
+sudo mas get 497799835 6475033368
+```
+
+This acquires and installs Xcode and Wuthering Waves; subsequent activations can
+use `mas install`. An unacquired app may produce `No downloads initiated` from
+that reinstall path. See [mas's App Store account requirements](https://github.com/mas-cli/mas/tree/v7.0.0#app-store-apple-account-requirements-for-get).
+
 ## Local development: explicit Apple setup
 
 The `dev` aspect installs Xcode through the existing MAS activation above and
