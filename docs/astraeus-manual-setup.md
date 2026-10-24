@@ -224,7 +224,7 @@ creates mutable `~/projects`; it does not clone or synchronize application data.
 | Project | Inspected starting point | App-worker responsibility / Mac gate |
 |---|---|---|
 | Folirei | Locally committed at `499662faec6b1d05b26394b386c50fcb3cdbc2d3`; publication pending. Apple targets, scoped CocoaPods, optional ARM64 Android and readiness/build helpers prepared without dependency-pin changes | 29 lightweight controls, Linux/Darwin evaluation, formatting/shell checks and independent review passed. Normal pre-push publication is still being resolved under the Linux SDK/CA hold. Native builds, Pods, signing, devices and browser behavior remain unverified. |
-| Shiori | Pushed on `codex/shiori-astraeus-darwin` at [`edfd97e`](https://github.com/nolvyn/shiori/commit/edfd97ee58861930c9dfe6450a4a92cb00f1ada6), not `main`; new Apple runners/FRB Pods wiring and Darwin Android/ARM64 AVD helper | Offline Linux/Darwin shell evaluation, ten fixtures, shell/Nix checks, 17 XML/plists, spec validation and independent review/secret scan passed. Native compilation/linkage, Pod locks, signing/VoiceOver and Android ARM execution remain unrun. |
+| Shiori | Pushed on `codex/shiori-astraeus-darwin` at [`59f79cb`](https://github.com/nolvyn/shiori/commit/59f79cb10a660a9b9ec2e0a701d24168a3de2ece), not `main`; new Apple runners/FRB Pods wiring and Darwin Android/ARM64 AVD helper | Offline Linux/Darwin shell evaluation, fourteen fixture/evaluation controls, shell/Nix checks, 17 XML/plists, spec validation and independent review/secret scan passed. Native compilation/linkage, Pod locks, signing/VoiceOver and Android ARM execution remain unrun. |
 | Nemure | Prepared at [`21b1e47`](https://github.com/nolvyn/nemure/commit/21b1e47e0e90fc979832eecdcbc0dc4332c08f49): matched Flutter 3.44.4/Dart 3.12.2 Apple Silicon shell; optional native Android shell | 175 Python and 288 Dart/Flutter tests plus analysis/format, three-platform shell evaluation and independent review passed on Linux. No native Mac build; AlarmKit remains disabled/uncompiled, signing pending and affected-platform SDK hold unresolved. |
 
 #### Folirei — publication pending
@@ -301,9 +301,9 @@ lightweight environment controls.
 #### Shiori — use the preparation branch
 
 The verified published source is
-[`edfd97ee58861930c9dfe6450a4a92cb00f1ada6`](https://github.com/nolvyn/shiori/commit/edfd97ee58861930c9dfe6450a4a92cb00f1ada6)
+[`59f79cb10a660a9b9ec2e0a701d24168a3de2ece`](https://github.com/nolvyn/shiori/commit/59f79cb10a660a9b9ec2e0a701d24168a3de2ece)
 on `codex/shiori-astraeus-darwin`. **It is not on `main`.** The
-[exact project report and commands](https://github.com/nolvyn/shiori/blob/edfd97ee58861930c9dfe6450a4a92cb00f1ada6/docs/experiments/reports/PROGRAM-ASTRAEUS-DEVELOPMENT-PREP-001.md)
+[exact project report and commands](https://github.com/nolvyn/shiori/blob/59f79cb10a660a9b9ec2e0a701d24168a3de2ece/docs/experiments/reports/PROGRAM-ASTRAEUS-DEVELOPMENT-PREP-001.md)
 are authoritative for this preparation. Preserve any existing local changes;
 for the first setup from a clean clone, select its branch explicitly:
 
@@ -349,17 +349,23 @@ were invented on Linux. Source floors remain macOS 10.15 / iOS 13; physical
 signing/provisioning, VoiceOver and real reader/document-provider acceptance
 remain Mac gates.
 
-Unlike the other projects' optional Android shells, Shiori includes Android in
-this Flutter shell and retains its existing Nix `android_sdk.accept_license = true`
-policy. Review the relevant SDK/image licenses before entering it; shell entry
-has no separate license prompt and can realize the SDK/image. The AVD helper
-itself neither accepts licenses nor downloads components. No Android realization
-or license acceptance was performed during this preparation.
+Shiori's Darwin `.#flutter` and default shells are Apple/web only: they exclude
+Android SDK/NDKs/JDK/images, Android hooks and Flutter Android engine artifacts.
+Linux's existing Android-enabled Flutter shell remains unchanged. To opt into
+Android on Astraeus, exit the Apple shell, return to the repository root, review
+the SDK and Google APIs ARM image agreements, and only if you agree enter:
 
-The same project shell provides Darwin Android platforms 35/36, build-tools
+```sh
+SHIORI_ACCEPT_ANDROID_LICENSES=1 nix develop --impure .#flutter-android
+```
+
+The exact acknowledgment and `--impure` are both required. Without them the shell
+refuses before forcing the SDK graph. No SDK realization or license acceptance
+occurred during preparation. The optional Android shell provides Darwin
+platforms 35/36, build-tools
 35.0.0, NDK 27.2.12479018 plus 28.2.13676358, CMake 3.22.1, JDK 17 and emulator
 36.5.11 with one API-35 `google_apis/arm64-v8a` image. From the repository root
-inside that shell, explicit AVD preparation is:
+inside the explicitly acknowledged Android shell, AVD preparation is:
 
 ```sh
 bash tools/setup-reader-android-avd.sh
