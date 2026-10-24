@@ -223,9 +223,80 @@ creates mutable `~/projects`; it does not clone or synchronize application data.
 
 | Project | Inspected starting point | App-worker responsibility / Mac gate |
 |---|---|---|
-| Folirei | Linux-only flake; Flutter + FRB/Rust; NDK 28.2/JDK 17 Android composition | Add Darwin shell/Apple Rust targets and scoped plugin tooling; preserve build-identity wrappers in `DEPLOYMENT.md`/build guidance. Actual iOS/macOS build and reader behavior remain Mac-only. |
+| Folirei | Locally committed at `499662faec6b1d05b26394b386c50fcb3cdbc2d3`; publication pending. Apple targets, scoped CocoaPods, optional ARM64 Android and readiness/build helpers prepared without dependency-pin changes | 29 lightweight controls, Linux/Darwin evaluation, formatting/shell checks and independent review passed. Normal pre-push publication is still being resolved under the Linux SDK/CA hold. Native builds, Pods, signing, devices and browser behavior remain unverified. |
 | Shiori | Darwin Rust/Flutter shells declared; Android composition guarded to Linux | Add native Darwin Android tooling/Apple targets and project build/run entry points. Preserve source-validation, renderer/data and accessibility gates. |
 | Nemure | Prepared at [`21b1e47`](https://github.com/nolvyn/nemure/commit/21b1e47e0e90fc979832eecdcbc0dc4332c08f49): matched Flutter 3.44.4/Dart 3.12.2 Apple Silicon shell; optional native Android shell | 175 Python and 288 Dart/Flutter tests plus analysis/format, three-platform shell evaluation and independent review passed on Linux. No native Mac build; AlarmKit remains disabled/uncompiled, signing pending and affected-platform SDK hold unresolved. |
+
+#### Folirei — publication pending
+
+The preparation is locally committed as
+`499662faec6b1d05b26394b386c50fcb3cdbc2d3` on
+`chore/astraeus-darwin-2026-10` in `/tmp/folirei-astraeus-20261024`.
+It has **not been published**. Its normal pre-push hook requires online Dart
+checks on Linux; the project worker is resolving the precise CA mitigation or
+fully equivalent offline gates without bypassing the hook or SDK hold. Do not
+assume an ordinary pull contains this preparation yet. Publication must be
+confirmed before the consolidated handoff is considered complete.
+
+The source guides are `docs/development/astraeus.md` and
+`docs/development/astraeus-validation.md` at that commit. The pinned Darwin
+outputs retain Flutter 3.41.9 / Dart 3.11.5, Rust 1.96.0, FRB codegen 2.12.0,
+CocoaPods 1.16.2 and production wasm-bindgen 0.2.106. CocoaPods is scoped to the
+project shell because the existing Cargokit Rust plugin and other plugins need
+it; no global SPM toggle or dependency upgrade was introduced. Podfiles/config
+includes and Apple Rust targets are prepared, while first native pod locks must
+be generated and reviewed on the Mac.
+
+After publication is confirmed and the shared Apple setup is complete, these
+are **future Astraeus commands**, not Linux commands or native-build evidence:
+
+```sh
+cd /Users/nolan/projects/folirei
+nix develop
+python3 scripts/apple-dev-check.py
+cd app
+flutter pub get --enforce-lockfile
+cd ..
+python3 scripts/apple-dev-check.py --prepare
+flutter doctor -v
+flutter devices
+scripts/build-macos.sh --debug
+scripts/build-ios.sh --simulator --debug
+cd app
+flutter run -d <device-id>
+```
+
+The explicit `--prepare` resolves the committed Dart lock offline and invokes
+Flutter's config-only CocoaPods integration; it is not native compilation.
+The build wrappers preserve the existing build identity/Sentry definitions.
+Choose the shared simulator UDID. Physical signing remains a separate Xcode
+step; minimum targets remain iOS 13.0 and macOS 10.15. Apple reader behavior,
+including WKWebView, is not established by the Linux controls.
+
+Optional Android build tools require personally reviewing the Android license,
+then entering a separate project shell from the project root:
+
+```sh
+NIXPKGS_ACCEPT_ANDROID_SDK_LICENSE=1 nix develop --impure .#android
+adb devices
+scripts/build-apk.sh --debug
+```
+
+The separate `.#androidEmulator` shell additionally requires reviewing the ARM
+image license. It provides one API-36 `google_apis/arm64-v8a` image and emulator
+36.5.11. Build tools retain platforms 33–36, build-tools 35.0.0, NDK
+28.2.13676358, CMake 3.22.1 and JDK 17. Follow the project guide's create-once
+`folirei-api36-arm64` AVD instructions, preserving any existing AVD; SDK and AVD
+state remain separate. No SDK realization, license acceptance or guest boot was
+performed during preparation. The affected-platform Dart SDK hold remains;
+preparing an Android command does not establish Android security clearance.
+
+Web commands in the project guide require a deliberately selected installed
+native Chrome executable through `CHROME_EXECUTABLE`. No Darwin browser build,
+reader parity or replacement for the Linux resource harness is claimed. Full
+Cargo/Flutter/clippy/analyze/native Patrol and real-browser release gates, plus
+earlier reader/audio qualification failures, remain distinct from these 29
+lightweight environment controls.
 
 #### Nemure
 
