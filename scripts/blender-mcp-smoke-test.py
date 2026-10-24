@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Exercise the built integration in disposable user directories, without activation.
+"""Exercise the integration in disposable user directories, without activation.
 
-Requires a graphical session and a free localhost:9876. Leaves logs and renders
-in the printed /tmp directory. Never opens or changes the user's scene/preferences.
+The full Blender/MCP run needs a GUI and free localhost:9876; ``--cache-only``
+tests the Home Manager/Codex lifecycle without either. Artifacts stay in /tmp.
+Never opens or changes the user's scene/preferences.
 """
 
 import argparse
@@ -11,6 +12,7 @@ import json
 import os
 from pathlib import Path
 import queue
+import re
 import shutil
 import socket
 import subprocess
@@ -65,8 +67,12 @@ class Rpc:
         import signal
 
         if self.process.poll() is None:
-            os.killpg(self.process.pid, signal.SIGTERM)
-            self.process.wait(timeout=10)
+            self.process.stdin.close()
+            try:
+                self.process.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                os.killpg(self.process.pid, signal.SIGTERM)
+                self.process.wait(timeout=10)
 
 
 def socket_call(kind, **params):
@@ -259,7 +265,7 @@ bpy.ops = OpsProxy()
 
 
 def cache_cases(args, root, base_env):
-    """Simulate link updates/removal and run the generated collision guard."""
+    """Exercise the declarative cache lifecycle in a disposable home."""
     import hashlib
 
     directory = root / "cache-lifecycle"
@@ -274,13 +280,17 @@ def cache_cases(args, root, base_env):
     # Materialize the actual five existing plugins in this disposable profile;
     # only list their inventory, never launch their MCP servers or use accounts.
     other_names = []
+    blender_entry = None
     for entry in original["plugins"]:
         if entry["name"] == "mcp-for-blender":
+            blender_entry = entry
             continue
         relative = entry["source"]["path"].removeprefix("./")
         source = Path(args.home_files) / relative
         shutil.copytree(source, directory / relative, symlinks=False)
         other_names.append(entry["name"])
+    assert blender_entry is not None
+    assert blender_entry["source"]["path"].endswith("/mcp-for-blender/default")
     settings = "[features]\nplugins=true\n" + "".join(
         f'[plugins."{n}@home-manager"]\nenabled=true\n' for n in other_names
     )
@@ -318,14 +328,33 @@ def cache_cases(args, root, base_env):
     guard = activation_step("checkBlenderPluginCache")
     guard = guard.replace(str(Path.home()), str(directory))
     cleanup = activation_step("cleanCodexPluginCache")
-    assert "mcp-for-blender/2.1.1" in cleanup
+    assert "mcp-for-blender/default" in cleanup
+    blender_cleanup = next(
+        block
+        for block in re.findall(
+            r'path="\$HOME"/[^\n]+\nif \[ -d "\$path" \].*?\nfi',
+            cleanup,
+            flags=re.DOTALL,
+        )
+        if "mcp-for-blender/default" in block
+    )
     print("PASS: generated guard precedes Codex cleanup and writeBoundary", flush=True)
 
-    # A real version directory is precisely what HM's cleanup would remove.
+    # The guard protects a real Codex-owned root before activation touches it.
     cache.mkdir()
     sentinel = cache / "user-owned.txt"
     sentinel.write_text("PRESERVE USER CONTENT\n")
-    legacy = cache / "2.1.1"
+    current = Path(args.plugin_cache).resolve()
+    current_version = json.loads(
+        (current / "default/.codex-plugin/plugin.json").read_text()
+    )["version"]
+    assert (current / current_version).is_dir()
+    assert not (current / current_version).is_symlink()
+    assert (current / "default").is_symlink()
+    assert (current / "default").resolve() == (current / current_version).resolve()
+    assert "mcp-for-blender/default" in blender_entry["source"]["path"]
+
+    legacy = cache / current_version
     (legacy / "nested").mkdir(parents=True)
     (legacy / "sentinel.txt").write_text("PRESERVE REAL VERSION\n")
     (legacy / "nested/sentinel.bin").write_bytes(bytes(range(256)))
@@ -354,7 +383,7 @@ def cache_cases(args, root, base_env):
     assert "STEP:cleanCodexPluginCache" not in refused.stdout
     assert legacy_snapshot(cache) == before_legacy
     print(
-        "PASS: refused legacy-cache activation never reaches cleanup; real 2.1.1 sentinels, modes and mtimes unchanged",
+        "PASS: refused legacy-cache activation never reaches cleanup; real version sentinels, modes and mtimes unchanged",
         flush=True,
     )
     cache.rename(directory / "legacy-cache-preserved")
@@ -366,29 +395,51 @@ def cache_cases(args, root, base_env):
     assert cache.readlink() == directory / "missing-user-target"
     cache.rename(directory / "dangling-user-link-preserved")
 
-    current = Path(args.plugin_cache).resolve()
     upgrade = directory / "upgrade-fixture"
-    shutil.copytree(current / "default", upgrade / "default", symlinks=False)
-    manifest = upgrade / "default/.codex-plugin/plugin.json"
+    upgrade_version = "9.9.9"
+    shutil.copytree(
+        current / current_version, upgrade / upgrade_version, symlinks=False
+    )
+    manifest = upgrade / upgrade_version / ".codex-plugin/plugin.json"
     manifest.chmod(0o644)
     metadata = json.loads(manifest.read_text())
     metadata["version"] = "9.9.9"
     manifest.write_text(json.dumps(metadata))
-    (upgrade / "9.9.9").symlink_to("default")
-    # Even a simulated stale higher version must lose to Codex's default slot.
-    shutil.copytree(upgrade / "default", upgrade / "99.0.0", symlinks=False)
+    (upgrade / "default").symlink_to(upgrade_version)
 
-    for label, source, version in [
-        ("install", current, "2.1.1"),
-        ("upgrade", upgrade, "9.9.9"),
-        ("rollback", current, "2.1.1"),
-    ]:
-        staged = directory / "next-cache-link"
-        staged.symlink_to(source, target_is_directory=True)
-        os.replace(staged, cache)
-        # The upstream cleanup addresses the version alias, which must remain
-        # a symlink so it never removes a real directory inside the store.
-        assert (cache / version).is_symlink()
+    link_script = re.search(
+        r'-exec bash (/nix/store/\S+-link) "\$newGenFiles"', activation
+    )[1]
+    cleanup_script = re.search(
+        r'xargs -0 bash (/nix/store/\S+-cleanup) "\$newGenFiles"', activation
+    )[1]
+    relative = ".codex/plugins/cache/home-manager/mcp-for-blender"
+
+    def generation(label, source):
+        files = directory / f"generation-{label}" / "home-files"
+        leaf = files / relative
+        leaf.parent.mkdir(parents=True)
+        leaf.symlink_to(source, target_is_directory=True)
+        return files, leaf
+
+    phases = [
+        ("install", current, current_version),
+        ("repeat-activation", current, current_version),
+        ("upgrade", upgrade, upgrade_version),
+        ("rollback", current, current_version),
+    ]
+    for label, source, version in phases:
+        files, leaf = generation(label, source)
+        if cache.exists() or cache.is_symlink():
+            subprocess.run(["bash", "-euc", blender_cleanup], env=env, check=True)
+        subprocess.run(
+            ["bash", link_script, str(files), str(leaf)], env=env, check=True
+        )
+        assert cache.is_symlink()
+        assert cache.resolve() == source.resolve()
+        assert (cache / version).is_dir() and not (cache / version).is_symlink()
+        assert (cache / "default").is_symlink()
+        assert (cache / "default").resolve() == (cache / version).resolve()
         state = json.loads(
             subprocess.check_output(
                 [args.codex, "plugin", "list", "--json"],
@@ -399,29 +450,55 @@ def cache_cases(args, root, base_env):
         )
         installed = {p["name"]: p for p in state["installed"]}
         assert set(installed) == set(other_names) | {"mcp-for-blender"}, state
-        assert installed["mcp-for-blender"]["version"] == "default", state
+        assert installed["mcp-for-blender"]["version"] == version, state
         assert (
-            json.loads((cache / "default/.codex-plugin/plugin.json").read_text())[
-                "version"
-            ]
+            json.loads(
+                (cache / version / ".codex-plugin/plugin.json").read_text()
+            )["version"]
             == version
         )
         print(
-            f"PASS: Codex plugin {label} selects default/{version}; existing plugins still discovered",
+            f"PASS: Codex plugin {label} reports real version {version}; Home Manager links and aliases remain intact",
+            flush=True,
+        )
+
+        # The app-server's local marketplace refresh must see matching cache
+        # and manifest versions and leave Codex's cache-root symlink untouched.
+        with (directory / f"app-server-{label}.log").open("w") as log:
+            rpc = Rpc(
+                [args.codex, "app-server", "--listen", "stdio://"],
+                env,
+                directory,
+                log,
+            )
+            try:
+                rpc.call(
+                    "initialize",
+                    {
+                        "clientInfo": {
+                            "name": "cache-lifecycle-fixture",
+                            "version": "1",
+                        }
+                    },
+                )
+                result = rpc.call(
+                    "plugin/list",
+                    {"marketplaceKinds": ["local"], "forceRefetch": False},
+                )
+                assert not result.get("marketplaceLoadErrors"), result
+                rpc.call("plugin/installed", {"cwds": []})
+            finally:
+                rpc.close()
+        assert cache.is_symlink()
+        assert cache.resolve() == source.resolve()
+        assert (cache / version).is_dir() and not (cache / version).is_symlink()
+        print(
+            f"PASS: Codex app-server local refresh preserves the declarative {version} cache layout",
             flush=True,
         )
     # Exercise HM's actual generated leaf link/cleanup scripts in this HOME.
     # No full activation or user service is run. Only our test-owned cache link
     # is removed; the five unrelated plugin trees must remain byte-for-byte.
-    import re
-
-    link_script = re.search(
-        r'-exec bash (/nix/store/\S+-link) "\$newGenFiles"', activation
-    )[1]
-    cleanup_script = re.search(
-        r'xargs -0 bash (/nix/store/\S+-cleanup) "\$newGenFiles"', activation
-    )[1]
-    relative = ".codex/plugins/cache/home-manager/mcp-for-blender"
     subprocess.run(
         ["bash", link_script, args.home_files, str(Path(args.home_files) / relative)],
         env=env,
@@ -462,15 +539,23 @@ def cache_cases(args, root, base_env):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--blender", required=True)
+    parser.add_argument("--blender")
     parser.add_argument("--home-files", required=True)
-    parser.add_argument("--plugin", required=True)
+    parser.add_argument("--plugin", help=argparse.SUPPRESS)
     parser.add_argument("--plugin-cache", required=True)
     parser.add_argument("--activation", required=True)
     parser.add_argument("--codex", default="codex")
+    parser.add_argument(
+        "--cache-only",
+        action="store_true",
+        help="run only disposable Home Manager and Codex cache lifecycle cases",
+    )
     args = parser.parse_args()
-    with socket.socket() as probe:
-        probe.bind(("127.0.0.1", 9876))
+    if not args.cache_only and not args.blender:
+        parser.error("--blender is required unless --cache-only is set")
+    if not args.cache_only:
+        with socket.socket() as probe:
+            probe.bind(("127.0.0.1", 9876))
     root = Path(tempfile.mkdtemp(prefix="blender-mcp-test-"))
     print(f"Artifacts: {root}", flush=True)
     env = os.environ | {
@@ -483,14 +568,9 @@ def main():
         "WAYLAND_DISPLAY": os.environ.get("WAYLAND_DISPLAY", "wayland-1"),
     }
     home_files = Path(args.home_files)
-    # Match HM's cache-root link; versions/manifests inside it remain regular.
-    plugin = Path(args.plugin)
-    version = json.loads((plugin / ".codex-plugin/plugin.json").read_text())["version"]
     cache = root / ".codex/plugins/cache/home-manager/mcp-for-blender"
     cache.parent.mkdir(parents=True)
     cache.symlink_to(Path(args.plugin_cache).resolve(), target_is_directory=True)
-    assert (cache / version).is_symlink()
-    assert not (cache / "default/.codex-plugin/plugin.json").is_symlink()
     (root / ".agents/plugins").mkdir(parents=True)
     shutil.copyfile(
         home_files / ".agents/plugins/marketplace.json",
@@ -501,6 +581,10 @@ def main():
     (root / ".codex/config.toml").write_text(
         '[features]\nplugins = true\n[plugins."mcp-for-blender@home-manager"]\nenabled = true\n'
     )
+    if args.cache_only:
+        cache_cases(args, root, env)
+        return
+
     blender_log = (root / "blender.log").open("w")
     blender = None
     codex = None

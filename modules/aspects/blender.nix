@@ -54,8 +54,7 @@
           meta.mainProgram = "mcp-for-blender";
         };
         plugin = pkgs.stdenvNoCC.mkDerivation {
-          # Home Manager derives the cache identity from these attributes, not
-          # a derivation's manifest. Match upstream's plugin name and version.
+          # Keep the package and manifest version aligned with upstream.
           pname = "mcp-for-blender";
           version = "2.1.1";
           src = "${source}/integrations/codex/plugins/mcp-for-blender";
@@ -69,15 +68,16 @@
               .mcp.json > "$out/.mcp.json"
           '';
         };
-        # Codex ignores symlinked version directories/manifests, but accepts a
-        # symlinked cache root containing real directories and regular files.
-        # Its reserved `default` slot wins version selection on every revision.
+        # Home Manager uses the derivation version as its cache identity and
+        # cleanup path; Codex needs the real upstream version directory so its
+        # cache version matches the plugin manifest during refresh.
+        codexPlugin = plugin // { version = "default"; };
         pluginCache = pkgs.runCommand "blender-codex-cache" { } ''
-          mkdir -p "$out/default"
-          cp -r ${plugin}/. "$out/default/"
-          # HM's marketplace and cleanup still address the upstream version.
-          # This alias is a symlink, so its cache cleanup leaves the store alone.
-          ln -s default "$out/${plugin.version}"
+          mkdir -p "$out/${plugin.version}"
+          cp -r ${plugin}/. "$out/${plugin.version}/"
+          # HM cleanup addresses this alias and skips it because it is a link.
+          # Codex ignores the alias and reads the real upstream version above.
+          ln -s "${plugin.version}" "$out/default"
         '';
         codexDir =
           if config.home.preferXdgDirectories then
@@ -120,9 +120,9 @@
         # The plugin owns the sole MCP registration, including viewport/form
         # capability flags. Merge with the existing plugins, never add a second
         # settings.mcp_servers entry for Blender.
-        programs.codex.plugins = [ plugin ];
+        programs.codex.plugins = [ codexPlugin ];
         home.file = lib.mkIf config.programs.codex.enable {
-          "${cacheRelative}/${plugin.version}".enable = false;
+          "${cacheRelative}/${codexPlugin.version}".enable = false;
           # No force: upgrades replace only HM-owned links, and removing the
           # aspect removes this link through normal Home Manager cleanup.
           "${cacheRelative}".source = pluginCache;
