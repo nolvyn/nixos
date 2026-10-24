@@ -90,8 +90,8 @@
 
             settings = {
               theme = "dark";
-              model = "gpt-6.1-sol";
-              model_reasoning_effort = "medium";
+              model = "gpt-6-luna";
+              model_reasoning_effort = "max";
               approval_policy = "on-request";
               sandbox_mode = "danger-full-access";
 
