@@ -96,7 +96,7 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 - `aarch64-darwin`, local user `nolan`, home `/Users/nolan`
 - Includes `workstation` + `determinate` + `homebrew` + `omniwm` + `macAppUtil`; hostname `Astraeus`
 - `determinate` imports `inputs.determinate.darwinModules.default` and enables `determinateNix`; Nix itself is externally installed
-- The host owns MAS enablement/cleanup (`update = false`); features own app declarations. Its replacement MAS module accepts only positive numeric IDs, preventing inventory warnings becoming cleanup targets. Retire the patch when upstream filters diagnostics.
+- The host owns MAS enablement/cleanup (`update = false`); features own app declarations. Its replacement MAS module accepts only positive numeric IDs, preventing inventory warnings becoming cleanup targets, and runs mas 7 as root with the configured user's `SUDO_UID`/`SUDO_GID`/`SUDO_USER` and home for App Store access without nested password prompts. Retire each guarded patch when upstream fixes it.
 - `macAppUtil` uses upstream trampolines and root `unstable` SBCL; temporarily pinned to PR #44 for Tahoe `CFBundleIconName`/`Assets.car` support. Remove the pin when an equivalent fix merges.
 - Its local SBCL wrapper sets complete ASDF registry/translation values, whose empty colon fields are valid Lisp configuration but rejected by `makeBinaryWrapper`'s PATH validation. Retire this guarded override when nixpkgs fixes the Lisp wrapper.
 - Home Manager GUI apps use `targets.darwin.linkApps`. Do not re-enable `copyApps` without accepting App Management/TCC requirements; retain normal collision protection.
