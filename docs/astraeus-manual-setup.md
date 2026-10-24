@@ -116,7 +116,10 @@ Review and accept Apple's license yourself in Xcode. The helper refuses an
 unaccepted license. It selects `/Applications/Xcode.app/Contents/Developer` using
 `sudo xcode-select --switch` when necessary, verifies the global selection even
 if `DEVELOPER_DIR` was set, and runs Apple's `-runFirstLaunch` only after the
-license check and only if `-checkFirstLaunchStatus` says it is required. Sudo may
+license check and only if `-checkFirstLaunchStatus` says it is required. A conflicting
+`DEVELOPER_DIR` in your calling shell is refused before changes; remove it with
+`set -e DEVELOPER_DIR` in Fish or `unset DEVELOPER_DIR` in a POSIX shell, then rerun.
+The helper cannot change its parent shell's environment. Sudo may
 prompt for the administrator password. For a deliberately different installed
 Xcode, use `astraeus-dev-setup --xcode /Applications/Xcode-beta.app`.
 No separate CLT installation, Homebrew Xcode cask, or Xcode downloader is needed.
@@ -129,14 +132,17 @@ astraeus-dev-setup --download-runtime
 
 This checks CoreSimulator registration first. It reuses the newest available
 iOS 26+ runtime no newer than the selected simulator SDK that supports both an
-iPhone and an iPad, and checks the runtime's `dyld_sim`/`dyld` loader for native ARM64 support.
+iPhone and an iPad. It correlates the registered runtime with CoreSimulator's
+runtime-image metadata by identifier and bundle path, requiring `Ready`,
+`Verified`, and advertised `arm64` support. It does not infer guest architecture
+from a potentially universal loader binary.
 The iOS 26 floor also covers Nemure's AlarmKit requirement. If needed, it asks
 Apple's `xcodebuild -downloadPlatform iOS -buildVersion <SDK version>
 -architectureVariant arm64` to install the native runtime, then checks registration
 again. A successful download alone never counts as success. Runtime availability,
 Apple account prompts, network access and free disk space can block installation;
-the helper reports the failing command and Apple's output. Use Xcode Settings →
-Components to inspect or install a compatible runtime if necessary, then rerun.
+the helper streams setup/download progress and reports the failing command and
+Apple's output. Use Xcode Settings → Components to inspect or install a compatible runtime if necessary, then rerun.
 See [Apple's component installation documentation](https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components).
 No runtime download or first-run command is attached to Nix activation or a login job.
 
@@ -144,12 +150,14 @@ The helper reuses an available iPhone/iPad already registered for that runtime,
 or creates `Astraeus iPhone iOS <version>` and `Astraeus iPad iOS <version>` using
 runtime-supported device types. It reads the devices back and prints confirmed
 UDIDs. Repeated runs retain names, boot state and data; concurrent helper runs
-are refused. It never deletes, erases, boots or shuts down a simulator. Runtime
-and device state remains in Apple's normal shared per-machine/per-user locations,
+are refused. If a helper-named device exists but is unavailable or incompatible,
+it stops with that UDID for diagnosis instead of creating duplicates on retries.
+It never deletes, erases, boots or shuts down a simulator. Runtime and device state remains in Apple's normal shared per-machine/per-user locations,
 so all three projects reuse it. To select a specific installed runtime:
 
 ```sh
 xcrun simctl list runtimes
+xcrun simctl runtime list --json
 astraeus-dev-setup --runtime com.apple.CoreSimulator.SimRuntime.iOS-27-0
 xcrun simctl list devices available
 xcodebuild -version
