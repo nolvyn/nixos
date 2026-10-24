@@ -98,6 +98,7 @@ Do NOT manually declare a host user's `users.users.<name>` account, `home.userna
 - `determinate` imports `inputs.determinate.darwinModules.default` and enables `determinateNix`; Nix itself is externally installed
 - The host owns MAS enablement/cleanup (`update = false`); features own app declarations. Its replacement MAS module accepts only positive numeric IDs, preventing inventory warnings becoming cleanup targets. Retire the patch when upstream filters diagnostics.
 - `macAppUtil` uses upstream trampolines and root `unstable` SBCL; temporarily pinned to PR #44 for Tahoe `CFBundleIconName`/`Assets.car` support. Remove the pin when an equivalent fix merges.
+- Its local SBCL wrapper sets complete ASDF registry/translation values, whose empty colon fields are valid Lisp configuration but rejected by `makeBinaryWrapper`'s PATH validation. Retire this guarded override when nixpkgs fixes the Lisp wrapper.
 - Home Manager GUI apps use `targets.darwin.linkApps`. Do not re-enable `copyApps` without accepting App Management/TCC requirements; retain normal collision protection.
 - OmniWM 0.7.6 overrides `pkgs.unstable.omniwm`, with an HM LaunchAgent and nix-darwin separate Spaces. `config/omniwm/settings.toml` is an out-of-store symlink (no rebuild for edits). Accessibility/Input Monitoring approvals are manual.
 - Bootstrap, approvals, permissions, and sign-ins: `docs/astraeus-manual-setup.md`.
