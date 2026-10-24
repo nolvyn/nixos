@@ -388,8 +388,10 @@ The prepared source commit is
 pushed to private `main` and `chore/astraeus-development`. Follow its
 [exact project guide](https://github.com/nolvyn/nemure/blob/21b1e47e0e90fc979832eecdcbc0dc4332c08f49/docs/astraeus-development.md)
 for current setup and acceptance details. The default shell provides Flutter
-3.44.4, matching Dart 3.12.2 and JDK 21 with guarded project caches. Existing SPM
-integration remains; no CocoaPods, Rust or web target was added.
+3.44.4, matching Dart 3.12.2 and JDK 21 with guarded project caches. Nemure's
+current AlarmKit source requires Xcode 26.1+; deployment targets remain iOS 26.0
+and macOS 10.15. Existing SPM integration remains; no CocoaPods, Rust or web
+target was added.
 
 After the shared Apple setup, run these **on Astraeus**, from the project checkout:
 
