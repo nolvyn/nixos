@@ -217,29 +217,50 @@ The actual WeebMachine checkouts inspected for this task are
 `/home/weeb/projects/folirei`, `/home/weeb/projects/shiori`, and
 `/home/weeb/projects/nemure`; only their app workers may change them. Their flakes,
 locks and setup/deployment guidance are independent of this host's lockfile.
-Use `/Users/nolan/projects/<name>` on Astraeus, and the commands/checklists delivered
-by each app worker after their changes are integrated. The host's `dev` aspect
-creates mutable `~/projects`; it does not clone or synchronize application data.
+Use `/Users/nolan/projects/<name>` on Astraeus with each exact published branch
+specified below. The host's `dev` aspect creates mutable `~/projects`; it does not
+clone or synchronize application data. After `gh auth login`, clone only the
+repositories that are absent:
 
-| Project | Inspected starting point | App-worker responsibility / Mac gate |
+```sh
+gh repo clone nolvyn/folirei /Users/nolan/projects/folirei
+gh repo clone nolvyn/shiori /Users/nolan/projects/shiori
+gh repo clone nolvyn/nemure /Users/nolan/projects/nemure
+```
+
+Before switching an existing checkout, inspect `git status --short` and preserve
+its local work. No reset, forced checkout or cleanup is part of this handoff.
+The app commit links identify the reviewed preparation even if a branch later
+advances. Published source and evaluated shells do not establish Mac execution.
+
+| Project | Published preparation | Verified evidence / remaining Mac gate |
 |---|---|---|
-| Folirei | Locally committed at `499662faec6b1d05b26394b386c50fcb3cdbc2d3`; publication pending. Apple targets, scoped CocoaPods, optional ARM64 Android and readiness/build helpers prepared without dependency-pin changes | 29 lightweight controls, Linux/Darwin evaluation, formatting/shell checks and independent review passed. Normal pre-push publication is still being resolved under the Linux SDK/CA hold. Native builds, Pods, signing, devices and browser behavior remain unverified. |
+| Folirei | Pushed on `chore/astraeus-darwin-2026-10` at [`97f6937`](https://github.com/nolvyn/folirei/commit/97f69371b3e1736927f3327d2a1c228febdcf2d7), not `main`; Apple targets, scoped CocoaPods and optional ARM64 Android, with pins unchanged | 29 lightweight controls, Linux/Darwin evaluation and independent review passed; the final ordinary hook passed strict clippy, 2,732 Rust tests, Flutter analysis, 2,342 VM tests, 177 browser tests and Deno/policy gates. Native Mac/iOS/Pods/signing/Darwin Android remain unverified. |
 | Shiori | Pushed on `codex/shiori-astraeus-darwin` at [`59f79cb`](https://github.com/nolvyn/shiori/commit/59f79cb10a660a9b9ec2e0a701d24168a3de2ece), not `main`; new Apple runners/FRB Pods wiring and Darwin Android/ARM64 AVD helper | Offline Linux/Darwin shell evaluation, fourteen fixture/evaluation controls, shell/Nix checks, 17 XML/plists, spec validation and independent review/secret scan passed. Native compilation/linkage, Pod locks, signing/VoiceOver and Android ARM execution remain unrun. |
 | Nemure | Prepared at [`21b1e47`](https://github.com/nolvyn/nemure/commit/21b1e47e0e90fc979832eecdcbc0dc4332c08f49): matched Flutter 3.44.4/Dart 3.12.2 Apple Silicon shell; optional native Android shell | 175 Python and 288 Dart/Flutter tests plus analysis/format, three-platform shell evaluation and independent review passed on Linux. No native Mac build; AlarmKit remains disabled/uncompiled, signing pending and affected-platform SDK hold unresolved. |
 
-#### Folirei — publication pending
+#### Folirei — use the preparation branch
 
-The preparation is locally committed as
-`499662faec6b1d05b26394b386c50fcb3cdbc2d3` on
-`chore/astraeus-darwin-2026-10` in `/tmp/folirei-astraeus-20261024`.
-It has **not been published**. Its normal pre-push hook requires online Dart
-checks on Linux; the project worker is resolving the precise CA mitigation or
-fully equivalent offline gates without bypassing the hook or SDK hold. Do not
-assume an ordinary pull contains this preparation yet. Publication must be
-confirmed before the consolidated handoff is considered complete.
+The verified published preparation is
+[`97f69371b3e1736927f3327d2a1c228febdcf2d7`](https://github.com/nolvyn/folirei/commit/97f69371b3e1736927f3327d2a1c228febdcf2d7)
+on `chore/astraeus-darwin-2026-10`. **It is not on `main`.** From a clean first
+clone, select that branch explicitly:
 
-The source guides are `docs/development/astraeus.md` and
-`docs/development/astraeus-validation.md` at that commit. The pinned Darwin
+```sh
+cd /Users/nolan/projects/folirei
+git fetch origin
+git switch --track origin/chore/astraeus-darwin-2026-10
+git rev-parse HEAD
+```
+
+If the local branch already exists, use `git switch chore/astraeus-darwin-2026-10`
+and `git merge --ff-only origin/chore/astraeus-darwin-2026-10`; stop on divergence
+and preserve local work. The final publication passed the ordinary pre-push hook
+without bypass; the original dirty worktrees were preserved.
+
+The exact [command guide](https://github.com/nolvyn/folirei/blob/97f69371b3e1736927f3327d2a1c228febdcf2d7/docs/development/astraeus.md)
+and [validation report](https://github.com/nolvyn/folirei/blob/97f69371b3e1736927f3327d2a1c228febdcf2d7/docs/development/astraeus-validation.md)
+distinguish initial preparation from later Linux publication checks. The pinned Darwin
 outputs retain Flutter 3.41.9 / Dart 3.11.5, Rust 1.96.0, FRB codegen 2.12.0,
 CocoaPods 1.16.2 and production wasm-bindgen 0.2.106. CocoaPods is scoped to the
 project shell because the existing Cargokit Rust plugin and other plugins need
@@ -247,8 +268,8 @@ it; no global SPM toggle or dependency upgrade was introduced. Podfiles/config
 includes and Apple Rust targets are prepared, while first native pod locks must
 be generated and reviewed on the Mac.
 
-After publication is confirmed and the shared Apple setup is complete, these
-are **future Astraeus commands**, not Linux commands or native-build evidence:
+After the shared Apple setup, these are **future Astraeus commands**, not Linux
+commands or native-build evidence:
 
 ```sh
 cd /Users/nolan/projects/folirei
@@ -293,10 +314,22 @@ preparing an Android command does not establish Android security clearance.
 
 Web commands in the project guide require a deliberately selected installed
 native Chrome executable through `CHROME_EXECUTABLE`. No Darwin browser build,
-reader parity or replacement for the Linux resource harness is claimed. Full
-Cargo/Flutter/clippy/analyze/native Patrol and real-browser release gates, plus
-earlier reader/audio qualification failures, remain distinct from these 29
-lightweight environment controls.
+reader parity or replacement for the Linux resource harness is claimed.
+
+The owning worker's final Linux publication report records both strict clippy
+gates, 2,732 Rust tests (five ignored), 13 Python controls, Flutter analysis with
+zero issues, 2,342 VM tests (four skipped), 177 browser tests, Deno lint/typechecks
+and seven final policy controls passing through the complete ordinary hook.
+Short temporary paths, a private test D-Bus and the actual Chromium run were
+validated; cleanup retired 234 tracked identities, left no reservations and
+preserved protected processes. Earlier interrupted attempts remain failed
+attempts, not omitted tests or a hook bypass.
+
+The exact process-local Linux tooling trust mitigation was verified on that
+host. It is not an SDK upgrade or Android/Windows advisory clearance. Native
+Mac/iOS builds, CocoaPods resolution/locks, signing, Darwin Android and built
+reader/Patrol acceptance remain unrun; earlier reader/audio qualification
+failures are not resolved by the Linux hook pass.
 
 #### Shiori — use the preparation branch
 
@@ -314,8 +347,9 @@ git switch --track origin/codex/shiori-astraeus-darwin
 git rev-parse HEAD
 ```
 
-If that local branch already exists, switch to it without `--track` and inspect
-its status/history; do not force-reset it. The reviewed commit above identifies
+If that local branch already exists, use `git switch codex/shiori-astraeus-darwin`
+and `git merge --ff-only origin/codex/shiori-astraeus-darwin`; stop on divergence
+and preserve local work. The reviewed commit above identifies
 this handoff even if the branch later advances. Access to the pinned private
 `nolvyn/epub-rs` engine uses the user's normal Git authentication.
 
@@ -391,7 +425,18 @@ for current setup and acceptance details. The default shell provides Flutter
 3.44.4, matching Dart 3.12.2 and JDK 21 with guarded project caches. Nemure's
 current AlarmKit source requires Xcode 26.1+; deployment targets remain iOS 26.0
 and macOS 10.15. Existing SPM integration remains; no CocoaPods, Rust or web
-target was added.
+target was added. This preparation is available on `main`:
+
+```sh
+cd /Users/nolan/projects/nemure
+git fetch origin
+git switch main
+git merge --ff-only origin/main
+git rev-parse HEAD
+```
+
+Stop on divergence and preserve local work; the reviewed published commit is
+`21b1e47e0e90fc979832eecdcbc0dc4332c08f49`.
 
 After the shared Apple setup, run these **on Astraeus**, from the project checkout:
 
