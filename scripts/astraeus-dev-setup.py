@@ -16,12 +16,12 @@ class SetupError(RuntimeError):
     pass
 
 
-def run(*args, check=True):
-    result = subprocess.run(args, text=True, capture_output=True)
+def run(*args, check=True, stream=False):
+    result = subprocess.run(args, text=True, capture_output=not stream)
     if check and result.returncode:
         raise SetupError(
             f"{shlex.join(map(str, args))} failed ({result.returncode}):\n"
-            f"{result.stdout}{result.stderr}"
+            f"{result.stdout or ''}{result.stderr or ''}"
         )
     return result
 
@@ -39,24 +39,41 @@ def inventory():
         ) from error
 
 
-def native_runtime(runtime):
-    root = runtime.get("runtimeRoot")
-    if not root and runtime.get("bundlePath"):
-        root = str(Path(runtime["bundlePath"]) / "Contents/Resources/RuntimeRoot")
-    if not root:
-        return False
-    # Inspect the registered runtime itself; an SDK or downloaded image is not registration.
-    for loader in ("dyld_sim", "dyld"):
-        result = run(
-            "/usr/bin/lipo", "-archs", str(Path(root) / "usr/lib" / loader), check=False
+def runtime_images():
+    try:
+        images = json.loads(
+            run("/usr/bin/xcrun", "simctl", "runtime", "list", "--json").stdout
         )
-        if result.returncode == 0 and {"arm64", "arm64e"} & set(result.stdout.split()):
-            return True
-    return False
+    except json.JSONDecodeError as error:
+        raise SetupError(
+            "simctl returned invalid runtime image JSON; inspect Xcode Components."
+        ) from error
+    if not isinstance(images, dict) or not all(
+        isinstance(image, dict) for image in images.values()
+    ):
+        raise SetupError(
+            "Unrecognized simctl runtime image metadata; inspect `xcrun simctl runtime list --json`."
+        )
+    return images.values()
+
+
+def native_runtime(runtime, images):
+    # Correlate Apple's ready, verified image with the registered runtime, rather
+    # than inferring guest architecture from a possibly universal loader binary.
+    return any(
+        image.get("runtimeIdentifier") == runtime["identifier"]
+        and image.get("state") == "Ready"
+        and image.get("signatureState") == "Verified"
+        and "arm64" in image.get("supportedArchitectures", [])
+        and bool(runtime.get("bundlePath"))
+        and image.get("runtimeBundlePath") == runtime["bundlePath"]
+        for image in images
+    )
 
 
 def choose_runtime(data, sdk_version, requested=None):
     candidates = []
+    images = list(runtime_images())
     for runtime in data.get("runtimes", []):
         if not runtime["identifier"].startswith(
             "com.apple.CoreSimulator.SimRuntime.iOS-"
@@ -72,7 +89,7 @@ def choose_runtime(data, sdk_version, requested=None):
         types = runtime.get("supportedDeviceTypes", [])
         phone = next((t for t in types if t.get("productFamily") == "iPhone"), None)
         tablet = next((t for t in types if t.get("productFamily") == "iPad"), None)
-        if phone and tablet and native_runtime(runtime):
+        if phone and tablet and native_runtime(runtime, images):
             candidates.append((runtime, phone, tablet))
     return max(candidates, key=lambda item: version(item[0]["version"]), default=None)
 
@@ -98,6 +115,14 @@ def ensure_device(runtime, device_type, family):
         device_id = existing[0]["udid"]
     else:
         name = f"Astraeus {family} iOS {runtime['version']}"
+        conflicts = [d for d in devices if d.get("name") == name]
+        if conflicts:
+            ids = ", ".join(d.get("udid", "unknown UDID") for d in conflicts)
+            raise SetupError(
+                f"{name} already exists ({ids}) but is unavailable or incompatible. "
+                "Inspect its registration in Device Hub/CoreSimulator and rerun; "
+                "no replacement device was created or existing data removed."
+            )
         device_id = run(
             "/usr/bin/xcrun",
             "simctl",
@@ -148,6 +173,16 @@ def setup(args):
         raise SetupError(
             f"Xcode is not installed at {args.xcode}. Finish the MAS install first."
         )
+    caller_developer = os.environ.get("DEVELOPER_DIR")
+    if caller_developer and Path(caller_developer).expanduser().resolve() not in (
+        developer,
+        developer.parent.parent,
+    ):
+        raise SetupError(
+            "The calling shell exports a conflicting DEVELOPER_DIR. Remove it with "
+            "`set -e DEVELOPER_DIR` in Fish or `unset DEVELOPER_DIR` in POSIX shells, "
+            "then rerun. This helper cannot change its parent shell's environment."
+        )
     os.environ["DEVELOPER_DIR"] = str(developer)
     # Check BEFORE runFirstLaunch: never accept a license on the user's behalf.
     if run(build, "-license", "check", check=False).returncode:
@@ -157,14 +192,20 @@ def setup(args):
         )
     selected = selected_xcode()
     if selected.returncode or Path(selected.stdout.strip()).resolve() != developer:
-        run("/usr/bin/sudo", "/usr/bin/xcode-select", "--switch", str(developer))
+        run(
+            "/usr/bin/sudo",
+            "/usr/bin/xcode-select",
+            "--switch",
+            str(developer),
+            stream=True,
+        )
     selected = selected_xcode()
     if selected.returncode or Path(selected.stdout.strip()).resolve() != developer:
         raise SetupError(
             f"Global Xcode selection not confirmed: {selected.stdout}{selected.stderr}"
         )
     if run(build, "-checkFirstLaunchStatus", check=False).returncode:
-        run("/usr/bin/sudo", build, "-runFirstLaunch")
+        run("/usr/bin/sudo", build, "-runFirstLaunch", stream=True)
         run(build, "-checkFirstLaunchStatus")
     print(run(build, "-version").stdout.strip())
     sdk_version = run(
@@ -190,6 +231,7 @@ def setup(args):
                 sdk_version,
                 "-architectureVariant",
                 "arm64",
+                stream=True,
             )
         except SetupError as error:
             raise SetupError(
@@ -201,7 +243,7 @@ def setup(args):
     if not chosen:
         raise SetupError(
             "No registered native iOS 26+ runtime compatible with this SDK and both iPhone/iPad "
-            "was found. Inspect `xcrun simctl list --json` and runtime dyld architecture with lipo. "
+            "was found. Inspect `xcrun simctl list --json` and `xcrun simctl runtime list --json`. "
             "Rerun with --download-runtime for an explicit Apple download, or install a compatible "
             "runtime in Xcode Settings > Components. Download completion alone is not registration."
         )

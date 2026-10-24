@@ -24,11 +24,22 @@ RUNTIME = {
     "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
     "version": "27.0",
     "isAvailable": True,
-    "runtimeRoot": "/runtime",
+    "bundlePath": "/runtime/iOS.simruntime",
     "supportedDeviceTypes": [
         {"identifier": "phone", "productFamily": "iPhone"},
         {"identifier": "tablet", "productFamily": "iPad"},
     ],
+}
+
+
+# Sanitized CoreSimulator image shape from the upstream tooling log at
+# https://github.com/dotnet/maui/issues/32735 (not an Astraeus execution fixture).
+RUNTIME_IMAGE = {
+    "runtimeIdentifier": RUNTIME["identifier"],
+    "runtimeBundlePath": RUNTIME["bundlePath"],
+    "state": "Ready",
+    "signatureState": "Verified",
+    "supportedArchitectures": ["x86_64", "arm64"],
 }
 
 
@@ -42,13 +53,18 @@ class AppleMock:
         self.first_launch = False
         self.arch = "arm64"
         self.runtime_arch = "arm64"
+        self.runtime_image_state = "Ready"
+        self.registration_available = True
+        self.streamed = []
         self.download_failure = False
         self.download_registers = True
         self.create_registers = True
         self.selection_works = True
 
-    def __call__(self, *args, check=True):
+    def __call__(self, *args, check=True, stream=False):
         self.calls.append(args)
+        if stream:
+            self.streamed.append(args)
         output, code = "", 0
         if args == ("/usr/bin/uname", "-m"):
             output = self.arch
@@ -70,8 +86,16 @@ class AppleMock:
             output = "Xcode 27.0\nBuild version fixture"
         elif args[:3] == ("/usr/bin/xcrun", "simctl", "list"):
             output = json.dumps(self.data)
-        elif args[:2] == ("/usr/bin/lipo", "-archs"):
-            output = self.runtime_arch
+        elif args[:4] == ("/usr/bin/xcrun", "simctl", "runtime", "list"):
+            output = json.dumps(
+                {
+                    "image-uuid": dict(
+                        RUNTIME_IMAGE,
+                        supportedArchitectures=[self.runtime_arch],
+                        state=self.runtime_image_state,
+                    )
+                }
+            )
         elif "-downloadPlatform" in args:
             if self.download_failure:
                 raise setup.SetupError(
@@ -86,7 +110,7 @@ class AppleMock:
                     {
                         "udid": output,
                         "deviceTypeIdentifier": args[-2],
-                        "isAvailable": True,
+                        "isAvailable": self.registration_available,
                         "name": args[-3],
                     }
                 )
@@ -160,6 +184,35 @@ class SetupTests(unittest.TestCase):
         self.assertEqual(before, self.apple.data["devices"][RUNTIME["identifier"]][0])
         self.assertIn("personal-phone", self.output.getvalue())
         self.assertEqual(sum("create" in c for c in self.apple.calls), 1)
+
+    def test_unavailable_helper_named_device_is_not_duplicated_on_retries(self):
+        self.apple.data["devices"][RUNTIME["identifier"]] = [
+            {
+                "udid": "incomplete-phone",
+                "deviceTypeIdentifier": "phone",
+                "isAvailable": False,
+                "name": "Astraeus iPhone iOS 27.0",
+            }
+        ]
+        before = copy.deepcopy(self.apple.data)
+        for _ in range(2):
+            with self.assertRaisesRegex(
+                setup.SetupError, "already exists.*incomplete-phone"
+            ):
+                self.execute()
+        self.assertEqual(before, self.apple.data)
+        self.assertFalse(any("create" in c for c in self.apple.calls))
+
+    def test_conflicting_caller_developer_dir_is_actionable_before_mutation(self):
+        os.environ["DEVELOPER_DIR"] = "/other/Xcode.app/Contents/Developer"
+        with self.assertRaisesRegex(
+            setup.SetupError, "set -e DEVELOPER_DIR.*unset DEVELOPER_DIR"
+        ):
+            self.execute()
+        self.assertEqual(
+            os.environ["DEVELOPER_DIR"], "/other/Xcode.app/Contents/Developer"
+        )
+        self.assertFalse(any("/usr/bin/sudo" in c for c in self.apple.calls))
 
     def test_license_refusal_precedes_system_mutation(self):
         self.apple.license = False
@@ -264,18 +317,48 @@ class SetupTests(unittest.TestCase):
         self.assertEqual(error.exception.code, 1)
         self.assertEqual(self.apple.calls, [])
 
-    def test_native_runtime_loader_fallback_and_missing_metadata(self):
-        failed = subprocess.CompletedProcess([], 1, "", "no loader")
-        native = subprocess.CompletedProcess([], 0, "arm64 x86_64", "")
-        with patch.object(setup, "run", side_effect=[failed, native]) as command:
-            self.assertTrue(setup.native_runtime(RUNTIME))
-            self.assertTrue(
-                command.call_args_list[0].args[-1].endswith("/usr/lib/dyld_sim")
-            )
-            self.assertTrue(
-                command.call_args_list[1].args[-1].endswith("/usr/lib/dyld")
-            )
-        self.assertFalse(setup.native_runtime({}))
+    def test_runtime_image_identity_readiness_signature_and_native_arch_are_required(
+        self,
+    ):
+        self.assertTrue(setup.native_runtime(RUNTIME, [RUNTIME_IMAGE]))
+        for change in [
+            {"runtimeIdentifier": "other-runtime"},
+            {"runtimeBundlePath": "/other/iOS.simruntime"},
+            {"state": "Installing"},
+            {"signatureState": "Other Signature Error"},
+            {"supportedArchitectures": ["x86_64"]},
+            {"supportedArchitectures": []},
+        ]:
+            with self.subTest(change=change):
+                self.assertFalse(
+                    setup.native_runtime(RUNTIME, [dict(RUNTIME_IMAGE, **change)])
+                )
+        self.assertFalse(
+            setup.native_runtime({"identifier": RUNTIME["identifier"]}, [RUNTIME_IMAGE])
+        )
+        self.assertFalse(setup.native_runtime(RUNTIME, []))
+
+    def test_failed_device_readback_does_not_duplicate_unavailable_registration(self):
+        self.apple.registration_available = False
+        with self.assertRaisesRegex(setup.SetupError, "registration not confirmed"):
+            self.execute()
+        for _ in range(2):
+            with self.assertRaisesRegex(setup.SetupError, "already exists"):
+                self.execute()
+        self.assertEqual(sum("create" in c for c in self.apple.calls), 1)
+
+    def test_long_running_apple_commands_stream_progress(self):
+        self.apple.data["runtimes"] = []
+        self.args.download_runtime = True
+        self.execute()
+        self.assertTrue(any("--switch" in c for c in self.apple.streamed))
+        self.assertTrue(any("-runFirstLaunch" in c for c in self.apple.streamed))
+        self.assertTrue(any("-downloadPlatform" in c for c in self.apple.streamed))
+
+    def test_accepted_app_path_override_still_verifies_global_selection(self):
+        os.environ["DEVELOPER_DIR"] = str(self.app)
+        self.execute()
+        self.assertEqual(self.apple.selected, self.apple.developer)
 
     def test_invalid_apple_json_is_actionable(self):
         with patch.object(
