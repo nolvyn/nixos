@@ -57,7 +57,8 @@ authorize implementation automatically.
 10. **Astraeus follow-up**
     - Retire the mac-app-util Tahoe source pin/SBCL wrapper only after an equivalent
       upstream fix is verified on the Mac; retain the validated OmniWM 0.7.6 pin.
-    - Retire the MAS patch when upstream filters diagnostic output from numeric app IDs.
+    - Retire the guarded MAS patches when upstream filters diagnostic output from
+      numeric app IDs and supplies mas 7's root credentials plus configured-user context.
     - Decide separately whether to pin mutable Homebrew taps/casks and Web Store payloads.
     - Review old `ipc.sock`/`ipc.sock.secret` in `~/Library/Caches/com.barut.OmniWM`
       only when cleanup is requested; never touch the live Application Support socket.

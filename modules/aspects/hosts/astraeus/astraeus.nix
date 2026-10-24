@@ -20,15 +20,30 @@
       let
         masModule = builtins.readFile "${inputs.darwin}/modules/programs/mas.nix";
         masIdGuard = ''[[ -n "$id" ]]'';
+        masUserFlag = "--user=\${escapeShellArg cfg.user}";
+        # mas 7 needs real root credentials, then drops its effective identity
+        # to SUDO_UID/SUDO_GID for the signed-in user's App Store session.
+        masRootContext = builtins.concatStringsSep " " [
+          "--user=root"
+          "env"
+          ''SUDO_UID="$(id -u ''${escapeShellArg cfg.user})"''
+          ''SUDO_GID="$(id -g ''${escapeShellArg cfg.user})"''
+          "SUDO_USER=\${escapeShellArg cfg.user}"
+          ''HOME="$(sudo --set-home --user=''${escapeShellArg cfg.user} /usr/bin/printenv HOME)"''
+        ];
       in
       {
-        # Upstream merges mas warnings into its app list; accept only real app IDs.
+        # Keep numeric inventory filtering and mas 7's required root/user context.
         disabledModules = [ "${inputs.darwin}/modules/programs/mas.nix" ];
         imports = [
           (
             assert lib.hasInfix masIdGuard masModule;
+            assert lib.hasInfix masUserFlag masModule;
             builtins.toFile "mas-validated-list.nix" (
-              builtins.replaceStrings [ masIdGuard ] [ ''[[ "$id" =~ ^[1-9][0-9]*$ ]]'' ] masModule
+              builtins.replaceStrings
+                [ masIdGuard masUserFlag ]
+                [ ''[[ "$id" =~ ^[1-9][0-9]*$ ]]'' masRootContext ]
+                masModule
             )
           )
         ];

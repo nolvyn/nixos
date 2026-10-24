@@ -92,6 +92,10 @@ and declare any apps you want to retain in `programs.mas.packages`. Sign into th
 Mac App Store as `nolan` and acquire declared apps there if needed before
 activation can install them.
 Activation does not run `mas update` or change Apple's Automatic Updates setting.
+The host adapts the MAS module for mas 7: activation invokes it as root while
+supplying `nolan`'s sudo identity and home, so it can use that user's App Store
+session without requesting another password from the noninteractive activation.
+Running `mas` directly as root without `SUDO_UID` and `SUDO_GID` is insufficient.
 
 ## Local development: explicit Apple setup
 
