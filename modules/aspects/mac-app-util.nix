@@ -9,6 +9,34 @@ let
             inherit system;
             config.allowUnfree = true;
           };
+          sbclWithPackages =
+            (modernPkgs.sbcl.withPackages (
+              ps: with ps; [
+                alexandria
+                cl-interpol
+                cl-json
+                inferior-shell
+                str
+                trivia
+              ]
+            )).overrideAttrs
+              (old: {
+                # ASDF uses empty colon fields as configuration syntax. Set its
+                # complete values instead of passing them through PATH validation.
+                # Retire when nixpkgs' Lisp wrapper supports makeBinaryWrapper again.
+                installPhase =
+                  let
+                    prefixes = [
+                      "--prefix CL_SOURCE_REGISTRY :"
+                      "--prefix ASDF_OUTPUT_TRANSLATIONS :"
+                    ];
+                  in
+                  assert builtins.all (prefix: modernPkgs.lib.hasInfix prefix old.installPhase) prefixes;
+                  builtins.replaceStrings prefixes [
+                    "--set CL_SOURCE_REGISTRY"
+                    "--set ASDF_OUTPUT_TRANSLATIONS"
+                  ] old.installPhase;
+              });
         in
         modernPkgs.stdenv.mkDerivation {
           pname = "mac-app-util";
@@ -17,18 +45,7 @@ let
           nativeBuildInputs = [ modernPkgs.makeBinaryWrapper ];
           installPhase = ''
             mkdir -p "$out/bin"
-            makeWrapper ${
-              modernPkgs.sbcl.withPackages (
-                ps: with ps; [
-                  alexandria
-                  cl-interpol
-                  cl-json
-                  inferior-shell
-                  str
-                  trivia
-                ]
-              )
-            }/bin/sbcl "$out/bin/mac-app-util" \
+            makeWrapper ${sbclWithPackages}/bin/sbcl "$out/bin/mac-app-util" \
               --add-flags "--script ${inputs.mac-app-util}/main.lisp" \
               --prefix PATH : "${
                 modernPkgs.lib.makeBinPath [
