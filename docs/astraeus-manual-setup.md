@@ -225,7 +225,66 @@ creates mutable `~/projects`; it does not clone or synchronize application data.
 |---|---|---|
 | Folirei | Linux-only flake; Flutter + FRB/Rust; NDK 28.2/JDK 17 Android composition | Add Darwin shell/Apple Rust targets and scoped plugin tooling; preserve build-identity wrappers in `DEPLOYMENT.md`/build guidance. Actual iOS/macOS build and reader behavior remain Mac-only. |
 | Shiori | Darwin Rust/Flutter shells declared; Android composition guarded to Linux | Add native Darwin Android tooling/Apple targets and project build/run entry points. Preserve source-validation, renderer/data and accessibility gates. |
-| Nemure | Darwin Flutter shell declared; Android build-tools output Linux-only | Supply Darwin Android/JDK tooling and Apple build/run checks. AlarmKit Swift scaffold was explicitly uncompiled/untested; simulator success cannot prove physical alarm reliability. |
+| Nemure | Prepared at [`21b1e47`](https://github.com/nolvyn/nemure/commit/21b1e47e0e90fc979832eecdcbc0dc4332c08f49): matched Flutter 3.44.4/Dart 3.12.2 Apple Silicon shell; optional native Android shell | 175 Python and 288 Dart/Flutter tests plus analysis/format, three-platform shell evaluation and independent review passed on Linux. No native Mac build; AlarmKit remains disabled/uncompiled, signing pending and affected-platform SDK hold unresolved. |
+
+#### Nemure
+
+The prepared source commit is
+[`21b1e47e0e90fc979832eecdcbc0dc4332c08f49`](https://github.com/nolvyn/nemure/commit/21b1e47e0e90fc979832eecdcbc0dc4332c08f49),
+pushed to private `main` and `chore/astraeus-development`. Follow its
+[exact project guide](https://github.com/nolvyn/nemure/blob/21b1e47e0e90fc979832eecdcbc0dc4332c08f49/docs/astraeus-development.md)
+for current setup and acceptance details. The default shell provides Flutter
+3.44.4, matching Dart 3.12.2 and JDK 21 with guarded project caches. Existing SPM
+integration remains; no CocoaPods, Rust or web target was added.
+
+After the shared Apple setup, run these **on Astraeus**, from the project checkout:
+
+```sh
+cd /Users/nolan/projects/nemure
+nix develop
+scripts/flutter-local --version
+scripts/dart-local --version
+for package in packages/nemure_core packages/nemure_hue; do
+  (cd "$package" && ../../scripts/dart-local pub get --enforce-lockfile)
+done
+(cd app && ../scripts/flutter-local pub get --enforce-lockfile)
+scripts/check.sh
+cd app
+../scripts/flutter-local build macos --debug --no-pub
+../scripts/flutter-local build ios --simulator --debug --no-codesign --no-pub
+../scripts/flutter-local devices
+../scripts/flutter-local run -d <chosen-simulator-or-device-ID> --no-pub
+```
+
+Choose the shared simulator UDID printed by `astraeus-dev-setup`; the placeholder
+must be replaced. The commands above are prepared Mac checks, not Mac execution
+evidence. Physical devices additionally require deliberate signing/pairing.
+AlarmKit remains disabled and its Swift source uncompiled/untested; missing
+countdown Live Activity and lifecycle acceptance still block a usable iOS alarm.
+macOS offers alarm management/previews, not autonomous delivery.
+
+For optional Android tools, exit the default development shell and return to
+the project root. Personally review the SDK and ARM emulator licenses first:
+
+```sh
+cd /Users/nolan/projects/nemure
+NIXPKGS_ACCEPT_ANDROID_SDK_LICENSE=1 nix develop --impure .#android
+python3 scripts/setup-android-darwin.py --check --with-emulator-image
+python3 scripts/setup-android-darwin.py --create-avd
+```
+
+This selects command-line tools 20.0, platform-tools 37.0.0, build-tools 36.0.0,
+platforms 35/36, NDK 28.2.13676358, emulator 36.6.11, JDK 21 (Zulu 21.0.11 on
+Darwin) and one API 35 `google_apis/arm64-v8a` image. The explicit helper reuses
+its matching project-local `NemureArm35` AVD and refuses partial/foreign state;
+it does not download tools, accept licenses or launch a guest. See the project
+guide for optional emulator/build/run commands and cache boundaries.
+
+Nemure's pinned Flutter/Dart still has the affected-platform SDK hold described
+in its [dependency notes](https://github.com/nolvyn/nemure/blob/21b1e47e0e90fc979832eecdcbc0dc4332c08f49/docs/dependency-refresh-2026-10.md).
+These future Mac commands do not authorize online affected-SDK tooling on Linux.
+No SDK download, license acceptance, native build or device test was performed
+for this preparation.
 
 This handoff does not deploy Folirei's websites, enable Shiori cloud/sync, pair a
 Hue bridge, or run the app repositories' guarded Linux runtime harnesses. Existing
