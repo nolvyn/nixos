@@ -44,6 +44,12 @@
         users.users.${host.userName}.extraGroups = [ "kvm" ]; # Needed for Android emulator hardware acceleration
       };
 
+    darwin = {
+      programs.mas.packages = {
+        "Xcode" = 497799835;
+      };
+    };
+
     homeManager =
       {
         config,
@@ -72,32 +78,39 @@
           run ${pkgs.coreutils}/bin/mkdir -p "$projectsDirectory"
         '';
 
-        home.packages = with pkgs; [
-          # JS/TS
-          nodejs
-          typescript
-          typescript-language-server
+        home.packages =
+          with pkgs;
+          [
+            # JS/TS
+            nodejs
+            typescript
+            typescript-language-server
 
-          # Lua
-          lua-language-server
+            # Lua
+            lua-language-server
 
-          # Nix
-          nixd
-          nixfmt
+            # Nix
+            nixd
+            nixfmt
 
-          # Python
-          pyright
-          python3
-          ruff
-          uv
+            # Python
+            pyright
+            python3
+            ruff
+            uv
 
-          # Rust
-          cargo
-          clippy
-          rust-analyzer
-          rustc
-          rustfmt
-        ];
+            # Rust
+            cargo
+            clippy
+            rust-analyzer
+            rustc
+            rustfmt
+          ]
+          ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
+            (pkgs.writeShellScriptBin "astraeus-dev-setup" ''
+              exec ${pkgs.python3}/bin/python3 ${../../scripts/astraeus-dev-setup.py} "$@"
+            '')
+          ];
 
         home.sessionVariables = linuxSessionVariables;
         systemd.user.sessionVariables = linuxSessionVariables;
