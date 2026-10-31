@@ -5,14 +5,25 @@
       { host, ... }:
       {
         environment.persistence."/persistent".users.${host.userName} = {
-          directories = [ ".claude" ];
+          directories = [
+            ".claude"
+            ".config/Claude"
+          ];
           files = [ ".claude.json" ];
         };
       };
 
+    darwin = {
+      homebrew.casks = [ "claude" ];
+    };
+
     homeManager =
-      { pkgs, ... }:
+      { lib, pkgs, ... }:
       {
+        home.packages = lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+          pkgs.llm-agents.claude-desktop
+        ];
+
         programs.claude-code = {
           enable = true;
           package = pkgs.llm-agents.claude-code;
@@ -23,6 +34,7 @@
             alwaysThinkingEnabled = true;
             showTurnDuration = true;
             defaultMode = "default";
+            remoteControlAtStartup = true;
 
             extraKnownMarketplaces = {
               "omc" = {

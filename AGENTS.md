@@ -12,8 +12,10 @@
   ```
 - Never touch: `secrets/` `assets/`
 - Never delete a file without asking first
-- Run `git add -A && git commit` before making large changes
+- Before large changes, record the working tree and preserve unrelated changes.
+- Create commits only with explicit approval for the current task; stage only reviewed paths or hunks.
 - Push only when explicitly requested for the current task; prior requests or requests for a clean/committed tree do not authorize pushing.
+- Public documentation describes configuration, setup, and maintenance contracts. Keep conversational approvals, personal timelines, agent handoffs, internal task identifiers, and private-project reports out of committed prose. Review the exact staged diff and metadata for privacy before any approved publication.
 
 ## Project Layout
 
@@ -160,6 +162,25 @@ Defined in `setup.nix` and available everywhere:
 - `scripts/blender-mcp-startup.py` uses a persistent one-shot timer, verifies resolved/loaded add-on paths, reports failing phases, and saves preferences only for enablement/privacy changes. Report conflicting user add-ons without overwriting them. Upstream auto-starts the loopback socket. Skip bootstrap for background/`--factory-startup`; never save factory defaults over preferences.
 - Disable telemetry/update checks; supply upstream's missing telemetry config without endpoints/keys. Enable MCP code-tool validation (not a sandbox). No generation providers, API keys, firewall rules, or Darwin configuration.
 - Persist `.config/blender` and `.local/share/blender`; caches/captures stay ephemeral. Optional focused lifecycle check: `scripts/blender-mcp-smoke-test.py --cache-only` (disposable Home Manager/Codex fixtures; pass generated `home-files`, plugin-cache, and activation paths; rerun after Codex or Home Manager version changes). Full Blender/MCP integration uses disposable profiles and requires a GUI plus free port 9876.
+
+### Claude Desktop and Claude Code
+
+- `ai.claude` retains the Numtide Claude Code CLI and its existing settings,
+  permission rules, plugins, marketplaces and MCP integration. Shared user
+  settings enable `remoteControlAtStartup`; do not rewrite Desktop's private
+  preference database or change permissions to make Remote Control work.
+- Linux Home Manager installs Numtide `claude-desktop` from official Anthropic
+  artifacts; NixOS packaging is community-supported. Darwin uses the Homebrew
+  `claude` cask, without a second Claude Code CLI install.
+- Linux persists `.config/Claude` alongside existing `.claude`, `.claude.json`
+  and shared keyring state. Do not add Cowork-specific host QEMU/KVM groups,
+  firmware, modules, or VM/cache persistence. Launch Linux Desktop with
+  `claude-desktop`; sign-in and account eligibility require manual verification.
+- Remote Control uses existing local permissions and outbound HTTPS; execution
+  stays local while Anthropic stores connected-session transcripts/tool activity.
+  Desktop can override the shared auto-connect setting through its saved UI
+  preference. Verify a live connection after sign-in; package installation alone
+  does not establish eligibility. See the [upstream Remote Control documentation](https://code.claude.com/docs/en/remote-control).
 
 ### Codex and browsers
 

@@ -45,7 +45,8 @@ mac-app-util foundations and host overrides.
 Homebrew is bootstrapped at `/opt/homebrew` by nix-homebrew. Do not run a separate
 Homebrew installer. The declared casks are Proton VPN (`protonvpn`, owned by the
 shared `proton` aspect), the official ChatGPT desktop app (`chatgpt`, owned by
-`ai.chatgpt`), and CrossOver, Heroic, NotProton, and Steam (owned by `gaming`).
+`ai.chatgpt`), Claude Desktop (`claude`, owned by `ai.claude`), and CrossOver,
+Heroic, NotProton, and Steam (owned by `gaming`).
 Activation uninstalls undeclared formulae/casks.
 Taps and cask versions remain mutable, so this reproduces package ownership
 rather than identical application binaries.
@@ -60,6 +61,12 @@ Store, or the deprecated `codex-app` cask. The Codex CLI remains independently
 Nix-managed through `llm-agents.nix`, with its existing settings, plugins, MCP
 servers, skills, and oh-my-codex integration. On Linux, the same `ai.chatgpt`
 aspect retains the `codex-desktop-linux` integration and persistence.
+
+Claude Desktop installs as `/Applications/Claude.app`; launch it with
+`open -a Claude` and sign in. The Nix-managed `claude` CLI remains separate.
+New eligible Code sessions enable Remote Control through the shared setting;
+a saved Desktop auto-connect preference takes precedence. Verify connection
+status in Desktop after sign-in.
 
 The shared `gaming` aspect installs Heroic through the `heroic` Homebrew cask at
 `/Applications/Heroic.app`, with its native updater left enabled. Heroic is not
