@@ -7,7 +7,10 @@
         environment.persistence."/persistent".users.${host.userName} = {
           directories = [
             ".claude"
-            ".config/Claude"
+            {
+              directory = ".config/Claude";
+              mode = "0700";
+            }
           ];
           files = [ ".claude.json" ];
         };
