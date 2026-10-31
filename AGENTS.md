@@ -73,13 +73,13 @@ Every aspect uses the attrset form (not dot-chained assignments):
 
 ## Batteries — All Opt-In
 
-| Battery | What it does | Where to include |
+|Battery|What it does|Where to include|
 |---|---|---|
-| `den.batteries.define-user` | sets the host user's OS account and Home Manager home path | `setup.nix` → `den.default.includes` |
-| `den.batteries.hostname` | sets `networking.hostName` from `host.hostName` | `setup.nix` → `den.default.includes` |
-| `den.batteries.primary-user` | NixOS wheel + networkmanager groups; Darwin `system.primaryUser` | `aspects/user.nix` → user aspect `includes` |
-| `den.batteries.user-shell "fish"` | fish shell at OS + HM level | `aspects/user.nix` → `den.aspects.weeb` and `den.aspects.nolan` |
-| `den.batteries.host-aspects` | wires host-named aspect to its host | `aspects/user.nix` → `primaryUser` |
+|`den.batteries.define-user`|sets the host user's OS account and Home Manager home path|`setup.nix` → `den.default.includes`|
+|`den.batteries.hostname`|sets `networking.hostName` from `host.hostName`|`setup.nix` → `den.default.includes`|
+|`den.batteries.primary-user`|NixOS wheel + networkmanager groups; Darwin `system.primaryUser`|`aspects/user.nix` → user aspect `includes`|
+|`den.batteries.user-shell "fish"`|fish shell at OS + HM level|`aspects/user.nix` → `den.aspects.weeb` and `den.aspects.nolan`|
+|`den.batteries.host-aspects`|wires host-named aspect to its host|`aspects/user.nix` → `primaryUser`|
 
 Do NOT manually declare a host user's `users.users.<name>` account, `home.username`, `home.homeDirectory`, or a battery-owned shell — batteries own these.
 `den.aspects.primaryUser` is the shared aspect for `primary-user` and `host-aspects`; both `weeb` and `nolan` consume it and the Fish user-shell battery.
@@ -126,12 +126,12 @@ Storage contracts:
 
 All under `den.schema.host`:
 
-| Option | Type | Default |
+|Option|Type|Default|
 |---|---|---|
-| `userName` | str | `"weeb"` |
-| `flakeDir` | str | Linux: `"/home/${host.userName}/nixos"`; Darwin: `"/Users/${host.userName}/nixos"` |
-| `git.userName` | str | `"nolvyn"` |
-| `git.userEmail` | str | `"245221879+nolvyn@users.noreply.github.com"` |
+|`userName`|str|`"weeb"`|
+|`flakeDir`|str|Linux: `"/home/${host.userName}/nixos"`; Darwin: `"/Users/${host.userName}/nixos"`|
+|`git.userName`|str|`"nolvyn"`|
+|`git.userEmail`|str|`"245221879+nolvyn@users.noreply.github.com"`|
 
 ## Package Sets and State Versions
 
@@ -156,12 +156,13 @@ Defined in `setup.nix` and available everywhere:
 
 ### Blender
 
-- `linuxDesktop` includes `blender`; Linux HM owns the sole wrapped `pkgs.unstable.pkgsRocm.blender`. Preserve HIP/ROCm and the executable/desktop entry. Python `requests` is already included; inspect dependencies before adding `withPackages`.
-- Pin the `ahujasid/mcp-for-blender` add-on, server, and complete Codex plugin together. The plugin owns the sole MCP registration; do not duplicate it in `programs.mcp` or Codex `settings.mcp_servers`.
-- Codex requires a real upstream-version directory matching the plugin manifest. Link the HM/XDG-derived cache root to a store tree with that real directory and a `default` symlink alias; give Home Manager the `default` identity so its cleanup skips the alias and normal HM links handle upgrades/rollback/removal. Never force caches or recursively delete them. Refuse real legacy directories/dangling links; verify the guard precedes **both** `cleanCodexPluginCache` and `writeBoundary` so cleanup cannot delete user data first.
-- `scripts/blender-mcp-startup.py` uses a persistent one-shot timer, verifies resolved/loaded add-on paths, reports failing phases, and saves preferences only for enablement/privacy changes. Report conflicting user add-ons without overwriting them. Upstream auto-starts the loopback socket. Skip bootstrap for background/`--factory-startup`; never save factory defaults over preferences.
-- Disable telemetry/update checks; supply upstream's missing telemetry config without endpoints/keys. Enable MCP code-tool validation (not a sandbox). No generation providers, API keys, firewall rules, or Darwin configuration.
-- Persist `.config/blender` and `.local/share/blender`; caches/captures stay ephemeral. Optional focused lifecycle check: `scripts/blender-mcp-smoke-test.py --cache-only` (disposable Home Manager/Codex fixtures; pass generated `home-files`, plugin-cache, and activation paths; rerun after Codex or Home Manager version changes). Full Blender/MCP integration uses disposable profiles and requires a GUI plus free port 9876.
+- `linuxDesktop` includes the sole wrapped `unstable.pkgsRocm.blender`; preserve HIP/ROCm, Python `requests`, executable and desktop entry. Inspect dependencies before adding `withPackages`.
+- Pin the MCP add-on/server and Codex plugin together. The plugin owns the sole MCP registration; preserve loopback, safe mode, capability flags and telemetry/update opt-outs. Do not add duplicate `mcp_servers`, providers, keys, firewall rules or Darwin configuration.
+- Home Manager owns immutable source and exact server-launcher links under `.local/share/codex-plugins`; Codex owns its mutable cache and separate plugin data. Never force or recursively delete real cache/source collisions. Keep the preservation guard before both `cleanCodexPluginCache` and `writeBoundary`. The guarded Home Manager compatibility patch changes only Blender's source path and cache ownership; retire it when upstream supports this contract.
+- Cached MCP configuration uses the stable absolute per-user launcher. Server rebuilds/rollbacks update that launcher without reinstalling or deleting cache data. Existing MCP consumers must reconnect after activation. Complete pinned-source checks reject unversioned metadata, capability, argument, asset, inventory or file-type changes; upstream plugin-version changes require a separately reviewed preservation/migration procedure.
+- A prior real cache containing the old store command must be preserved while Codex/plugin consumers are stopped. `scripts/blender-codex-cache-preserve.py --codex-home PATH` only plans by default; `--apply --quiescent` records the external quiescence prerequisite, then atomically moves the entire root into private recovery storage. Before old-layout rollback, preserve the real cache the same way; never restore over existing data. Normal HM orphan cleanup removes only its owned links.
+- `scripts/blender-mcp-startup.py` uses a persistent one-shot timer, verifies resolved/loaded add-on paths, reports failing phases, and saves preferences only for enablement/privacy changes. Report conflicting user add-ons without overwriting them; upstream starts the loopback socket. Skip background/`--factory-startup`; never save factory defaults over preferences. Supply the missing telemetry config without endpoints/keys; retain MCP code-tool validation (not a sandbox). Persist `.config/blender` and `.local/share/blender`, not captures/caches.
+- Focused check: `scripts/blender-mcp-smoke-test.py --cache-only --home-files PATH --activation PATH --codex PATH`; add `--previous-home-files PATH` to test the old-layout transition. It uses disposable homes and pinned Nix input fixtures without activating a profile, accounts or MCP servers; rerun after Codex/Home Manager updates. Full Blender/MCP checks additionally need a GUI, `--blender PATH` and free port9876.
 
 ### Claude Desktop and Claude Code
 
@@ -184,7 +185,7 @@ Defined in `setup.nix` and available everywhere:
 
 ### Codex and browsers
 
-- `den.aspects.ai.provides.chatgpt` owns `programs.codex`, `pkgs.llm-agents.codex`, plugins, skills, MCP, and oh-my-codex on both platforms; retain upstream Codex input/program names. Its Darwin block declares only the official `chatgpt` Homebrew cask.
+- `den.aspects.ai.provides.chatgpt` owns `programs.codex`, `pkgs.llm-agents.codex`, plugins, skills, MCP, and oh-my-codex on both platforms; retain upstream Codex input/program names. Codex defaults to GPT-6.1 Sol with Medium reasoning and Standard speed (no `service_tier` override). Its Darwin block declares only the official `chatgpt` Homebrew cask.
 - NixOS persists `.codex`, `.config/Codex`, `.config/codex-desktop` (`0700`, including pairing keys), and `.local/state/codex-desktop`. Do not separately persist the pairing-key child directory; caches stay ephemeral, keyring persistence stays in `security.general`.
 - Linux Home Manager supplies `codex-desktop-linux`, Computer Use UI, mobile control, and one declarative remote-control service; community anonymous usage reporting is disabled in both session environments.
 - Desktop's private `cliPackage` adapter (`scripts/codex-desktop-proxy.py`) translates only `app-server proxy` from JSONL to Unix WebSocket. All other commands/services use the regular CLI. Retire when Desktop supports this transport.

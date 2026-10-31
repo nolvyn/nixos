@@ -1,4 +1,5 @@
 .claude/
+.codex/
 .omc/
 .omx/
 config/quickshell/bar/.qmlls.ini
