@@ -1,4 +1,7 @@
 { inputs, ... }:
+let
+  sharedMcpServers = import ./_mcp-servers.nix;
+in
 {
   flake-file.inputs.openai-plugins = {
     url = "github:openai/plugins";
@@ -101,10 +104,7 @@
               projects."${config.home.homeDirectory}/projects/shiori".trust_level = "trusted";
               projects."${config.home.homeDirectory}/projects/gw-analysis".trust_level = "trusted";
 
-              mcp_servers.playwright = {
-                command = "npx";
-                args = [ "@playwright/mcp@latest" ];
-              };
+              mcp_servers.playwright = sharedMcpServers.playwright;
               /*
                 mcp_servers.revenuecat = {
                   command = "npx";

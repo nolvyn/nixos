@@ -1,4 +1,7 @@
 { ... }:
+let
+  sharedMcpServers = import ./_mcp-servers.nix;
+in
 {
   den.aspects.ai.provides.antigravity = {
     nixos =
@@ -18,45 +21,14 @@
           enableMcpIntegration = true;
 
           mcpServers = {
-            playwright = {
-              command = "npx";
-              args = [ "@playwright/mcp@latest" ];
-            };
-            cloudflare-bindings = {
-              command = "npx";
-              args = [
-                "mcp-remote"
-                "https://bindings.mcp.cloudflare.com/mcp"
-              ];
-            };
-            cloudflare-docs = {
-              command = "npx";
-              args = [
-                "mcp-remote"
-                "https://docs.mcp.cloudflare.com/mcp"
-              ];
-            };
-            stripe = {
-              command = "npx";
-              args = [
-                "mcp-remote"
-                "https://mcp.stripe.com"
-              ];
-            };
-            supabase = {
-              command = "npx";
-              args = [
-                "mcp-remote"
-                "https://mcp.supabase.com/mcp"
-              ];
-            };
-            revenuecat = {
-              command = "npx";
-              args = [
-                "mcp-remote"
-                "https://mcp.revenuecat.ai/mcp"
-              ];
-            };
+            inherit (sharedMcpServers)
+              cloudflare-bindings
+              cloudflare-docs
+              playwright
+              revenuecat
+              stripe
+              supabase
+              ;
           };
 
           settings = {

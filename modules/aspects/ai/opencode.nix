@@ -1,4 +1,7 @@
 { ... }:
+let
+  sharedMcpServers = import ./_mcp-servers.nix;
+in
 {
   den.aspects.ai.provides.opencode = {
     nixos =
@@ -48,60 +51,24 @@
                 ];
                 enabled = true;
               };
-              playwright = {
-                type = "local";
-                command = [
-                  "npx"
-                  "@playwright/mcp@latest"
-                ];
-                enabled = true;
-              };
-              cloudflare-bindings = {
-                type = "local";
-                command = [
-                  "npx"
-                  "mcp-remote"
-                  "https://bindings.mcp.cloudflare.com/mcp"
-                ];
-                enabled = true;
-              };
-              cloudflare-docs = {
-                type = "local";
-                command = [
-                  "npx"
-                  "mcp-remote"
-                  "https://docs.mcp.cloudflare.com/mcp"
-                ];
-                enabled = true;
-              };
-              stripe = {
-                type = "local";
-                command = [
-                  "npx"
-                  "mcp-remote"
-                  "https://mcp.stripe.com"
-                ];
-                enabled = true;
-              };
-              supabase = {
-                type = "local";
-                command = [
-                  "npx"
-                  "mcp-remote"
-                  "https://mcp.supabase.com/mcp"
-                ];
-                enabled = true;
-              };
-              revenuecat = {
-                type = "local";
-                command = [
-                  "npx"
-                  "mcp-remote"
-                  "https://mcp.revenuecat.ai/mcp"
-                ];
-                enabled = true;
-              };
-            };
+            }
+            //
+              builtins.mapAttrs
+                (_: server: {
+                  type = "local";
+                  command = [ server.command ] ++ server.args;
+                  enabled = true;
+                })
+                {
+                  inherit (sharedMcpServers)
+                    cloudflare-bindings
+                    cloudflare-docs
+                    playwright
+                    revenuecat
+                    stripe
+                    supabase
+                    ;
+                };
 
             permission = {
               edit = "allow";

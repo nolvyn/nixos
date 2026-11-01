@@ -13,6 +13,7 @@
       ai.opencode
       base
       browser
+      celluloid
       dev
       fish
       fonts
@@ -28,7 +29,6 @@
       { pkgs, ... }:
       {
         environment.systemPackages = with pkgs; [
-          celluloid
           nautilus
           onlyoffice-desktopeditors
         ];

@@ -39,10 +39,6 @@
         boot.loader.systemd-boot.configurationLimit = 50;
         boot.loader.timeout = 1;
 
-        systemd.services.display-manager.after = lib.mkForce [
-          "systemd-user-sessions.service"
-        ];
-
         systemd.services.NetworkManager-wait-online.enable = false; # Speed up boot time
 
         systemd.services.systemd-rfkill = {

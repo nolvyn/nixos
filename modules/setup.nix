@@ -26,6 +26,12 @@ let
     };
   };
 
+  sharedOverlays = [
+    unstableOverlay
+    warmOverlay
+    stableOverlay
+  ];
+
   version = "25.11";
 in
 {
@@ -44,11 +50,7 @@ in
   den.default = {
     nixos = {
       nixpkgs.config.allowUnfree = true;
-      nixpkgs.overlays = [
-        unstableOverlay
-        warmOverlay
-        stableOverlay
-      ];
+      nixpkgs.overlays = sharedOverlays;
       nix.settings.experimental-features = [
         "flakes"
         "nix-command"
@@ -59,11 +61,7 @@ in
 
     darwin = {
       nixpkgs.config.allowUnfree = true;
-      nixpkgs.overlays = [
-        unstableOverlay
-        warmOverlay
-        stableOverlay
-      ];
+      nixpkgs.overlays = sharedOverlays;
       system.stateVersion = 7;
       home-manager.backupFileExtension = "backup";
     };
@@ -72,11 +70,7 @@ in
       home.stateVersion = version;
       home.enableNixpkgsReleaseCheck = false;
       nixpkgs.config.allowUnfree = true;
-      nixpkgs.overlays = [
-        unstableOverlay
-        warmOverlay
-        stableOverlay
-      ];
+      nixpkgs.overlays = sharedOverlays;
     };
   };
 }

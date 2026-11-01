@@ -6,7 +6,8 @@
     nixos = { pkgs, ... }: {
       boot.kernelPackages = pkgs.linuxPackages_latest;
 
-      # security.lockKernelModules = true; # Causes too many problems. Will get back to later
+      # Kernel module locking is disabled due to compatibility problems.
+      # security.lockKernelModules = true;
       security.protectKernelImage = true; # Must be commented out or set to false on target machine for NixOS Anywhere install
 
       boot.kernelModules = [

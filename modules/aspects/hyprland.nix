@@ -6,8 +6,8 @@
         ".config/hypr"
       ];
 
-      # This might be for the display manager (sddm) choosing uwsm for some reason
-      # but i cant say that for certain cause i forgot
+      # Keep this capability override until its SDDM/session behavior is verified.
+      # UWSM is disabled; the original rationale for the override is unverified.
       security.wrappers.Hyprland.capabilities = lib.mkForce "";
 
       programs.hyprland = {

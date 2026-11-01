@@ -12,6 +12,15 @@
         ...
       }:
       let
+        rollbackMetadataTools = pkgs.runCommand "rollback-tree-metadata" {
+          nativeBuildInputs = [ pkgs.stdenv.cc ];
+        } ''
+          mkdir -p "$out/bin"
+          cc -std=gnu11 -O2 -Wall -Wextra -Werror \
+            ${../../scripts/rollback-tree-metadata.c} -o "$out/bin/rollback-tree-metadata"
+          cc -std=gnu11 -O2 -Wall -Wextra -Werror \
+            ${../../scripts/rollback-tree-record.c} -o "$out/bin/rollback-tree-record"
+        '';
         persistence = config.environment.persistence."/persistent";
         scopes = [ persistence ] ++ builtins.attrValues persistence.users;
         directories = lib.concatMap (scope: scope.directories) scopes;
@@ -65,7 +74,6 @@
 
               ".cache/spotify"
 
-              ".config/celluloid"
               ".config/@filen"
               ".config/ghostty"
               ".config/Slack"
@@ -106,13 +114,24 @@
           };
         };
 
+        boot.initrd.systemd.extraBin = {
+          findmnt = "${pkgs.util-linux}/bin/findmnt";
+          rollback-tree-metadata = "${rollbackMetadataTools}/bin/rollback-tree-metadata";
+          rollback-tree-record = "${rollbackMetadataTools}/bin/rollback-tree-record";
+          sha256sum = "${pkgs.coreutils}/bin/sha256sum";
+          timeout = "${pkgs.coreutils}/bin/timeout";
+        };
+
         boot.initrd.systemd.services.rollback = {
           description = "Rollback btrfs root and home subvolumes";
           wantedBy = [ "initrd.target" ];
           after = [ "systemd-cryptsetup@cryptroot.service" ];
           before = [ "sysroot.mount" ];
           unitConfig.DefaultDependencies = "no";
-          serviceConfig.Type = "oneshot";
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+          };
           script = builtins.readFile ../../scripts/rollback-btrfs.sh;
         };
       };

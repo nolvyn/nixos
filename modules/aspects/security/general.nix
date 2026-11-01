@@ -26,7 +26,8 @@
       nix.settings.allowed-users = [ "@users" ];
 
       # For more information see https://mynixos.com/nixpkgs/option/environment.memoryAllocator.provider
-      # environment.memoryAllocator.provider = "libc"; # scudo and mimalloc mess up my system
+      # Scudo and mimalloc caused compatibility problems.
+      # environment.memoryAllocator.provider = "libc";
 
       boot.kernel.sysctl = {
         "dev.tty.ldisc_autoload" = 0;
@@ -48,7 +49,7 @@
         "net.ipv4.conf.all.log_martians" = 1;
         "net.ipv4.conf.default.log_martians" = 1;
 
-        # Setting this to 1 breaks my internet
+        # Strict reverse-path filtering (rp_filter = 1) broke connectivity; retain loose mode (2).
         "net.ipv4.conf.all.rp_filter" = 2;
         "net.ipv4.conf.default.rp_filter" = 2;
 

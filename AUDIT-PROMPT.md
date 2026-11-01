@@ -112,8 +112,8 @@ remain in scope.
   that evaluate but will not behave as intended.
 - Check for hard-coded usernames, paths, hostnames, interfaces, devices, and
   assumptions that conflict with the schema.
-- Verify `modules/inputs.nix`, `flake.lock`, generated `flake.nix`, and
-  `AGENTS.md` describe the same configuration.
+- Verify inputs, `flake.lock`, and generated `flake.nix` agree, and that
+  `AGENTS.md` rules still match the architecture and safety contracts.
 - Confirm generated files have not drifted from their sources.
 
 ### Security and privacy
@@ -131,6 +131,24 @@ remain in scope.
   secrets accidentally copied into the Nix store.
 - Distinguish verified vulnerabilities from deliberate personal security
   tradeoffs.
+
+### Public-repository publication hygiene
+
+- Review current files and staged/untracked publication candidates for
+  credentials, tokens, private keys, recovery codes, session material, and
+  confidential account or project details. Never print sensitive values;
+  report redacted file/line evidence instead.
+- Flag unnecessary conversational approvals, dates of personal decisions,
+  personal timelines, agent handoffs, internal task identifiers, execution
+  narratives, and temporary/private working paths. Recommend minimal, neutral
+  wording that documents the configuration or maintenance contract.
+- Preserve essential setup/recovery guidance, public identifiers, useful
+  source/version dates, and reproducible commands. Assess context and separate
+  credential exposure or confidential data from low-risk prose hygiene.
+- State current-tree, staged/untracked candidate, and Git-history coverage
+  separately; do not imply uninspected history, caches, or external copies are
+  clean. Do not rotate credentials, change permissions, rewrite history,
+  commit, or push as part of this audit.
 
 ### Storage, boot, persistence, and recovery
 
@@ -204,10 +222,17 @@ remain in scope.
 
 ## Safe validation
 
-Run evaluation with lock-file updates disabled:
+Run checks with lock-file updates disabled:
 
 - `nix flake check --no-update-lock-file`
-- `nix eval --no-update-lock-file .#nixosConfigurations.WeebMachine.config.system.build.toplevel.drvPath`
+
+Evaluate host derivations individually and sequentially with bounded resources;
+never evaluate full host attribute sets or hosts in parallel:
+
+```sh
+timeout --signal=TERM --kill-after=5s 45s nice -n 10 nix eval --no-update-lock-file --raw .#nixosConfigurations.WeebMachine.config.system.build.toplevel.drvPath
+timeout --signal=TERM --kill-after=5s 45s nice -n 10 nix eval --no-update-lock-file --raw .#darwinConfigurations.Astraeus.config.system.build.toplevel.drvPath
+```
 
 Use non-formatting syntax checks for shell, Lua, QML, TOML, and other formats
 when the required tools are available.
