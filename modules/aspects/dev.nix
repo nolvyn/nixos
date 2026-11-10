@@ -13,6 +13,12 @@
             ".dart-tool"
             ".local/share/jupyter"
             ".local/share/uv"
+            {
+              directory = ".local/share/weeb-test-admission-v2.5-${
+                builtins.substring 0 12 (builtins.hashFile "sha256" ../../scripts/host-test-admission.py)
+              }";
+              mode = "0700";
+            }
             ".local/state/quickshell"
           ];
           files = [
@@ -105,6 +111,11 @@
             rust-analyzer
             rustc
             rustfmt
+          ]
+          ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+            (pkgs.writeShellScriptBin "weeb-test-admission" ''
+              exec ${pkgs.python3}/bin/python3 ${../../scripts/host-test-admission.py} "$@"
+            '')
           ]
           ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
             (pkgs.writeShellScriptBin "astraeus-dev-setup" ''
