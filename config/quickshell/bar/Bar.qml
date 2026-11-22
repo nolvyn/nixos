@@ -21,17 +21,10 @@ PanelWindow {
         anchors.verticalCenter: parent.verticalCenter
     }
 
-    Battery {
-        id: battery
-        anchors.left: audio.right
-        anchors.leftMargin: 4
-        anchors.verticalCenter: parent.verticalCenter
-    }
-
     Workspaces {
         id: workspaces
 
-        anchors.left: battery.right
+        anchors.left: audio.right
         anchors.leftMargin: 4
         anchors.verticalCenter: parent.verticalCenter
 
