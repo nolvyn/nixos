@@ -6,6 +6,7 @@
       cache
       locale
       optimizations
+      tailscale
     ];
   };
 }
