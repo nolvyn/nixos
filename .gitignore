@@ -2,6 +2,8 @@
 .codex/
 .omc/
 .omx/
+.ruff_cache/
 config/quickshell/bar/.qmlls.ini
 result
+scripts/__pycache__
 secrets/host-keys/
