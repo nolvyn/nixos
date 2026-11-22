@@ -18,14 +18,21 @@
       };
 
     homeManager =
-      { pkgs, ... }:
+      { osConfig, pkgs, ... }:
       let
         isLinux = pkgs.stdenv.hostPlatform.isLinux;
       in
       {
-        nixpkgs.overlays = [ inputs.nix-vscode-extensions.overlays.default ];
+        # NixOS hosts get this overlay from the system pkgs (useGlobalPkgs).
+        nixpkgs.overlays = lib.mkIf (!osConfig.home-manager.useGlobalPkgs) [
+          inputs.nix-vscode-extensions.overlays.default
+        ];
         programs.vscode = {
           enable = true;
+          # The main nixpkgs pin's vscode 1.144.0 fails in its patch phase (it removes a
+          # bundled ripgrep path the 1.144 tarball no longer has); the unstable pin carries
+          # the fixed recipe for the same version. Retire when the main pin builds vscode.
+          package = lib.mkIf isLinux pkgs.unstable.vscode;
 
           profiles.default.extensions =
             (with pkgs.vscode-extensions; [
@@ -58,9 +65,6 @@
             );
 
           profiles.default.userSettings = {
-            # C++
-            "C_Cpp.default.cppStandard" = "c++23";
-
             # Dart/Fluter
             "debug.internalConsoleOptions" = "openOnSessionStart";
             "[dart]" = {
@@ -92,9 +96,6 @@
             "[rust]" = {
               "editor.defaultFormatter" = "rust-lang.rust-analyzer";
             };
-
-            # Zig
-            "zig.zls.enabled" = "on";
 
             # Editor
             "diffEditor.ignoreTrimWhitespace" = true;
