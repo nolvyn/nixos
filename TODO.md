@@ -11,7 +11,7 @@ implementation or deployment automatically.
   login and fingerprint/erase confirmations in a disposable VM.
 - Validate SDDM through three physical cold boots with the actual displays;
   check intended-session input for two minutes and logout/login on each.
-- Establish monthly storage-report history and verify the once-per-report Fish
+- Establish weekly storage-report history and verify the once-per-report Fish
   notification. Check printer queues and GitHub CLI/keyring state survive rollback.
 - Perform a physical print and check Quickshell in a fresh session.
 
@@ -33,8 +33,7 @@ implementation or deployment automatically.
   separate identity from rebuildable indexes and encrypt any recovery credentials.
 - Pin mutable `npx`, `uvx`, OpenCode plugins and the `.mcp.json` GitHub invocation
   with an update process; retain the installer exemption.
-- Share VS Code/Cursor defaults while preserving editor-specific additions.
-- Gather several monthly persistence reports before choosing cleanup policy.
+- Gather several weekly persistence reports before choosing cleanup policy.
   Preserve precious state and bulk data; reject incomplete/missing-mount or
   implausible mass-orphan scans, exclude symlinks/protected paths, and consider
   quarantine/restore before deletion. Storage separation is a separate migration.
