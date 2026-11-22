@@ -60,7 +60,7 @@
       }:
       let
         linuxAliases = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
-          nhs = "nh os switch";
+          nhs = "cd $HOME/nixos && git add . && nh os switch";
           sure = "sudo reboot";
           rup = "ripunzip unzip-file";
           matu = "matugen image --source-color-index 0";
@@ -80,7 +80,7 @@
         programs.fish = {
           interactiveShellInit = "set fish_greeting";
           shellAliases = {
-            nfu = "cd $HOME/nixos && nix run .#write-flake && nix flake update";
+            nfu = "cd $HOME/nixos && git add . && nix run .#write-flake && nix flake update";
             nfw = "cd $HOME/nixos && nix run .#write-flake && nix flake check";
 
             ga = "cd $HOME/nixos && git add .";
