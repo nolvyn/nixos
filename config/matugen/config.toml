@@ -1,10 +1,5 @@
 [config]
 
-[templates.btop]
-input_path = '~/nixos/config/matugen/templates/btop.theme'
-output_path = '~/.config/btop/themes/matugen.theme'
-post_hook = 'pkill -USR2 btop || true'
-
 [templates.dunst]
 input_path = '~/nixos/config/matugen/templates/dunstrc-colors'
 output_path = '~/.config/dunst/dunstrc'
@@ -44,14 +39,6 @@ output_path = '~/.local/state/quickshell/generated/colors.json'
 input_path = '~/nixos/config/matugen/templates/midnight-discord.css'
 output_path = '~/.config/vesktop/themes/midnight-discord-matugen.css'
 
-[templates.vivaldi]
-input_path = '~/nixos/config/matugen/templates/vivaldi.css'
-output_path = '~/.config/vivaldi/themes/matugen.css'
-
 [templates.yazi]
 input_path = '~/nixos/config/matugen/templates/yazi-theme.toml'
 output_path = '~/.config/yazi/theme.toml'
-
-[templates.zed]
-input_path = '~/nixos/config/matugen/templates/zed-colors.json'
-output_path = '~/.config/zed/themes/matugen.json'
