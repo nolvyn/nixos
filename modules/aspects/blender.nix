@@ -18,8 +18,8 @@
         ...
       }:
       let
-        # Let Codex own its mutable cache; advertise this plugin's immutable
-        # source directly. Guard the temporary Home Manager compatibility patch.
+        # Advertise the immutable plugin source directly and leave the mutable cache to Codex.
+        # Guard the temporary Home Manager compatibility patch.
         codexModuleRoot = "${inputs.home-manager}/modules/programs/codex";
         codexModulePatched = import ../../scripts/codex-local-source.nix {
           inherit lib codexModuleRoot;
@@ -42,10 +42,10 @@
           build-system = [ python.setuptools ];
           dependencies = [
             python.httpx
-            python.mcp
+            # The pinned server requires mcp >=1.26,<2; python.mcp tracks 2.x.
+            python.mcp_1
           ];
-          # Upstream git excludes config.py (the PyPI artifact embeds telemetry
-          # credentials). Supply the same interface with collection disabled.
+          # Upstream git omits config.py. PyPI embeds telemetry credentials. Provide the same interface with collection off.
           postPatch = ''
             cp ${../../scripts/blender-mcp-telemetry-config.py} src/blender_mcp/config.py
             substituteInPlace src/blender_mcp/consent_prompt.py \
@@ -53,16 +53,23 @@
                 '    return ""  # Nix-managed telemetry opt-out; do not ask for consent.'
           '';
           makeWrapperArgs = [
-            "--set BLENDER_HOST 127.0.0.1"
-            "--set BLENDER_PORT 9876"
-            "--set BLENDER_MCP_DISABLE_TELEMETRY true"
-            "--set BLENDER_MCP_SAFE_MODE 1"
+            "--set"
+            "BLENDER_HOST"
+            "127.0.0.1"
+            "--set"
+            "BLENDER_PORT"
+            "9876"
+            "--set"
+            "BLENDER_MCP_DISABLE_TELEMETRY"
+            "true"
+            "--set"
+            "BLENDER_MCP_SAFE_MODE"
+            "1"
           ];
           pythonImportsCheck = [ "blender_mcp.server" ];
           meta.mainProgram = "mcp-for-blender";
         };
         plugin = pkgs.stdenvNoCC.mkDerivation {
-          # Keep the package and manifest version aligned with upstream.
           pname = "mcp-for-blender";
           version = "2.1.1";
           src = "${source}/integrations/codex/plugins/mcp-for-blender";
@@ -108,7 +115,6 @@
               --set BLENDERMCP_NO_UPDATE_CHECK 1
           '';
           # The pinned Blender already supplies requests and its Python deps.
-          # Retain its HIP build and the blender executable/desktop entry.
           inherit (base) meta;
           passthru = {
             inherit
@@ -125,9 +131,8 @@
         imports = [ codexModulePatched ];
         config = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
           home.packages = [ blender ];
-          # The plugin owns the sole MCP registration, including viewport/form
-          # capability flags. Merge with the existing plugins, never add a second
-          # settings.mcp_servers entry for Blender.
+          # Merge the plugin into the existing list. It owns Blender's sole MCP registration and viewport/form flags;
+          # never add a settings.mcp_servers entry for Blender.
           programs.codex.plugins = [ codexPlugin ];
           home.activation.checkBlenderPluginCache = lib.mkIf config.programs.codex.enable (
             lib.hm.dag.entryBefore [ "cleanCodexPluginCache" "writeBoundary" ] ''
@@ -139,6 +144,8 @@
                 ${lib.escapeShellArg cacheRoot} --cache \
                 --command ${lib.escapeShellArg serverLauncher} \
                 --managed-home-files "$managedFiles" \
+                --pending-home-files "$newGenPath/home-files" \
+                --system-home-manager-unit ${lib.escapeShellArg "/run/current-system/etc/systemd/system/home-manager-${config.home.username}.service"} \
                 --cache-relative ${lib.escapeShellArg cacheRelative} \
                 --home ${lib.escapeShellArg config.home.homeDirectory} \
                 --owned-link .local/share/codex-plugins/mcp-for-blender \
@@ -152,7 +159,6 @@
             ".local/share/codex-plugins/mcp-for-blender".source = plugin;
             "${serverLauncherRelative}".source = lib.getExe server;
           };
-
         };
       };
   };

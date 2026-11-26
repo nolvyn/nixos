@@ -68,7 +68,6 @@ def _enable():
             flush=True,
         )
         traceback.print_exc()
-    return None
 
 
 def register():

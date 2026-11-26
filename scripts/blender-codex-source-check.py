@@ -6,7 +6,11 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
+import shlex
 import stat
+
+STORE = Path("/nix/store")
 
 RAW = {
     ".mcp.json": "cc792dbba763503807e8450b23aa69813d4885cbe718493cedb68b7f82bda30f",
@@ -64,18 +68,72 @@ def verify(root, command=None, allow_extras=False):
             )
 
 
-def verify_cache(cache, command, managed_home_files=None, cache_relative=None):
+def system_home_files(unit):
+    """Authorize only the generation named by the immutable active system unit."""
+    unit = Path(unit).resolve(strict=True)
+    meta = unit.stat()
+    if (
+        not unit.is_relative_to(STORE)
+        or not stat.S_ISREG(meta.st_mode)
+        or meta.st_uid != 0
+        or meta.st_mode & 0o222
+    ):
+        raise ValueError(
+            "Home Manager recovery unit must be immutable in the Nix store"
+        )
+    commands = [
+        shlex.split(line.removeprefix("ExecStart="))
+        for line in unit.read_text().splitlines()
+        if line.startswith("ExecStart=")
+    ]
+    store = re.escape(str(STORE))
+    if (
+        len(commands) != 1
+        or len(commands[0]) != 2
+        or not re.fullmatch(store + r"/[a-z0-9]{32}-hm-setup-env", commands[0][0])
+        or not re.fullmatch(
+            store + r"/[a-z0-9]{32}-home-manager-generation", commands[0][1]
+        )
+    ):
+        raise ValueError("Unexpected immutable Home Manager unit command")
+    generation = Path(commands[0][1])
+    files = (generation / "home-files").resolve(strict=True)
+    meta = files.stat()
+    if (
+        files.parent != STORE
+        or not files.name.endswith("-home-manager-files")
+        or not stat.S_ISDIR(meta.st_mode)
+        or meta.st_uid != 0
+        or meta.st_mode & 0o222
+    ):
+        raise ValueError("Recovery home files must be an immutable generation")
+    return files
+
+
+def expected_links(relative, managed_home_files, additional_home_files):
+    roots = ([managed_home_files] if managed_home_files else []) + list(
+        additional_home_files
+    )
+    return {str(Path(root).resolve() / relative) for root in roots}
+
+
+def verify_cache(
+    cache,
+    command,
+    managed_home_files=None,
+    cache_relative=None,
+    additional_home_files=(),
+):
     cache = Path(cache)
     if cache.is_symlink():
         expected = (
-            Path(managed_home_files).resolve() / cache_relative
-            if managed_home_files and cache_relative
-            else None
+            expected_links(cache_relative, managed_home_files, additional_home_files)
+            if cache_relative
+            else set()
         )
         if (
             cache.lstat().st_uid != os.getuid()
-            or expected is None
-            or os.readlink(cache) != str(expected)
+            or os.readlink(cache) not in expected
             or not cache.exists()
         ):
             raise ValueError(
@@ -94,7 +152,9 @@ def verify_cache(cache, command, managed_home_files=None, cache_relative=None):
     verify(cache / "2.1.1", command, allow_extras=True)
 
 
-def verify_owned_links(home, relatives, managed_home_files=None):
+def verify_owned_links(
+    home, relatives, managed_home_files=None, additional_home_files=()
+):
     home = Path(home)
     for relative in relatives:
         parts = Path(relative).parts
@@ -110,16 +170,11 @@ def verify_owned_links(home, relatives, managed_home_files=None):
                 )
         if not path.exists() and not path.is_symlink():
             continue
-        expected = (
-            Path(managed_home_files).resolve() / relative
-            if managed_home_files
-            else None
-        )
+        expected = expected_links(relative, managed_home_files, additional_home_files)
         if (
             not path.is_symlink()
             or path.lstat().st_uid != os.getuid()
-            or expected is None
-            or os.readlink(path) != str(expected)
+            or os.readlink(path) not in expected
             or not path.exists()
         ):
             raise ValueError(
@@ -134,6 +189,8 @@ def main():
     parser.add_argument("--cache", action="store_true")
     parser.add_argument("--managed-home-files")
     parser.add_argument("--cache-relative")
+    parser.add_argument("--pending-home-files")
+    parser.add_argument("--system-home-manager-unit")
     parser.add_argument("--home")
     parser.add_argument("--owned-link", action="append", default=[])
     args = parser.parse_args()
@@ -141,12 +198,23 @@ def main():
         if args.cache:
             if not args.command:
                 parser.error("--cache requires --command")
+            additional = []
+            if args.pending_home_files:
+                additional.append(args.pending_home_files)
+            if args.system_home_manager_unit:
+                additional.append(system_home_files(args.system_home_manager_unit))
             if args.owned_link:
                 if not args.home:
                     parser.error("--owned-link requires --home")
-                verify_owned_links(args.home, args.owned_link, args.managed_home_files)
+                verify_owned_links(
+                    args.home, args.owned_link, args.managed_home_files, additional
+                )
             verify_cache(
-                args.root, args.command, args.managed_home_files, args.cache_relative
+                args.root,
+                args.command,
+                args.managed_home_files,
+                args.cache_relative,
+                additional,
             )
         else:
             verify(args.root, args.command)
