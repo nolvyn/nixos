@@ -44,13 +44,10 @@
         linuxSessionVariables = lib.optionalAttrs isLinux {
           CODEX_LINUX_DISABLE_USAGE_REPORTING = "1";
         };
-        # On Linux, use Numtide's pinned dependencies for Codex binary substitutes.
-        # Shared nixpkgs or local overrides change the derivation and miss that cache.
-        codexPackage =
-          if isLinux then
-            inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex
-          else
-            pkgs.llm-agents.codex;
+        # Use Numtide's pinned dependencies for Codex binary substitutes.
+        # Shared nixpkgs or local overrides change the derivation and miss that cache;
+        # on macOS the shared-nixpkgs build of 0.171.0 also fails in aws-lc-sys.
+        codexPackage = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex;
         desktopProxyPython = pkgs.python3.withPackages (ps: [ ps.websockets ]);
         desktopCli = pkgs.writeShellScriptBin "codex" ''
           exec ${desktopProxyPython}/bin/python3 \
