@@ -29,9 +29,9 @@
         ];
         programs.vscode = {
           enable = true;
-          # Main's VS Code 1.144.0 patch removes a ripgrep path absent from the tarball. Unstable fixes the same version.
-          # Drop the override when main builds VS Code.
-          package = lib.mkIf isLinux pkgs.unstable.vscode;
+          # Main's VS Code 1.144.0 patch touches a ripgrep path absent from the Linux tarball and the macOS app.
+          # Unstable fixes the same version. Drop the override when main builds VS Code.
+          package = pkgs.unstable.vscode;
 
           profiles.default.extensions =
             (with pkgs.vscode-extensions; [
