@@ -32,8 +32,8 @@ RUNTIME = {
 }
 
 
-# Sanitized CoreSimulator image shape from the upstream tooling log at
-# https://github.com/dotnet/maui/issues/32735 (not an Astraeus execution fixture).
+# Sanitized CoreSimulator image shape from the upstream log at https://github.com/dotnet/maui/issues/32735.
+# Astraeus execution remains untested by this fixture.
 RUNTIME_IMAGE = {
     "runtimeIdentifier": RUNTIME["identifier"],
     "runtimeBundlePath": RUNTIME["bundlePath"],
@@ -53,7 +53,6 @@ class AppleMock:
         self.first_launch = False
         self.arch = "arm64"
         self.runtime_arch = "arm64"
-        self.runtime_image_state = "Ready"
         self.registration_available = True
         self.streamed = []
         self.download_failure = False
@@ -92,7 +91,6 @@ class AppleMock:
                     "image-uuid": dict(
                         RUNTIME_IMAGE,
                         supportedArchitectures=[self.runtime_arch],
-                        state=self.runtime_image_state,
                     )
                 }
             )

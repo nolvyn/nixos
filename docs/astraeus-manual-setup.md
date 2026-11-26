@@ -1,22 +1,15 @@
 # Astraeus manual setup
 
-These are the manual steps for restoring the declared Astraeus environment on
-an Apple Silicon Mac. Packages, app links, launchd jobs, browser extension
-policies, Fish, and the OmniWM configuration are managed by this repository.
-Personal data, account sessions, and Apple security approvals remain outside Nix.
-The `workstation` profile provides the portable Home Manager baseline plus shared
-applications and tools; Astraeus adds the Determinate, Homebrew, OmniWM, and
-mac-app-util foundations and host overrides.
+Use an Apple Silicon Mac and the macOS administrator account `nolan` with home
+`/Users/nolan`. Keep SIP enabled and use a native terminal.
 
-## Bootstrap
+## 1. Install Nix and prepare the checkout
 
-1. Create or use the macOS administrator account `nolan`, with home
-   `/Users/nolan`. The current host declaration expects this existing account.
-2. Install [Determinate Nix using its macOS package installer](https://determinate.systems/install/),
-   then open a new terminal. Determinate owns the Nix installation;
-   `determinateNix.enable = true` keeps nix-darwin's `nix.enable = false`.
-3. Clone the repository to `/Users/nolan/nixos`. If Git is unavailable, use a
-   temporary Nix shell rather than invoking Apple's Git shim and installing CLT:
+1. Install [Determinate Nix](https://determinate.systems/install/) with the macOS
+   package installer and open a new terminal.
+2. Clone or update the reviewed checkout at `/Users/nolan/nixos`. OmniWM reads
+   `config/omniwm/settings.toml` through a live link to that checkout. When Git
+   is missing, use the temporary Nix shell before cloning.
 
    ```sh
    nix shell 'https://flakehub.com/f/DeterminateSystems/nixpkgs-26.05-chilled/0.1#git'
@@ -24,277 +17,110 @@ mac-app-util foundations and host overrides.
    cd /Users/nolan/nixos
    ```
 
-4. Build the locked configuration as your user, then activate using the rebuild
-   command in that result. This also bootstraps nix-darwin and Home Manager:
+3. On an existing Mac, review the declared Homebrew and App Store packages
+   before activation. Add packages you intend to keep because activation removes
+   undeclared packages in both managers. List App Store apps with
+   `nix shell .#darwinConfigurations.Astraeus.config.programs.mas.package -c mas list`.
+   Review agent permission arrays, approval/sandbox policy, model preferences,
+   project trust and Remote Control settings. Preserve account data and native
+   plugin caches. Never copy sign-in state from another machine or replace a
+   native plugin cache with a Nix-store link.
+4. Sign in to the Mac App Store as `nolan`. Acquire Xcode and Wuthering Waves
+   from the App Store or run the following and complete any Apple Account prompts.
+   Reinstallation through `mas install` needs prior acquisition; an app not yet
+   acquired shows `No downloads initiated`. Activation never runs `mas update`
+   or changes Automatic Updates.
 
    ```sh
-   nix build .#darwinConfigurations.Astraeus.system
-   sudo /nix/var/nix/profiles/default/bin/nix-env --profile /nix/var/nix/profiles/system --set ./result
-   sudo ./result/sw/bin/darwin-rebuild activate --no-flake
+   sudo mas get 497799835 6475033368
    ```
 
-   Use the same build, set-profile, and activate sequence for subsequent changes.
-   Building as your user avoids root's Git ownership check on the checkout;
-   activation uses the exact built generation. Inspect any activation collision
-   before moving an existing file; do not blindly overwrite it.
-5. Log out and back in if separate Spaces changed, and to start a new session
-   with Fish and the managed environment. Keep the checkout at the declared
-   path: OmniWM reads `config/omniwm/settings.toml` through a live symlink.
-   Keep intended settings edits in the repository and commit them.
+## 2. Build and activate on the Mac
 
-Homebrew is bootstrapped at `/opt/homebrew` by nix-homebrew. Do not run a separate
-Homebrew installer. The declared casks are Proton VPN (`protonvpn`, owned by the
-shared `proton` aspect), the official ChatGPT desktop app (`chatgpt`, owned by
-`ai.chatgpt`), Claude Desktop (`claude`, owned by `ai.claude`), and CrossOver,
-Heroic, NotProton, and Steam (owned by `gaming`).
-Activation uninstalls undeclared formulae/casks.
-Taps and cask versions remain mutable, so this reproduces package ownership
-rather than identical application binaries.
-
-The Homebrew aspect manages the installation infrastructure; individual feature
-aspects own their casks. Proton Pass desktop is not declared yet; the browser
-extension remains managed by the browser aspect.
-
-ChatGPT installs as `/Applications/ChatGPT.app` through Homebrew and retains its
-native updater. Do not install an additional copy through Nixpkgs, the Mac App
-Store, or the deprecated `codex-app` cask. The Codex CLI remains independently
-Nix-managed through `llm-agents.nix`, with its existing settings, plugins, MCP
-servers, skills, and oh-my-codex integration. On Linux, the same `ai.chatgpt`
-aspect retains the `codex-desktop-linux` integration and persistence.
-
-Claude Desktop installs as `/Applications/Claude.app`; launch it with
-`open -a Claude` and sign in. The Nix-managed `claude` CLI remains separate.
-New eligible Code sessions enable Remote Control through the shared setting;
-a saved Desktop auto-connect preference takes precedence. Verify connection
-status in Desktop after sign-in.
-
-The shared `gaming` aspect installs Heroic through the `heroic` Homebrew cask at
-`/Applications/Heroic.app`, with its native updater left enabled. Heroic is not
-also installed through Nix on macOS; Linux installs `pkgs.warm.heroic` as a
-NixOS system package, not through Home Manager.
-Prism Launcher uses Home Manager's Nixpkgs package and its bundled Java runtime
-selection. Launch Prism from `~/Applications/Home Manager Apps`; do not install
-a duplicate Prism Homebrew cask.
-Game downloads, accounts, saves, and launcher data remain mutable personal state.
-Windows-game compatibility runners in Heroic are selected separately as needed.
-
-Steam installs at `/Applications/Steam.app` through Homebrew and retains its
-native updater. Its current [Homebrew cask](https://github.com/Homebrew/homebrew-cask/blob/master/Casks/s/steam.rb)
-requires Rosetta on Apple Silicon. Accept Apple's Rosetta installation prompt
-when launching Steam if needed; this approval is a manual setup step.
-
-CrossOver and NotProton install through the `crossover` and
-`notprotonnot/notproton/notproton` casks. The `gaming` aspect declares NotProton's
-upstream tap; it does not run a post-install script. If macOS blocks NotProton's
-first launch, approve it in System Settings → Privacy & Security → Open Anyway.
-CrossOver license activation and NotProton's Steam/runtime setup remain manual.
-
-Mac App Store apps are owned separately by nix-darwin `programs.mas`. Its desired
-set contains Xcode (`497799835`), declared by `dev.darwin`, and Wuthering Waves
-(`6475033368`), declared by `gaming.darwin`; the host
-owns MAS enablement and cleanup policy. Activation removes undeclared
-MAS apps (not built-in macOS apps). Before the first switch on an existing Mac, run
-`nix shell .#darwinConfigurations.Astraeus.config.programs.mas.package -c mas list`
-and declare any apps you want to retain in `programs.mas.packages`. Sign into the
-Mac App Store as `nolan` and acquire declared apps there if needed before
-activation can install them.
-Activation does not run `mas update` or change Apple's Automatic Updates setting.
-The host adapts the MAS module for mas 7: activation invokes it as root while
-supplying `nolan`'s sudo identity and home, so it can use that user's App Store
-session without requesting another password from the noninteractive activation.
-Running `mas` directly as root without `SUDO_UID` and `SUDO_GID` is insufficient.
-
-`mas install` only reinstalls apps already acquired by the signed-in Apple
-Account. For the first installation of these two free apps, run the following
-from `nolan`'s normal terminal and complete any Apple Account prompts:
+Build as `nolan` to use that user's Git checkout, then activate the built
+generation. Use the same sequence for later changes. Review file collisions
+before moving existing data.
 
 ```sh
-sudo mas get 497799835 6475033368
+nix build .#darwinConfigurations.Astraeus.system
+sudo /nix/var/nix/profiles/default/bin/nix-env --profile /nix/var/nix/profiles/system --set ./result
+sudo ./result/sw/bin/darwin-rebuild activate --no-flake
 ```
 
-This acquires and installs Xcode and Wuthering Waves; subsequent activations can
-use `mas install`. An unacquired app may produce `No downloads initiated` from
-that reinstall path. See [mas's App Store account requirements](https://github.com/mas-cli/mas/tree/v7.0.0#app-store-apple-account-requirements-for-get).
+Log out and back in for a fresh session and to apply any Separate Spaces change.
+Use the managed apps. Avoid separate Homebrew or CLT installations, duplicate
+app copies, re-signing Brave or OmniWM, and Home Manager `copyApps`.
+Homebrew lives at `/opt/homebrew` (nix-homebrew). ChatGPT, Claude Desktop, Steam,
+Heroic, CrossOver and NotProton are Homebrew casks with their own updaters;
+Prism Launcher comes from Home Manager (`~/Applications/Home Manager Apps`).
+The Codex and Claude CLIs stay Nix-managed. Proton Pass desktop is not declared yet.
 
-## Local development: explicit Apple setup
+## 3. Approve apps and sign in
 
-The `dev` aspect installs Xcode through the existing MAS activation above and
-provides `astraeus-dev-setup` through Darwin Home Manager. The App Store selects
-the current compatible release; Xcode and Apple's runtimes are not lock-pinned
-Nix derivations. Check the installed release and macOS compatibility against
-[Apple's Xcode support table](https://developer.apple.com/support/xcode/).
-Xcode 27 requires macOS Tahoe 26.6 or later according to its
-[release notes](https://developer.apple.com/documentation/xcode-release-notes/xcode-27-release-notes).
-An older compatible App Store version is not evidence of Xcode 27 readiness.
+- Open `~/Applications/Home Manager Apps/OmniWM.app` if needed. Approve
+  Accessibility and Input Monitoring for the app in System Settings →
+  Privacy & Security. Return to OmniWM, recheck permissions, and choose
+  **Continue Without Screen Recording** unless you want capture-derived visuals.
+  Keep the app's own login item disabled.
+- On first Proton VPN connection, accept the VPN configuration. For
+  WireGuard, Stealth or Smart Protocol, approve its network extension in
+  System Settings → General → Login Items & Extensions → Network Extensions.
+  Approve split tunneling separately if used.
+- Launch Steam and approve Rosetta when prompted. If NotProton is blocked,
+  use Privacy & Security → Open Anyway, then complete its Steam/runtime setup.
+  Activate the CrossOver license and select Heroic compatibility runners as needed.
+- Sign in to ChatGPT, Claude Desktop (`open -a Claude`), and the apps and game
+  stores you use. Verify Claude Remote Control status in Desktop if using it.
+  Sign into GitHub via `gh auth login`. Restore browser data, files and game
+  saves from your backups or app sync. Review optional app permissions as prompted,
+  including Local Network for LocalSend. Browser extensions install by managed
+  policy; check `brave://policy` or `chrome://policy` after a restart.
+- Check the native plugin inventories with `codex plugin list --marketplace
+  home-manager --json`, `claude plugin marketplace list` and `claude plugin list
+  --json`. For Codex conflicts, see the Codex plugin rule in `AGENTS.md`.
+  If Claude omits a required plugin after initialization, register the
+  already-declared directory with `claude plugin marketplace add <directory>` and
+  run `claude plugin install <name>@<marketplace> --scope user` for the missing
+  entry. Check `android-cli@android-cli-plugin` and `sentry`, `claude-security`
+  and `pr-review-toolkit` at `claude-plugins-official`. Authorize Sentry and other
+  remote accounts as needed and inspect existing account-synced connections first.
+  A marketplace entry is not an installation: check installed and enabled. Use
+  the declared directory, not a second clone. A registration error is never a
+  reason to replace settings or make them mutable.
 
-After the build/profile/activate sequence above has actually installed Xcode,
-run these **on Astraeus as `nolan`**, outside any project shell:
+## 4. Set up Xcode and project tools
 
-```sh
-open /Applications/Xcode.app
-astraeus-dev-setup
-```
+1. Outside project shells, run `open /Applications/Xcode.app` and accept the
+   license in Xcode. Run `astraeus-dev-setup` as `nolan` and answer any sudo
+   prompt. Clear a conflicting `DEVELOPER_DIR` with `set -e DEVELOPER_DIR` in
+   Fish or `unset DEVELOPER_DIR` in POSIX shells. For a different installed
+   Xcode, use `astraeus-dev-setup --xcode /Applications/Xcode-beta.app`.
+   The helper refuses an unaccepted license and concurrent runs, and never
+   deletes, erases, boots or shuts down a simulator. A second run prints the
+   same UDIDs.
+2. If a compatible registered arm64 iOS runtime is missing, explicitly run
+   `astraeus-dev-setup --download-runtime` or install one in Xcode Settings →
+   Components and rerun. For a specific installed runtime, use
+   `xcrun simctl list runtimes` and pass its identifier to
+   `astraeus-dev-setup --runtime <identifier>`. Inspect registered images with
+   `xcrun simctl runtime list --json` and available devices with
+   `xcrun simctl list devices available`. Record the printed iPhone/iPad UDIDs
+   for project use. If a named device conflicts, inspect its UDID in
+   CoreSimulator or Xcode → Open Developer Tool → Device Hub where available.
+3. Clone or restore your projects under `~/projects` and use their locked shells
+   for build tools, SDKs, licenses, signing and acceptance tests. Keep Flutter,
+   Android tooling and additional Rust toolchains project-local. Use Swift
+   Package Manager where supported, or project-pinned Ruby/CocoaPods if needed.
+   For Android CLI, reuse the project SDK with
+   `android --no-metrics --sdk=/absolute/existing/android-sdk info` and
+   `android --no-metrics --sdk=/absolute/existing/android-sdk emulator list`.
+   Check `dart --version` and `android --no-metrics --version` in the selected
+   environment. Avoid `android init`, `android update`, a second SDK and
+   emulator image downloads for validation.
+4. Run the project's build and device checks on the Mac. Boot simulators when
+   needed. For physical devices, follow Xcode's account, signing, pairing and
+   Developer Mode prompts. Evaluation on Linux proves nothing about native
+   builds, signing or devices.
 
-Review and accept Apple's license yourself in Xcode. The helper refuses an
-unaccepted license. It selects `/Applications/Xcode.app/Contents/Developer` using
-`sudo xcode-select --switch` when necessary, verifies the global selection even
-if `DEVELOPER_DIR` was set, and runs Apple's `-runFirstLaunch` only after the
-license check and only if `-checkFirstLaunchStatus` says it is required. A conflicting
-`DEVELOPER_DIR` in your calling shell is refused before changes; remove it with
-`set -e DEVELOPER_DIR` in Fish or `unset DEVELOPER_DIR` in a POSIX shell, then rerun.
-The helper cannot change its parent shell's environment. Sudo may
-prompt for the administrator password. For a deliberately different installed
-Xcode, use `astraeus-dev-setup --xcode /Applications/Xcode-beta.app`.
-No separate CLT installation, Homebrew Xcode cask, or Xcode downloader is needed.
-
-If no compatible registered runtime exists, explicitly permit a download:
-
-```sh
-astraeus-dev-setup --download-runtime
-```
-
-This checks CoreSimulator registration first. It reuses the newest available
-iOS 26+ runtime no newer than the selected simulator SDK that supports both an
-iPhone and an iPad. It correlates the registered runtime with CoreSimulator's
-runtime-image metadata by identifier and bundle path, requiring `Ready`,
-`Verified`, and advertised `arm64` support. It does not infer guest architecture
-from a potentially universal loader binary.
-If needed, it asks
-Apple's `xcodebuild -downloadPlatform iOS -buildVersion <SDK version>
--architectureVariant arm64` to install the native runtime, then checks registration
-again. A successful download alone never counts as success. Runtime availability,
-Apple account prompts, network access and free disk space can block installation;
-the helper streams setup/download progress and reports the failing command and
-Apple's output. Use Xcode Settings → Components to inspect or install a compatible runtime if necessary, then rerun.
-See [Apple's component installation documentation](https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components).
-No runtime download or first-run command is attached to Nix activation or a login job.
-
-The helper reuses an available iPhone/iPad already registered for that runtime,
-or creates `Astraeus iPhone iOS <version>` and `Astraeus iPad iOS <version>` using
-runtime-supported device types. It reads the devices back and prints confirmed
-UDIDs. Repeated runs retain names, boot state and data; concurrent helper runs
-are refused. If a helper-named device exists but is unavailable or incompatible,
-it stops with that UDID for diagnosis instead of creating duplicates on retries.
-It never deletes, erases, boots or shuts down a simulator. Runtime and device state remains in Apple's normal shared per-machine/per-user locations,
-so projects can reuse it. To select a specific installed runtime:
-
-```sh
-xcrun simctl list runtimes
-xcrun simctl runtime list --json
-astraeus-dev-setup --runtime com.apple.CoreSimulator.SimRuntime.iOS-27-0
-xcrun simctl list devices available
-xcodebuild -version
-xcode-select -p
-```
-
-Use the identifier actually listed on the Mac; the example is not a required
-runtime version. Save each printed UDID for project commands. Running the helper
-once more should print the same UDIDs without creating more devices or downloading
-another runtime. Boot and exercise devices only when beginning the corresponding
-Mac test session.
-
-[Device Hub ships with Xcode 27](https://developer.apple.com/videos/play/wwdc2026/260/),
-not as a separately installed app. It combines physical-device and simulator
-inventory, interactive screens, configuration, apps and diagnostics. Open it from
-Xcode → Open Developer Tool → Device Hub. Apple's `devicectl` supplies device
-inventory/automation; this helper uses `simctl` for CoreSimulator registration.
-After installation, inspect the installed tool's capabilities with
-`xcrun devicectl help` and `xcrun simctl help`; Device Hub behavior has not been
-exercised from Linux.
-
-### Project tools and Android convention
-
-Keep project versions in each app's locked development shell. The shared host
-already supplies editor/Fish/direnv integration and general Rust/Python/JS tools;
-project shells take precedence for their own Rust targets, Flutter and Dart.
-Do not add global Flutter, Android Studio, CocoaPods, or another Rust installer.
-Prefer Swift Package Manager where the project's plugin set supports it; if
-CocoaPods is required, provide the pinned Ruby/CocoaPods tooling inside that
-project shell or Bundler environment, never through `sudo gem install`.
-
-Each project's Darwin shell should provide only its required SDK platform,
-build-tools, NDK, JDK and optional emulator/image. Use these shared variable names
-**inside the project shell**, without global Fish/session settings:
-
-| Variable | Meaning |
-|---|---|
-| `ANDROID_HOME` | Project-selected SDK root |
-| `ANDROID_SDK_ROOT` | Same SDK root for compatible older clients |
-| `ANDROID_NDK_ROOT`, `NDK_HOME` | The project's pinned NDK path |
-| `JAVA_HOME` | The project's selected JDK home |
-| `ANDROID_AVD_HOME` | Project-scoped writable AVD directory |
-
-Prefer a lock-pinned `androidenv` composition when its Darwin tools are usable;
-if the pinned Nixpkgs lacks a usable native emulator, the project must provide
-an explicit project-local official-tools setup and document its versions and
-license step. Never silently fall back to Linux binaries or an Intel guest on
-Apple Silicon. Select `arm64-v8a` Android system images and the native Darwin
-emulator; keep SDK/NDK inputs separate from mutable AVDs, Pub/Gradle caches and
-app data. Use project-prefixed AVD names and project-local caches. Android license
-acceptance is a deliberate project setup step, not a global host policy. Do not
-apply Linux KVM groups or Linux-only `aapt2` overrides on Darwin.
-
-### Project setup and validation
-
-Use each application repository's development guide and locked shell for its
-platform tools, build commands, dependencies, signing, and acceptance tests.
-The host creates `~/projects`; it does not clone repositories or synchronize app
-data. Preserve existing checkout changes before selecting a project branch.
-
-Host evaluation does not verify native Apple builds, runtime registration,
-signing, accessibility, or physical-device behavior. Check these on the Mac.
-Simulator-only development does not require physical-device pairing or signing.
-For physical devices, follow Xcode's account, signing, pairing, and Developer Mode
-prompts. Keep app-specific validation and test reports in the app repository.
-
-## Required Apple approvals
-
-- OmniWM requires **Accessibility** and **Input Monitoring**. Approve the actual
-  OmniWM application when prompted in System Settings → Privacy & Security.
-  Return to its permission window, check again if necessary, and choose
-  **Continue Without Screen Recording**. Its app is available through
-  `~/Applications/Home Manager Apps/OmniWM.app`; Home Manager owns startup, so
-  do not enable a second application-managed login item. See the
-  [OmniWM launch requirements](https://github.com/OmniNull/OmniWM#requirements).
-- Separate Spaces and disabling Apple's three-finger horizontal workspace
-  gesture are already declared. A logout may be needed for separate Spaces.
-- When first connecting Proton VPN, accept its request to add VPN configuration.
-  If using WireGuard/Stealth/Smart Protocol, enable the requested Proton VPN
-  network extension in System Settings → General → Login Items & Extensions →
-  Network Extensions. Split tunneling has its own feature-dependent approval;
-  it is not required just to reproduce the installed app. Follow
-  [Proton's network extension instructions](https://protonvpn.com/support/macos-network-extensions)
-  for the prompts presented by your selected features.
-
-## Accounts and personal state
-
-- Run `gh auth login` when GitHub authentication is needed; the declared Git
-  credential helper uses GitHub CLI. Retain credentials in its supported local
-  storage/Keychain, never in this repository.
-- Launch `/Applications/ChatGPT.app` and sign in to OpenAI after activation.
-  Desktop sign-in and feature-dependent macOS permissions remain manual.
-- Sign in to Steam and the stores used in Heroic, and add your Microsoft account
-  in Prism Launcher when needed. Restore game saves from backups or cloud sync.
-- Sign in to Proton VPN and Proton Pass, Filen, Slack, Spotify, Vesktop,
-  browsers, editors, and AI tools as needed. Restore personal browser data and
-  other user files from your own backup or the relevant app's sync service.
-- Browser extensions install through managed policy; no profile-directory
-  migration or manual extension JSON files are required. Check `brave://policy`
-  or `chrome://policy` after launching/restarting the browser if needed.
-
-## Optional permissions and features
-
-OmniWM Screen Recording enables capture-derived visuals such as Overview
-thumbnails and drag previews. It is optional for the current window management
-setup. LocalSend discovery may prompt for Local Network access; approve it only
-if using transfers. Microphone, camera, notifications, and screen sharing are
-choices for the apps/features you use, not bootstrap prerequisites.
-
-## Not required
-
-Keep SIP enabled. No MDM, TCC database edits, Full Disk Access workaround,
-Terminal access to Brave/Chrome App Data, a separate Apple CLT install, or Intel
-Homebrew is required for this configuration. Review optional application access
-in System Settings → Privacy & Security → Files & Folders.
-Do not re-sign the supplied Brave or OmniWM app, enable Home Manager `copyApps`,
-or install another copy of OmniWM with Homebrew.
+Not needed: MDM, TCC database edits, Full Disk Access workarounds, Terminal
+access to browser app data, Intel Homebrew.

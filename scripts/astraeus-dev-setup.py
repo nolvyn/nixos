@@ -142,7 +142,6 @@ def ensure_device(runtime, device_type, family):
             f"{family} registration not confirmed: {device_id}. No devices were removed."
         )
     print(f"{family}: {device_id} (iOS {runtime['version']})")
-    return device_id
 
 
 def selected_xcode():
