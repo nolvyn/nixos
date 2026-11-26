@@ -1,4 +1,4 @@
-{ ... }:
+{ inputs, ... }:
 let
   sharedMcpServers = import ./_mcp-servers.nix;
 in
@@ -22,7 +22,7 @@ in
 
         programs.opencode = {
           enable = true;
-          package = pkgs.llm-agents.opencode;
+          package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode;
           enableMcpIntegration = true;
           tui.theme = "system";
 

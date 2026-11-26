@@ -5,7 +5,7 @@
       { host, pkgs, ... }:
       {
         environment.systemPackages = [
-          pkgs.llm-agents.grok
+          inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.grok
           pkgs.llm-agents.grok-bot
         ];
 

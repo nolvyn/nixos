@@ -27,7 +27,7 @@
       {
         programs.claude-code = {
           enable = true;
-          package = pkgs.llm-agents.claude-code;
+          package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code;
           enableMcpIntegration = true;
 
           settings = {

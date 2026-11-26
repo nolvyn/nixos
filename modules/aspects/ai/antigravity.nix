@@ -1,4 +1,4 @@
-{ ... }:
+{ inputs, ... }:
 {
   den.aspects.ai.provides.antigravity = {
     nixos =
@@ -14,7 +14,7 @@
       {
         programs.antigravity-cli = {
           enable = true;
-          package = pkgs.llm-agents.antigravity-cli;
+          package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.antigravity-cli;
 
           # Merge into a writable settings.json so agy can rewrite it. A read-only link blocked Home Manager
           # activation at boot and left the entire home unconfigured.
