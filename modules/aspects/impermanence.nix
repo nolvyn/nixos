@@ -12,15 +12,18 @@
         ...
       }:
       let
-        rollbackMetadataTools = pkgs.runCommand "rollback-tree-metadata" {
-          nativeBuildInputs = [ pkgs.stdenv.cc ];
-        } ''
-          mkdir -p "$out/bin"
-          cc -std=gnu11 -O2 -Wall -Wextra -Werror \
-            ${../../scripts/rollback-tree-metadata.c} -o "$out/bin/rollback-tree-metadata"
-          cc -std=gnu11 -O2 -Wall -Wextra -Werror \
-            ${../../scripts/rollback-tree-record.c} -o "$out/bin/rollback-tree-record"
-        '';
+        rollbackMetadataTools =
+          pkgs.runCommand "rollback-tree-metadata"
+            {
+              nativeBuildInputs = [ pkgs.stdenv.cc ];
+            }
+            ''
+              mkdir -p "$out/bin"
+              cc -std=gnu11 -O2 -Wall -Wextra -Werror \
+                ${../../scripts/rollback-tree-metadata.c} -o "$out/bin/rollback-tree-metadata"
+              cc -std=gnu11 -O2 -Wall -Wextra -Werror \
+                ${../../scripts/rollback-tree-record.c} -o "$out/bin/rollback-tree-record"
+            '';
         persistence = config.environment.persistence."/persistent";
         scopes = [ persistence ] ++ builtins.attrValues persistence.users;
         directories = lib.concatMap (scope: scope.directories) scopes;
@@ -66,24 +69,62 @@
             directories = [
               # Personal
               "Downloads"
-              "mext"
               "nixos"
-              "other"
               "projects"
               "school"
 
-              ".cache/spotify"
-
-              ".config/@filen"
               ".config/ghostty"
               ".config/Slack"
-              ".config/spotify"
-            ];
+            ]
+            ++
+              map
+                (
+                  entry:
+                  entry
+                  // {
+                    # Provision this new backing for the exact required development inputs before boot; preserve legacy /persistent/home.
+                    persistentStoragePath = "/persistent/development-runtime-20261103";
+                  }
+                )
+                [
+                  {
+                    directory = ".cache/deno";
+                    mode = "0700";
+                  }
+                  {
+                    directory = ".cache/folirei-android-gradle-v1";
+                    mode = "0700";
+                  }
+                  {
+                    directory = ".cache/nix";
+                    mode = "0755";
+                  }
+                  {
+                    directory = ".pub-cache/hosted";
+                    mode = "0755";
+                  }
+                  {
+                    directory = ".cargo/registry/cache";
+                    mode = "0755";
+                  }
+                  {
+                    directory = ".cargo/registry/src";
+                    mode = "0755";
+                  }
+                  {
+                    directory = ".local/share/folirei-prepush-nix-v1";
+                    mode = "0700";
+                  }
+                  {
+                    directory = ".local/share/folirei-projection-public-inputs-v1";
+                    mode = "0700";
+                  }
+                ];
           };
         };
 
         systemd.services.persistent-storage-report = {
-          description = "Monthly persistence size and declaration report";
+          description = "Weekly persistence size and declaration report";
           unitConfig.RequiresMountsFor = [ "/persistent" ];
           serviceConfig = {
             Type = "oneshot";
@@ -108,7 +149,7 @@
         systemd.timers.persistent-storage-report = {
           wantedBy = [ "timers.target" ];
           timerConfig = {
-            OnCalendar = "monthly";
+            OnCalendar = "weekly";
             Persistent = true;
             RandomizedDelaySec = "1h";
           };

@@ -21,14 +21,13 @@ let
               ]
             )).overrideAttrs
               (old: {
-                # ASDF uses empty colon fields as configuration syntax. Set its
-                # complete values instead of passing them through PATH validation.
+                # Set full ASDF values to bypass PATH validation and preserve empty colon fields used as syntax.
                 # Retire when nixpkgs' Lisp wrapper supports makeBinaryWrapper again.
                 installPhase =
                   let
                     prefixes = [
-                      "--prefix CL_SOURCE_REGISTRY :"
-                      "--prefix ASDF_OUTPUT_TRANSLATIONS :"
+                      "--prefix-unchecked CL_SOURCE_REGISTRY :"
+                      "--prefix-unchecked ASDF_OUTPUT_TRANSLATIONS :"
                     ];
                   in
                   assert builtins.all (prefix: modernPkgs.lib.hasInfix prefix old.installPhase) prefixes;

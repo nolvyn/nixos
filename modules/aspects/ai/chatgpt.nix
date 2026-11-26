@@ -1,7 +1,4 @@
 { inputs, ... }:
-let
-  sharedMcpServers = import ./_mcp-servers.nix;
-in
 {
   flake-file.inputs.openai-plugins = {
     url = "github:openai/plugins";
@@ -47,11 +44,18 @@ in
         linuxSessionVariables = lib.optionalAttrs isLinux {
           CODEX_LINUX_DISABLE_USAGE_REPORTING = "1";
         };
+        # On Linux, use Numtide's pinned dependencies for Codex binary substitutes.
+        # Shared nixpkgs or local overrides change the derivation and miss that cache.
+        codexPackage =
+          if isLinux then
+            inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex
+          else
+            pkgs.llm-agents.codex;
         desktopProxyPython = pkgs.python3.withPackages (ps: [ ps.websockets ]);
         desktopCli = pkgs.writeShellScriptBin "codex" ''
           exec ${desktopProxyPython}/bin/python3 \
             ${../../../scripts/codex-desktop-proxy.py} \
-            ${lib.getExe pkgs.llm-agents.codex} "$@"
+            ${lib.getExe codexPackage} "$@"
         '';
         mkPlugin =
           name:
@@ -64,17 +68,16 @@ in
         # Module imports must not depend on pkgs, or evaluation recurses.
         imports = lib.optional isNixOS inputs.codex-desktop-linux.homeManagerModules.default;
 
-        home.packages = [ pkgs.llm-agents.oh-my-codex ];
         home.sessionVariables = linuxSessionVariables;
         systemd.user.sessionVariables = linuxSessionVariables;
 
         programs = {
           codex = {
             enable = true;
-            package = pkgs.llm-agents.codex;
-            enableMcpIntegration = true;
-
-            skills = "${pkgs.llm-agents.oh-my-codex}/share/oh-my-codex/skills";
+            package = codexPackage;
+            # Off since 2026-11-15 to save memory: programs.mcp only adds mcp-nixos, one process per Codex session.
+            # Uncomment to restore.
+            # enableMcpIntegration = true;
 
             plugins = map mkPlugin [
               "cloudflare"
@@ -84,36 +87,15 @@ in
               "supabase"
             ];
 
-            rules.default = ''
-              prefix_rule(pattern = ["rm", "-rf", "/"], decision = "forbidden")
-              prefix_rule(pattern = ["rm", "-rf", "~"], decision = "forbidden")
-              prefix_rule(pattern = ["dd", "if=/dev/"], decision = "forbidden")
-              prefix_rule(pattern = ["mkfs"], decision = "forbidden")
-            '';
-
             settings = {
               theme = "dark";
-              model = "gpt-6.1-sol";
+              model = "gpt-6.2-sol";
               model_reasoning_effort = "medium";
-              model_auto_compact_token_limit = 500000;
               approval_policy = "on-request";
               sandbox_mode = "danger-full-access";
 
               projects."${config.home.homeDirectory}/nixos".trust_level = "trusted";
-              projects."${config.home.homeDirectory}/projects/folirei".trust_level = "trusted";
-              projects."${config.home.homeDirectory}/projects/shiori".trust_level = "trusted";
               projects."${config.home.homeDirectory}/projects/gw-analysis".trust_level = "trusted";
-
-              mcp_servers.playwright = sharedMcpServers.playwright;
-              /*
-                mcp_servers.revenuecat = {
-                  command = "npx";
-                  args = [
-                    "mcp-remote"
-                    "https://mcp.revenuecat.ai/mcp"
-                  ];
-                };
-              */
             };
           };
         }
@@ -126,7 +108,7 @@ in
             remoteMobileControl.enable = true;
             remoteControl = {
               enable = true;
-              package = pkgs.llm-agents.codex;
+              package = codexPackage;
               extraPackages = with pkgs; [
                 bash
                 coreutils

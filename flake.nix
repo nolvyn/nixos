@@ -8,6 +8,10 @@
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    android-cli-plugin = {
+      url = "github:android/android-cli-plugin";
+      flake = false;
+    };
     codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
     darwin = {
       url = "github:nix-darwin/nix-darwin/master";
@@ -49,6 +53,7 @@
       url = "github:openai/plugins";
       flake = false;
     };
+    paseo.url = "github:getpaseo/paseo/1c00b365c9e0b74c1580eba33d905d693125ae21";
     stable.url = "https://flakehub.com/f/DeterminateSystems/nixpkgs-26.05-chilled/0.1";
     stevenblack-hosts.url = "github:StevenBlack/hosts";
     unstable.url = "https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly/0.1";

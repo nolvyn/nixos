@@ -98,6 +98,15 @@ in
         extensions = browserExtensions;
         extraOpts = bravePolicies;
       };
+
+      # nixpkgs' programs.chromium now writes only chromium and opt/chrome; restore both former Brave files
+      # so Brave still receives its extensions and policies.
+      environment.etc = {
+        "brave/policies/managed/default.json".text = builtins.toJSON {
+          ExtensionInstallForcelist = browserExtensions;
+        };
+        "brave/policies/managed/extra.json".text = builtins.toJSON bravePolicies;
+      };
     };
 
     darwin =
@@ -215,9 +224,8 @@ in
           };
       in
       {
-        # Brave reads mandatory macOS policies from the system managed
-        # preferences domain, not from ordinary user defaults. Both Darwin
-        # activation and the root launchd daemon call this same reconciler.
+        # Brave reads mandatory macOS policies from system managed preferences; user defaults do not apply.
+        # Darwin activation and the root launchd daemon share this reconciler.
         system.activationScripts.postActivation.text = lib.mkAfter ''
           ${lib.escapeShellArg (toString bravePolicyReconciler)}
           ${lib.escapeShellArg (toString chromePolicyReconciler)}
@@ -242,7 +250,7 @@ in
       {
         programs.brave = {
           enable = true;
-          package = pkgs.unstable.brave;
+          package = pkgs.warm.brave;
         };
 
         programs.google-chrome = {
@@ -250,9 +258,8 @@ in
           package = pkgs.warm.google-chrome;
         };
 
-        # Darwin extension force-installation is handled by the root-owned
-        # managed-preferences plists in the system block. This avoids writing
-        # into browser-owned Application Support directories.
+        # The system block force-installs Darwin extensions via root-owned managed-preferences plists,
+        # avoiding writes to browser-owned Application Support directories.
       };
   };
 }

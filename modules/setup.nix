@@ -57,6 +57,7 @@ in
       ];
       system.stateVersion = version;
       home-manager.backupFileExtension = "backup";
+      home-manager.useGlobalPkgs = true;
     };
 
     darwin = {
@@ -66,11 +67,16 @@ in
       home-manager.backupFileExtension = "backup";
     };
 
-    homeManager = {
-      home.stateVersion = version;
-      home.enableNixpkgsReleaseCheck = false;
-      nixpkgs.config.allowUnfree = true;
-      nixpkgs.overlays = sharedOverlays;
-    };
+    homeManager =
+      { osConfig, ... }:
+      {
+        home.stateVersion = version;
+        home.enableNixpkgsReleaseCheck = false;
+        # Only hosts without useGlobalPkgs give Home Manager its own package set (nix-darwin, see Astraeus pkgsPath).
+        nixpkgs = lib.mkIf (!osConfig.home-manager.useGlobalPkgs) {
+          config.allowUnfree = true;
+          overlays = sharedOverlays;
+        };
+      };
   };
 }

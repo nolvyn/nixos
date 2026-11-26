@@ -1,16 +1,16 @@
 { den, ... }:
 {
-  # Cross-platform personal workstation applications. This is intentionally
-  # opt-in so future servers do not inherit GUI applications, gaming, AI tools,
-  # or personal persistence declarations accidentally.
+  # Opt-in cross-platform personal workstation profile. Keeps GUI apps, gaming, AI tools and
+  # personal persistence off future servers by default.
   den.aspects.workstation = {
     includes = with den.aspects; [
       ai.antigravity
       ai.chatgpt
       ai.claude
-      ai.cursor
       ai.general
+      ai.grok
       ai.opencode
+      ai.paseo
       base
       browser
       celluloid
@@ -20,9 +20,9 @@
       gaming
       localsend
       proton
+      spotify
       vesktop
       vscode
-      zed
     ];
 
     nixos =
@@ -30,7 +30,6 @@
       {
         environment.systemPackages = with pkgs; [
           nautilus
-          onlyoffice-desktopeditors
         ];
       };
 
@@ -47,10 +46,8 @@
           ripunzip
           sherlock
           slack
-          spotify
           tree
           unrar
-          # unstable.filen-desktop
           wget
         ];
       };

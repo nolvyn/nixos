@@ -1,9 +1,11 @@
-{ ... }:
+{ inputs, ... }:
 {
   den.aspects.ai.provides.claude = {
     nixos =
-      { host, ... }:
+      { host, pkgs, ... }:
       {
+        environment.systemPackages = [ pkgs.llm-agents.claude-desktop ];
+
         environment.persistence."/persistent".users.${host.userName} = {
           directories = [
             ".claude"
@@ -21,12 +23,8 @@
     };
 
     homeManager =
-      { lib, pkgs, ... }:
+      { pkgs, ... }:
       {
-        home.packages = lib.optionals pkgs.stdenv.hostPlatform.isLinux [
-          pkgs.llm-agents.claude-desktop
-        ];
-
         programs.claude-code = {
           enable = true;
           package = pkgs.llm-agents.claude-code;
@@ -40,32 +38,25 @@
             remoteControlAtStartup = true;
 
             extraKnownMarketplaces = {
-              "omc" = {
-                source = {
-                  source = "github";
-                  repo = "Yeachan-Heo/oh-my-claudecode";
-                };
+              "android-cli-plugin".source = {
+                source = "directory";
+                path = "${inputs.android-cli-plugin}";
               };
             };
 
             enabledPlugins = {
-              "claude-md-management@claude-plugins-official" = true;
+              "android-cli@android-cli-plugin" = true;
+              "claude-security@claude-plugins-official" = true;
+              "pr-review-toolkit@claude-plugins-official" = true;
+              "sentry@claude-plugins-official" = true;
               "cloudflare@claude-plugins-official" = true;
               "code-simplifier@claude-plugins-official" = true;
               "code-review@claude-plugins-official" = true;
-              "commit-commands@claude-plugins-official" = true;
-              "feature-dev@claude-plugins-official" = true;
-              "frontend-design@claude-plugins-official" = true;
-              "lua-lsp@claude-plugins-official" = true;
-              "oh-my-claudecode@omc" = true;
-              "playwright@claude-plugins-official" = true;
-              "pyright-lsp@claude-plugins-official" = true;
-              "revenuecat@claude-plugins-official" = true;
-              "rust-analyzer-lsp@claude-plugins-official" = true;
+              # The Claude account also syncs a copy of this one; without this it loads anyway.
+              "rust-analyzer-lsp@synced" = false;
               "security-guidance@claude-plugins-official" = true;
               "stripe@claude-plugins-official" = true;
               "supabase@claude-plugins-official" = true;
-              "typescript-lsp@claude-plugins-official" = true;
             };
 
             permissions = {
@@ -74,19 +65,6 @@
                 "WebFetch(domain:*)"
                 "WebSearch"
                 "mcp__nixos__*"
-              ];
-              deny = [
-                "Read(~/.ssh/**)"
-                "Read(~/.age/**)"
-                "Read(**/*.key)"
-                "Read(**/*.pem)"
-                "Bash(rm -rf /*)"
-                "Bash(rm -rf ~*)"
-                "Bash(dd if=/dev/*)"
-                "Bash(mkfs*)"
-                "Bash(curl * | bash)"
-                "Bash(wget * | sh)"
-                "Bash(wget * | bash)"
               ];
             };
           };

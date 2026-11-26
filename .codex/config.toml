@@ -1,9 +1,0 @@
-model_auto_compact_token_limit = 500000
-
-[mcp_servers.nixos]
-command = "nix"
-args = [
-    "run",
-    "github:utensils/mcp-nixos",
-    "--",
-]

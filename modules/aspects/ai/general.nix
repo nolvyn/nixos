@@ -1,20 +1,25 @@
 { inputs, ... }:
 {
+  flake-file.inputs.android-cli-plugin = {
+    url = "github:android/android-cli-plugin";
+    flake = false;
+  };
+
   flake-file.inputs.llm-agents.url = "github:numtide/llm-agents.nix";
 
   den.aspects.ai.provides.general = {
     nixos =
-      { host, pkgs, ... }:
+      {
+        host,
+        pkgs,
+        ...
+      }:
       {
         nixpkgs.overlays = [ inputs.llm-agents.overlays.shared-nixpkgs ];
 
-        environment.systemPackages = [
-          # pkgs.llm-agents.grok
-        ];
-
-        environment.persistence."/persistent".users.${host.userName}.directories = [
-          ".mcp-auth"
-        ];
+        environment.persistence."/persistent".users.${host.userName} = {
+          directories = [ ".mcp-auth" ];
+        };
 
         nix.settings = {
           extra-substituters = [ "https://cache.numtide.com" ];
@@ -25,20 +30,20 @@
       };
 
     homeManager =
-      { pkgs, ... }:
       {
-        nixpkgs.overlays = [ inputs.llm-agents.overlays.shared-nixpkgs ];
+        lib,
+        osConfig,
+        ...
+      }:
+      {
+        # NixOS hosts get this overlay from the system pkgs (useGlobalPkgs).
+        nixpkgs.overlays = lib.mkIf (!osConfig.home-manager.useGlobalPkgs) [
+          inputs.llm-agents.overlays.shared-nixpkgs
+        ];
 
         programs.mcp = {
           enable = true;
           servers = {
-            context7 = {
-              command = "npx";
-              args = [
-                "-y"
-                "@upstash/context7-mcp"
-              ];
-            };
             mcp-nixos = {
               command = "uvx";
               args = [ "mcp-nixos" ];

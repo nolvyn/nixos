@@ -9,6 +9,32 @@ from pathlib import Path
 import re
 import stat
 
+WEEKLY = re.compile(r"(\d{4})-W(\d{2})")
+MONTHLY = re.compile(r"(\d{4})-(\d{2})")
+KEEP_WEEKLY = 26
+
+
+def period_start(stem):
+    """Start date of a weekly (YYYY-Www) or legacy monthly (YYYY-MM) snapshot."""
+    try:
+        if match := WEEKLY.fullmatch(stem):
+            return datetime.date.fromisocalendar(int(match[1]), int(match[2]), 1)
+        if match := MONTHLY.fullmatch(stem):
+            return datetime.date(int(match[1]), int(match[2]), 1)
+    except ValueError:
+        pass
+    return None
+
+
+def snapshots(output):
+    """Regular snapshot files with a recognised name, newest period first."""
+    found = []
+    for snapshot in output.glob("*.json"):
+        start = period_start(snapshot.stem)
+        if start is not None and not snapshot.is_symlink() and snapshot.is_file():
+            found.append((start, snapshot))
+    return sorted(found, reverse=True)
+
 
 def mounts_from(path):
     mounts = set()
@@ -120,12 +146,13 @@ def render(report, previous, output):
     missing = sum(b["status"] in {"missing", "mismatch"} for b in report["bindings"])
     uncertain = sum(b["status"] == "unreadable" for b in report["bindings"])
     notice = (
-        f"Monthly storage report: {report['month']}\n"
+        f"Weekly storage report: {report['period']}\n"
         f"Readable persisted data: {size_text(report['readable_allocated_bytes'])}; "
         f"outside current declarations: {size_text(candidate_bytes)} (review only).\n"
     )
     if comparable:
-        notice += f"Change since {previous['month']}: {size_text(report['readable_allocated_bytes'] - previous['readable_allocated_bytes'])}.\n"
+        since = previous.get("period", previous.get("month"))
+        notice += f"Change since {since}: {size_text(report['readable_allocated_bytes'] - previous['readable_allocated_bytes'])}.\n"
     if missing or uncertain or report["skipped"]["unreadable"]:
         notice += f"Partial inspection: {missing} missing/mismatched bindings, {uncertain} unverified bindings, {report['skipped']['unreadable']} unreadable paths.\n"
     notice += f"Details: {output / 'latest.txt'}\n"
@@ -177,10 +204,13 @@ def main():
         raise SystemExit("Refusing symlink report directory")
     output.mkdir(mode=0o700, parents=True, exist_ok=True)
     now = datetime.datetime.now(datetime.timezone.utc)
-    month = now.strftime("%Y-%m")
+    year, week, _ = now.isocalendar()
+    period = f"{year}-W{week:02d}"
+    current_start = period_start(period)
     previous = {}
-    for snapshot in sorted(output.glob("????-??.json"), reverse=True):
-        if snapshot.stem < month and not snapshot.is_symlink():
+    # Compare with the newest earlier weekly snapshot, or a legacy monthly one.
+    for start, snapshot in snapshots(output):
+        if snapshot.stem != period and start <= current_start:
             try:
                 candidate = json.loads(snapshot.read_text())
                 if isinstance(candidate, dict) and isinstance(
@@ -191,10 +221,10 @@ def main():
             except (OSError, ValueError):
                 continue
     report = collect(root, json.loads(Path(args.manifest).read_text()), mounts)
-    report.update(month=month, generated_at=now.isoformat())
+    report.update(period=period, generated_at=now.isoformat())
     notice, details = render(report, previous, output)
     for name, text in [
-        (f"{month}.json", json.dumps(report, indent=2) + "\n"),
+        (f"{period}.json", json.dumps(report, indent=2) + "\n"),
         ("latest.txt", details),
         ("notice.txt", notice),
     ]:
@@ -203,7 +233,11 @@ def main():
         with staging.open("x") as handle:
             handle.write(text)
         os.replace(staging, output / name)
-    print("Monthly storage report saved.")
+    # Keep only the newest weekly snapshots; legacy monthly ones stay untouched.
+    weekly = [path for _, path in snapshots(output) if WEEKLY.fullmatch(path.stem)]
+    for snapshot in weekly[KEEP_WEEKLY:]:
+        snapshot.unlink()
+    print("Weekly storage report saved.")
 
 
 if __name__ == "__main__":

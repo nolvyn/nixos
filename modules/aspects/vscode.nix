@@ -29,9 +29,8 @@
         ];
         programs.vscode = {
           enable = true;
-          # The main nixpkgs pin's vscode 1.144.0 fails in its patch phase (it removes a
-          # bundled ripgrep path the 1.144 tarball no longer has); the unstable pin carries
-          # the fixed recipe for the same version. Retire when the main pin builds vscode.
+          # Main's VS Code 1.144.0 patch removes a ripgrep path absent from the tarball. Unstable fixes the same version.
+          # Drop the override when main builds VS Code.
           package = lib.mkIf isLinux pkgs.unstable.vscode;
 
           profiles.default.extensions =
@@ -40,18 +39,15 @@
               dart-code.dart-code
               dart-code.flutter
               jnoortheen.nix-ide
-              rust-lang.rust-analyzer
-              sumneko.lua
-              tamasfe.even-better-toml
-            ])
-            ++ (with pkgs.stable.vscode-extensions; [
-              # nixpkgs-unstable jedi-language-server has a broken dep constraint (requires jedi<0.20, unstable ships 0.20.0)
               ms-python.debugpy
               ms-python.python
               ms-python.vscode-pylance
               ms-toolsai.jupyter
               ms-toolsai.jupyter-keymap
               ms-toolsai.jupyter-renderers
+              rust-lang.rust-analyzer
+              sumneko.lua
+              tamasfe.even-better-toml
             ])
             ++ (with pkgs.vscode-marketplace; [
               adguard.adblock
@@ -65,7 +61,7 @@
             );
 
           profiles.default.userSettings = {
-            # Dart/Fluter
+            # Dart/Flutter
             "debug.internalConsoleOptions" = "openOnSessionStart";
             "[dart]" = {
               "editor.formatOnType" = true;
