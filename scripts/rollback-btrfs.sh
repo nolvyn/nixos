@@ -4,7 +4,6 @@ set -Eeuo pipefail
 export LC_ALL=C
 RB_UUID='[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
 RB_PROOF=rollback-checkpoints-v7
-RB_MAX_CLONES=4
 RB_MAX_KEPT=24
 RB_MAX_INTENTS=8
 rb_error() { printf >&2 'rollback: %s\n' "$*"; return 1; }
@@ -12,7 +11,7 @@ rb_exists() { [[ -e $1 || -L $1 ]]; }
 rb_dir() { [[ -d $1 && ! -L $1 ]]; }
 rb_subvol() { rb_dir "$1" && btrfs subvolume show "$1" >/dev/null 2>&1; }
 rb_uuid() {
-    local output line value found=
+    local output line found=
     output=$(btrfs subvolume show "$1") || return
     while IFS= read -r line; do
         if [[ $line =~ ^[[:space:]]*UUID:[[:space:]]*($RB_UUID)$ ]]; then
@@ -299,7 +298,7 @@ rb_prune() {
         rb_subvol "$path" || continue
         if [[ ${path##*/} =~ ^archived-([0-9]{10})-[0-9]+$ ]]; then
             epoch=$((10#${BASH_REMATCH[1]}))
-            if ((epoch <= now - 2592000)); then btrfs subvolume delete --recursive "$path" || return; fi
+            if ((epoch <= now - 1209600)); then btrfs subvolume delete --recursive "$path" || return; fi
         elif [[ ${path##*/} =~ ^[0-9]{4}-[0-9]{2}-[0-9]{1,2}_[0-9]{2}:[0-9]{2}:[0-9]{2}$ ]]; then
             dest=$(rb_archive_path "$directory" "$now") || return
             mv -T -- "$path" "$dest" || return
@@ -668,7 +667,7 @@ rb_finalize() {
             if [[ -z $found && $published == true ]]; then
                 now=$(date +%s) || return
                 [[ $now =~ ^[0-9]{10}$ ]] || return 1
-                if ((10#$now - last_published < 2592000)); then
+                if ((10#$now - last_published < 1209600)); then
                     rb_error "published archive missing before retention elapsed: $role/$uuid; receipt retained"; return 1
                 fi
             fi
@@ -772,7 +771,6 @@ rb_fallback() {
         target=$root/@;index=3
         if [[ $role == home ]];then target=$root/@home;index=4;fi
         if rb_exists "$target";then rb_subvol "$target" || return 1;continue;fi
-        target=$root/@;[[ $role == root ]] || target=$root/@home
         for entry in "$tx/new-$role" "$tx"/clone-$role-[0-3];do
             rb_exists "$entry" || continue
             rb_ro "$entry" || continue
