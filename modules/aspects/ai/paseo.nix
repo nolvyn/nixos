@@ -34,5 +34,10 @@
           config.services.paseo.dataDir
         ];
       };
+
+    darwin = {
+      # Homebrew owns the desktop app and its bundled daemon; its native updater remains enabled.
+      homebrew.casks = [ "paseo" ];
+    };
   };
 }
