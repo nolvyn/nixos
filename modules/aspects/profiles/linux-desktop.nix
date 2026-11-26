@@ -1,8 +1,7 @@
 { den, ... }:
 {
-  # Linux desktop configuration can be reused by NixOS or standalone Linux
-  # Home Manager. Its NixOS projection needs a storage profile because several
-  # of the existing desktop aspects declare persistence under /persistent.
+  # Reusable on NixOS and standalone Linux Home Manager. NixOS needs a storage profile because
+  # several desktop aspects declare persistence under /persistent.
   den.aspects.linuxDesktop = {
     includes = with den.aspects; [
       audio

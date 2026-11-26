@@ -1,5 +1,3 @@
-# theme.nix
-
 # Most matugen templates are stolen from https://github.com/InioX/matugen-themes
 { ... }:
 {

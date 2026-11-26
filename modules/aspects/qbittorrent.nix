@@ -11,7 +11,7 @@
       environment.systemPackages = with pkgs; [
         qbittorrent
       ];
-      # Optional confinement is part of the app module and defaults to disabled.
+      # App-local confinement is off by default.
       imports = [
         (
           {
@@ -124,18 +124,16 @@
                   abi <abi/4.0>,
                   include <tunables/global>
 
-                  # Attach before either the packaged ELF wrapper or its real binary runs.
-                  # Retained package paths also attach. Compatibility with runtime
-                  # dependencies outside the selected closure is not guaranteed.
+                  # Attach before the packaged ELF wrapper or real binary runs, including retained package paths.
+                  # Runtime dependencies outside the selected closure may be incompatible.
                   profile nixos-qbittorrent "/nix/store/*-qbittorrent-*/bin/{qbittorrent,.qbittorrent-wrapped}" flags=(attach_disconnected,mediate_deleted) {
                     include <abstractions/base>
                     include <abstractions/fonts>
                     include <abstractions/nameservice-strict>
                     include "${runtimeRules}"
 
-                    # The base abstraction assumes these eCryptfs locations contain
-                    # encrypted data and grants broad file/execute access. Reserve
-                    # them regardless of downloadDirectories; names prove nothing.
+                    # The base abstraction assumes these eCryptfs locations hold encrypted data and grants broad file/execute access.
+                    # Reserve these paths regardless of downloadDirectories. Their names alone prove nothing.
                     deny @{HOME}/.Private/{,**} mrwklx,
                     deny @{HOMEDIRS}/.ecryptfs/*/.Private/{,**} mrwklx,
 
@@ -153,8 +151,7 @@
                     ${directoryRules}
                     ${resolvedEtcRules}
 
-                    # Pathname Unix sockets use file rules; do not grant blanket Unix access.
-                    # Qt's single-instance socket and short-lived app files.
+                    # Use file rules for Qt's single-instance pathname socket and short-lived app files. Avoid blanket Unix access.
                     owner /tmp/.qBittorrent/ rw,
                     owner /tmp/.qBittorrent/** rwkl,
                     owner /run/user/[0-9]*/wayland-[0-9]* rw,
@@ -190,8 +187,7 @@
               # The normal desktop/PATH launch fails if the named profile is unavailable.
               environment.systemPackages = [ (lib.hiPrio guardedDesktop) ];
 
-              # NixOS's AppArmor module owns loading, boot ordering and reload triggers.
-              # No application service, login hook, state rewrite or automatic restart.
+              # NixOS AppArmor handles loading, boot order and reload triggers. No app service, login hook, state rewrite or auto-restart.
             };
           }
         )

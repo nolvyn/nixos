@@ -73,8 +73,7 @@ reinstall() {
     read -rp "Type 'VERIFY $host' after checking it: " fingerprint_confirmation
     [[ $fingerprint_confirmation == "VERIFY $host" ]] || die "SSH fingerprint was not confirmed"
 
-    # Keep these controls in sync with nixos-anywhere-trusted.nix. Options must
-    # precede upstream defaults: OpenSSH uses the first value of each option.
+    # Sync with nixos-anywhere-trusted.nix. Put these options before upstream defaults because OpenSSH uses the first value.
     export NIXOS_ANYWHERE_KNOWN_HOSTS="$temp_dir/known_hosts"
     ssh_options=(
         -o StrictHostKeyChecking=yes

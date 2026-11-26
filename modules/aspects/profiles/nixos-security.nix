@@ -1,7 +1,6 @@
 { den, ... }:
 {
-  # These aspects currently persist state under /persistent. Keep them out of
-  # the generic base so a future server can choose a different storage policy.
+  # These aspects persist state under /persistent. Keep them out of the generic base so future servers can choose storage policy.
   den.aspects.nixosSecurity = {
     includes = with den.aspects; [
       agenix

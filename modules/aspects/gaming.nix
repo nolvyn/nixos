@@ -1,12 +1,6 @@
 { inputs, ... }:
 {
   flake-file.inputs = {
-    /*
-      aagl = {
-        url = "github:ezKEa/aagl-gtk-on-nix";
-        inputs.nixpkgs.follows = "unstable";
-      };
-    */
     moe-gaming = {
       url = "github:nolvyn/moe-gaming-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -18,7 +12,6 @@
       { host, pkgs, ... }:
       {
         imports = [
-          # inputs.aagl.nixosModules.default
           inputs.moe-gaming.nixosModules.default
         ];
         nixpkgs.overlays = [ inputs.moe-gaming.overlays.default ];
@@ -26,20 +19,16 @@
           "Games"
           ".cache/mesa_shader_cache"
           ".cache/radv_builtin_shaders"
-          # ".cache/sleepy-launcher"
           ".cache/umu"
           ".cache/umu-protonfixes"
           ".config/heroic"
-          # ".local/share/honkers-railway-launcher"
           ".local/share/PrismLauncher"
-          # ".local/share/sleepy-launcher"
           ".local/share/Steam"
           ".local/share/umu"
           ".local/state/Heroic"
         ];
         environment.systemPackages = with pkgs; [
-          # warm channel: default heroic pulls insecure pnpm-10.29.2
-          # (CVE-2026-48995/50014/50015).
+          # warm carries the newer Electron; the Heroic version is the same.
           warm.heroic
           protonplus
         ];
@@ -58,10 +47,6 @@
         };
 
         moe-gaming.proton.enable = true;
-
-        # programs.honkers-railway-launcher.enable = true;
-        # programs.sleepy-launcher.enable = true;
-        # aagl.enableNixpkgsReleaseBranchCheck = false;
 
         boot.kernelModules = [ "ntsync" ];
       };

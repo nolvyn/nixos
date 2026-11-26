@@ -1,5 +1,3 @@
-# btrfs.nix
-
 { ... }:
 {
   den.aspects.btrfs = {

@@ -1,4 +1,3 @@
-# Enable fish and configure it for interactive use.
 { lib, ... }:
 {
   den.aspects.fish = {
@@ -20,9 +19,8 @@
         dsclUser = lib.escapeShellArg "/Users/${host.userName}";
       in
       {
-        # Existing macOS accounts are Directory Services-owned. nix-darwin
-        # intentionally does not mutate their UserShell, so reconcile it at
-        # activation time after /etc/shells has been generated.
+        # nix-darwin leaves UserShell alone for existing Directory Services-owned macOS accounts.
+        # Reconcile it at activation after generating /etc/shells.
         system.activationScripts.postActivation.text = lib.mkAfter ''
           desiredShell="/run/current-system/sw/bin/fish"
 

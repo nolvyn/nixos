@@ -6,8 +6,8 @@
         ".config/hypr"
       ];
 
-      # Keep this capability override until its SDDM/session behavior is verified.
-      # UWSM is disabled; the original rationale for the override is unverified.
+      # UWSM is off and the override's original rationale is unverified.
+      # Keep it until SDDM/session behavior is verified.
       security.wrappers.Hyprland.capabilities = lib.mkForce "";
 
       programs.hyprland = {

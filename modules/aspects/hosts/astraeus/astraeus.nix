@@ -21,8 +21,8 @@
         masModule = builtins.readFile "${inputs.darwin}/modules/programs/mas.nix";
         masIdGuard = ''[[ -n "$id" ]]'';
         masUserFlag = "--user=\${escapeShellArg cfg.user}";
-        # mas 7 needs real root credentials, then drops its effective identity
-        # to SUDO_UID/SUDO_GID for the signed-in user's App Store session.
+        # mas 7 needs real root, then drops its effective identity to SUDO_UID/SUDO_GID
+        # for the signed-in user's App Store session.
         masRootContext = builtins.concatStringsSep " " [
           "--user=root"
           "env"

@@ -1,5 +1,3 @@
-# optimizations.nix
-
 # For more information see https://nixos.wiki/wiki/Storage_optimization
 { ... }:
 {

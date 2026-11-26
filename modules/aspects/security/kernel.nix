@@ -1,5 +1,3 @@
-# kernel.nix
-
 { ... }:
 {
   den.aspects.security.provides.kernel = {

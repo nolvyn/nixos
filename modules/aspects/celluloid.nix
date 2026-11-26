@@ -9,7 +9,7 @@
           ".config/celluloid"
         ];
 
-        # Optional confinement is part of the app module and defaults to disabled.
+        # App-local confinement is off by default.
         imports = [
           (
             {
@@ -230,8 +230,7 @@
                       include "${filteredBase}"
                       include <abstractions/fonts>
                       include "${closureRules}"
-                      # Coarse Unix access is retained for desktop use. No fine socket isolation
-                      # is claimed for the selected parser/kernel/bus stack.
+                      # Desktop use needs coarse Unix access. Fine socket isolation is unverified on this parser/kernel/bus stack.
                       network unix,
                       ${lib.optionalString allowInternet ''
                           network inet stream,
@@ -263,8 +262,7 @@
                         "${home}/.cache/yt-dlp/**" rwk,
                       ''}
                       /etc/{passwd,group,nsswitch.conf,hosts,machine-id,os-release} r,
-                      # Only directory traversal through the selected merged icon tree;
-                      # icon file targets still need their own reviewed closure grants.
+                      # Allow traversal of the selected merged icon directories only. Review closure grants for individual icon targets.
                       "${config.system.path}/share/icons/" r,
                       "${config.system.path}/share/icons/**/" r,
                       "${config.system.path}/share/pixmaps/" r,

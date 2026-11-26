@@ -28,8 +28,7 @@ let
 in
 installer.overrideAttrs (old: {
   postPatch = (old.postPatch or "") + ''
-    # OpenSSH takes the first value. Enforce authentication at the shared array,
-    # before upstream/user options, and fail closed if this upstream seam drifts.
+    # OpenSSH takes the first value. Enforce auth in the shared array before upstream/user options; fail closed on upstream drift.
     test "$(grep -Fxc -- ${lib.escapeShellArg original} src/nixos-anywhere.sh)" -eq 1
     substituteInPlace src/nixos-anywhere.sh \
       --replace-fail ${lib.escapeShellArg original} ${lib.escapeShellArg replacement}

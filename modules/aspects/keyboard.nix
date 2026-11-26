@@ -1,5 +1,3 @@
-# keyboard.nix
-
 { ... }:
 {
   den.aspects.keyboard = {
@@ -10,7 +8,6 @@
         ".config/mozc"
       ];
 
-      # Configure keymap in X11
       services.xserver.xkb = {
         layout = "us";
         variant = "";

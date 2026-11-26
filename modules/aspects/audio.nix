@@ -1,5 +1,3 @@
-# audio.nix
-
 # For more information see https://wiki.nixos.org/wiki/Category:Audio
 { ... }:
 {

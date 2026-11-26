@@ -11,9 +11,6 @@
       nixosSecurity
       linuxDesktop
       workstation
-      # anki
-      # printing
-      # qbittorrent
     ];
 
     nixos =

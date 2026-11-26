@@ -26,10 +26,8 @@ hl.window_rule({ match = { class = "celluloid" }, workspace = "name:anime" })
 -- Force fullscreen for all games
 hl.window_rule({ match = { class = "^steam_app_[0-9]+$" }, fullscreen = true })
 
--- Keep launcher/cover windows floating while the actual game stays fullscreen.
--- The explicit fullscreen state prevents the generic game rule above from
--- fullscreening them, and suppress_event prevents the launcher from requesting
--- fullscreen again during startup.
+-- Float launcher/cover windows and keep the game fullscreen. Explicit state overrides the generic fullscreen rule;
+-- suppress_event blocks renewed launcher fullscreen requests during startup.
 hl.window_rule({
     match            = {
         class         = "steam_app_4162040", -- Zenless Zone Zero
@@ -122,8 +120,8 @@ hl.on("window.open", start_fullscreen_game_guard)
 hl.on("window.class", start_fullscreen_game_guard)
 hl.on("window.fullscreen", force_fullscreen_game)
 
--- Keep Steam games on the Steam workspace, even if the mouse/pointer is on another
--- monitor when the game window appears. Numeric AppIDs cover every regular game
+-- Keep regular Steam games on Steam's workspace even if the pointer is elsewhere when the window appears.
+-- Numeric AppIDs cover them all.
 hl.window_rule({ match = { class = "^steam_app_[1-9][0-9]*$" }, workspace = "name:steam" })
 hl.window_rule({ match = { class = "steam_app_0" }, workspace = "name:games" }) -- Heroic/non-Steam games
 

@@ -1,5 +1,3 @@
-# general.nix
-
 { ... }:
 {
   den.aspects.security.provides.general = {
@@ -15,12 +13,10 @@
       security.sudo.enable = false;
       security.sudo-rs.enable = true;
 
-      # CVE-2026-111943: match the upstream NixOS distrust policy.
+      # CVE-2026-111943: NixOS already blocks Comodo AAA Services root.
       security.pki.caCertificateBlacklist = [
-        "Comodo AAA Services root"
-        # Absent from NSS 3.131.1; buildcatrust rejects missing blocklist names.
-        # Keep these inactive while absent; restore them if a future CA bundle
-        # reintroduces the certificates, so they do not become trusted again.
+        # NSS 3.131.1 lacks these names and buildcatrust rejects absent entries.
+        # Leave them inactive while absent; restore them if the bundle reintroduces the CAs to prevent renewed trust.
         # "emSign ECC Root CA - G3"
         # "emSign Root CA - C1"
         # "emSign ECC Root CA - C3"
@@ -74,9 +70,8 @@
         enable = true;
         killUnconfinedConfinables = true;
         packages = [ pkgs.apparmor-profiles ];
-        # Confine the actual executable reached by NixOS's capability wrapper.
-        # Packaged desktop profiles often allow everything; loading them alone
-        # would give a confined-looking label without useful restrictions.
+        # Confine the real executable behind NixOS's capability wrapper.
+        # Packaged desktop profiles often allow everything, giving a label without useful restrictions.
         policies.nixos-ping = {
           state = "enforce";
           profile = ''

@@ -1,5 +1,3 @@
-# systemd.nix
-
 { ... }:
 {
   den.aspects.security.provides.systemd = {
@@ -33,7 +31,7 @@
                 'd /var/lib/systemd/coredump 0755 root root m:7d'
             '';
 
-        # Bootloader.
+        # Bootloader
         boot.loader.systemd-boot.enable = true;
         boot.loader.efi.canTouchEfiVariables = true;
         boot.loader.systemd-boot.configurationLimit = 50;
