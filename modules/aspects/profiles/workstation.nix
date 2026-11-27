@@ -9,6 +9,7 @@
       ai.claude
       ai.general
       ai.grok
+      ai.muse
       ai.opencode
       ai.paseo
       base
